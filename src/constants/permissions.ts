@@ -1,0 +1,10 @@
+export const PERMISSIONS = {
+  DASHBOARD_VIEW: 'DASHBOARD_VIEW',
+  USER_VIEW: 'USER_VIEW',
+  USER_CREATE: 'USER_CREATE',
+  USER_UPDATE: 'USER_UPDATE',
+  USER_DELETE: 'USER_DELETE',
+  ROLE_VIEW: 'ROLE_VIEW',
+} as const
+
+export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS]
