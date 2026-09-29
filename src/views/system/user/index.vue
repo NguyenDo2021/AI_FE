@@ -29,7 +29,10 @@ const form = ref<Record<string, unknown>>({})
 const formRules = computed(() => ({
   username: [validationRules.required(t('user.required'))],
   fullName: [validationRules.required(t('user.required'))],
-  email: [validationRules.required(t('user.required')), validationRules.email(t('user.invalidEmail'))],
+  email: [
+    validationRules.required(t('user.required')),
+    validationRules.email(t('user.invalidEmail')),
+  ],
 }))
 const formSchema = computed<FormSchema[]>(() => [
   { name: 'username', label: t('user.username'), rules: formRules.value.username },
@@ -58,8 +61,10 @@ const columns = computed<TableColumnsType<User>>(() => [
   { title: t('user.fullName'), dataIndex: 'fullName', key: 'fullName' },
   { title: t('user.email'), dataIndex: 'email', key: 'email' },
   { title: t('user.phone'), dataIndex: 'phone', key: 'phone' },
-  { title: t('user.createdAt'), dataIndex: 'createdAt', key: 'createdAt' },
   { title: t('user.status'), dataIndex: 'status', key: 'status' },
+  { title: t('user.createdAt'), dataIndex: 'createdAt', key: 'createdAt' },
+  { title: t('user.updatedAt'), dataIndex: 'updatedAt', key: 'updatedAt' },
+  { title: t('user.updatedBy'), dataIndex: 'updatedByName', key: 'updatedByName' },
   { title: t('common.actions'), key: 'actions', fixed: 'right', width: 220 },
 ])
 
@@ -188,7 +193,13 @@ onMounted(() => void loadUsers())
 
 <template>
   <section>
-    <a-alert v-if="errorMessage" :message="errorMessage" type="error" show-icon class="user-page__error" />
+    <a-alert
+      v-if="errorMessage"
+      :message="errorMessage"
+      type="error"
+      show-icon
+      class="user-page__error"
+    />
     <div class="user-page__heading">
       <div>
         <h1>{{ $t('user.management') }}</h1>
@@ -233,6 +244,7 @@ onMounted(() => void loadUsers())
           {{ record.status === 1 ? $t('common.active') : $t('common.inactive') }}
         </a-tag>
         <span v-else-if="column.key === 'createdAt'">{{ formatDateTime(record.createdAt) }}</span>
+        <span v-else-if="column.key === 'updatedAt'">{{ formatDateTime(record.updatedAt) }}</span>
         <div v-else-if="column.key === 'actions'" class="user-page__actions">
           <a-button type="link" size="small" @click="openDetail(record)">
             {{ $t('common.detail') }}
@@ -277,10 +289,18 @@ onMounted(() => void loadUsers())
 
     <BasicDrawer v-model:open="drawerOpen" :title="$t('user.detail')" :destroy-on-close="false">
       <a-descriptions v-if="selectedUser" bordered :column="1">
-        <a-descriptions-item :label="$t('user.username')">{{ selectedUser.username }}</a-descriptions-item>
-        <a-descriptions-item :label="$t('user.fullName')">{{ selectedUser.fullName }}</a-descriptions-item>
-        <a-descriptions-item :label="$t('user.email')">{{ selectedUser.email }}</a-descriptions-item>
-        <a-descriptions-item :label="$t('user.phone')">{{ selectedUser.phone || '-' }}</a-descriptions-item>
+        <a-descriptions-item :label="$t('user.username')">{{
+          selectedUser.username
+        }}</a-descriptions-item>
+        <a-descriptions-item :label="$t('user.fullName')">{{
+          selectedUser.fullName
+        }}</a-descriptions-item>
+        <a-descriptions-item :label="$t('user.email')">{{
+          selectedUser.email
+        }}</a-descriptions-item>
+        <a-descriptions-item :label="$t('user.phone')">{{
+          selectedUser.phone || '-'
+        }}</a-descriptions-item>
         <a-descriptions-item :label="$t('user.status')">
           {{ selectedUser.status === 1 ? $t('common.active') : $t('common.inactive') }}
         </a-descriptions-item>

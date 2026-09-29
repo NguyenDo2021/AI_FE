@@ -46,6 +46,8 @@ export default {
     phone: 'Phone',
     status: 'Status',
     createdAt: 'Created at',
+    UpdatedAt: 'Updated at',
+    updatedBy: 'Updated by',
     add: 'Add user',
     edit: 'Edit user',
     detail: 'User details',

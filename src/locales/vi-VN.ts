@@ -46,6 +46,8 @@ export default {
     phone: 'Số điện thoại',
     status: 'Trạng thái',
     createdAt: 'Ngày tạo',
+    updatedAt: 'Ngày cập nhật',
+    updatedBy: 'Cập nhật bởi',
     add: 'Thêm người dùng',
     edit: 'Sửa người dùng',
     detail: 'Thông tin người dùng',

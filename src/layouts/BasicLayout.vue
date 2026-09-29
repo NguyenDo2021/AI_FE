@@ -62,13 +62,15 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
       collapsible
       class="admin-layout__sider"
     >
-      <div class="admin-layout__brand">{{ appStore.sidebarCollapsed ? 'FB' : 'Frontend Base' }}</div>
+      <div class="admin-layout__brand">
+        {{ appStore.sidebarCollapsed ? 'FB' : 'Frontend Base' }}
+      </div>
       <a-menu
         mode="inline"
         theme="dark"
         :selected-keys="[route.path]"
         :open-keys="appStore.sidebarCollapsed ? [] : ['/system']"
-        @click="({ key }) => router.push(String(key))"
+        @click="({ key }: { key: string }) => router.push(String(key))"
       >
         <template v-for="item in visibleMenus" :key="item.key">
           <a-sub-menu v-if="item.children?.length" :key="item.key">
@@ -93,8 +95,15 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
           <MenuFoldOutlined v-else />
         </a-button>
         <div class="admin-layout__user">
-          <span class="admin-layout__user-name">{{ authStore.user?.fullName ?? authStore.user?.username }}</span>
-          <a-select :value="$i18n.locale" size="small" :aria-label="$t('common.language')" @change="changeLocale">
+          <span class="admin-layout__user-name">{{
+            authStore.user?.fullName ?? authStore.user?.username
+          }}</span>
+          <a-select
+            :value="$i18n.locale"
+            size="small"
+            :aria-label="$t('common.language')"
+            @change="changeLocale"
+          >
             <a-select-option value="vi-VN">Tiếng Việt</a-select-option>
             <a-select-option value="en-US">English</a-select-option>
           </a-select>

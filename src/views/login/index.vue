@@ -48,7 +48,11 @@ const submit = async (): Promise<void> => {
           <a-input v-model:value="form.username" autocomplete="username" size="large" />
         </a-form-item>
         <a-form-item name="password" :label="$t('auth.password')">
-          <a-input-password v-model:value="form.password" autocomplete="current-password" size="large" />
+          <a-input-password
+            v-model:value="form.password"
+            autocomplete="current-password"
+            size="large"
+          />
         </a-form-item>
         <a-button type="primary" html-type="submit" size="large" block :loading="loading">
           {{ $t('auth.login') }}
