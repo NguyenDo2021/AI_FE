@@ -5,6 +5,9 @@ export const PERMISSIONS = {
   USER_UPDATE: 'USER_UPDATE',
   USER_DELETE: 'USER_DELETE',
   ROLE_VIEW: 'ROLE_VIEW',
+  ROLE_CREATE: 'ROLE_CREATE',
+  ROLE_UPDATE: 'ROLE_UPDATE',
+  ROLE_DELETE: 'ROLE_DELETE',
 } as const
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS]
