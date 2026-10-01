@@ -22,3 +22,7 @@ export interface UserPayload {
   phone?: string
   status: number
 }
+
+export interface UpdateUserRolesRequest {
+  roleIds: string[]
+}

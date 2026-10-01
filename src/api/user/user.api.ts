@@ -1,6 +1,7 @@
 import { request } from '@/utils/request'
 import type { PageData } from '@/types/api'
-import type { User, UserListParams, UserPayload } from '@/types/user'
+import type { Role } from '@/types/role'
+import type { User, UserListParams, UserPayload, UpdateUserRolesRequest } from '@/types/user'
 
 export const getUserList = (params: UserListParams): Promise<PageData<User>> =>
   request.get<PageData<User>>('/users', { params })
@@ -14,3 +15,15 @@ export const updateUser = (id: string, payload: UserPayload): Promise<User> =>
   request.put<User>(`/users/${id}`, payload)
 
 export const deleteUser = (id: string): Promise<void> => request.delete<void>(`/users/${id}`)
+
+export const getUserRoles = (userId: string): Promise<Role[]> =>
+  request.get<Role[]>(`/users/${userId}/roles`)
+
+export const updateUserRoles = (
+  userId: string,
+  roleIds: string[],
+): Promise<Role[]> =>
+  request.put<Role[]>(`/users/${userId}/roles`, { roleIds } satisfies UpdateUserRolesRequest)
+
+export const removeUserRole = (userId: string, roleId: string): Promise<void> =>
+  request.delete<void>(`/users/${userId}/roles/${roleId}`)

@@ -3,29 +3,59 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
 import type { TableColumnsType } from 'ant-design-vue'
-import { createUser, deleteUser, getUser, getUserList, updateUser } from '@/api/user/user.api'
+import { getRoles } from '@/api/role/role.api'
+import {
+  createUser,
+  deleteUser,
+  getUser,
+  getUserList,
+  getUserRoles,
+  removeUserRole,
+  updateUser,
+  updateUserRoles,
+} from '@/api/user/user.api'
 import { PERMISSIONS } from '@/constants/permissions'
 import { BasicForm, BasicModal, BasicTable, BasicDrawer, type FormSchema } from '@/components'
 import type { PageData } from '@/types/api'
+import type { Role } from '@/types/role'
 import type { User, UserListParams, UserPayload } from '@/types/user'
+import { useAuthStore } from '@/stores/auth'
 import { formatDateTime, formatOrdinal } from '@/utils'
+import { hasPermission } from '@/utils/permission'
+import { type NormalizedApiError } from '@/utils/request'
 import { validationRules } from '@/utils/validate'
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 const users = ref<User[]>([])
 const loading = ref(false)
 const saving = ref(false)
 const errorMessage = ref('')
 const modalOpen = ref(false)
 const drawerOpen = ref(false)
+const roleModalOpen = ref(false)
 const editingUserId = ref<string | null>(null)
 const selectedUser = ref<User | null>(null)
+const roleAssignUser = ref<User | null>(null)
+const roleOptions = ref<Role[]>([])
+const selectedRoleIds = ref<string[]>([])
+const loadingRoles = ref(false)
+const savingRoles = ref(false)
+const removingRoleId = ref<string | null>(null)
 const formRef = ref<InstanceType<typeof BasicForm>>()
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const ROLE_PAGE_SIZE_LIMIT = 100
 const filters = reactive({ keyword: '', status: undefined as number | undefined })
 const form = ref<Record<string, unknown>>({})
+const canViewUserRoles = computed(() =>
+  hasPermission(PERMISSIONS.USER_VIEW, authStore.user?.permissions ?? []),
+)
+const canUpdateUserRoles = computed(() =>
+  hasPermission(PERMISSIONS.USER_UPDATE, authStore.user?.permissions ?? []),
+)
+
 const formRules = computed(() => ({
   username: [validationRules.required(t('user.required'))],
   fullName: [validationRules.required(t('user.required'))],
@@ -65,7 +95,7 @@ const columns = computed<TableColumnsType<User>>(() => [
   { title: t('user.createdAt'), dataIndex: 'createdAt', key: 'createdAt' },
   { title: t('user.updatedAt'), dataIndex: 'updatedAt', key: 'updatedAt' },
   { title: t('user.updatedBy'), dataIndex: 'updatedByName', key: 'updatedByName' },
-  { title: t('common.actions'), key: 'actions', fixed: 'right', width: 220 },
+  { title: t('common.actions'), key: 'actions', fixed: 'right', width: 260 },
 ])
 
 const pagination = computed(() => ({
@@ -75,6 +105,17 @@ const pagination = computed(() => ({
   showSizeChanger: true,
   showTotal: (count: number) => `${count}`,
 }))
+
+const selectedRoles = computed(() =>
+  roleOptions.value.filter((role) => selectedRoleIds.value.includes(role.id)),
+)
+
+const apiErrorMessage = (error: unknown, fallback = t('errors.unknown')): string => {
+  if (!(error instanceof Error)) return fallback
+  const apiError = error as NormalizedApiError
+  if (apiError.status === 403) return t('user.rolePermissionDenied')
+  return apiError.message || fallback
+}
 
 const loadUsers = async (): Promise<void> => {
   if (loading.value) return
@@ -137,8 +178,89 @@ const openDetail = async (user: User): Promise<void> => {
   try {
     selectedUser.value = await getUser(user.id)
     drawerOpen.value = true
-  } catch {
-    errorMessage.value = t('errors.unknown')
+  } catch (error) {
+    errorMessage.value = apiErrorMessage(error)
+  }
+}
+
+const loadAllRolesForAssignment = async (): Promise<Role[]> => {
+  const allRoles: Role[] = []
+  let currentPage = 1
+
+  while (true) {
+    const response = await getRoles({
+      page: currentPage,
+      pageSize: ROLE_PAGE_SIZE_LIMIT,
+    })
+
+    allRoles.push(...response.items)
+
+    if (allRoles.length >= response.total || response.items.length < ROLE_PAGE_SIZE_LIMIT) {
+      break
+    }
+
+    currentPage += 1
+  }
+
+  return allRoles
+}
+
+const openAssignRoleModal = async (user: User): Promise<void> => {
+  if (!canViewUserRoles.value || !canUpdateUserRoles.value) return
+
+  roleAssignUser.value = user
+  roleModalOpen.value = true
+  loadingRoles.value = true
+  selectedRoleIds.value = []
+  roleOptions.value = []
+
+  try {
+    const [allRoles, currentRoles] = await Promise.all([
+      loadAllRolesForAssignment(),
+      getUserRoles(user.id),
+    ])
+    roleOptions.value = allRoles
+    selectedRoleIds.value = currentRoles.map((role) => role.id)
+    errorMessage.value = ''
+  } catch (error) {
+    errorMessage.value = apiErrorMessage(error)
+    roleModalOpen.value = false
+  } finally {
+    loadingRoles.value = false
+  }
+}
+
+const removeSingleRole = async (roleId: string): Promise<void> => {
+  if (!roleAssignUser.value || removingRoleId.value) return
+  const targetRole = roleOptions.value.find((role) => role.id === roleId)
+  if (!targetRole || targetRole.code === 'ADMIN') return
+
+  removingRoleId.value = roleId
+  try {
+    await removeUserRole(roleAssignUser.value.id, roleId)
+    selectedRoleIds.value = selectedRoleIds.value.filter((id) => id !== roleId)
+    message.success(t('user.roleRemovedSuccess'))
+  } catch (error) {
+    errorMessage.value = apiErrorMessage(error)
+  } finally {
+    removingRoleId.value = null
+  }
+}
+
+const saveUserRoles = async (): Promise<void> => {
+  if (!roleAssignUser.value || savingRoles.value) return
+
+  savingRoles.value = true
+  try {
+    await updateUserRoles(roleAssignUser.value.id, selectedRoleIds.value)
+    message.success(t('user.assignRoleSuccess'))
+    roleModalOpen.value = false
+    errorMessage.value = ''
+    await loadUsers()
+  } catch (error) {
+    errorMessage.value = apiErrorMessage(error)
+  } finally {
+    savingRoles.value = false
   }
 }
 
@@ -162,8 +284,8 @@ const saveUser = async (): Promise<void> => {
     modalOpen.value = false
     errorMessage.value = ''
     await loadUsers()
-  } catch {
-    errorMessage.value = t('errors.unknown')
+  } catch (error) {
+    errorMessage.value = apiErrorMessage(error)
   } finally {
     saving.value = false
   }
@@ -181,8 +303,8 @@ const confirmDelete = (user: User): void => {
         message.success(t('user.deleteSuccess'))
         errorMessage.value = ''
         await loadUsers()
-      } catch {
-        errorMessage.value = t('errors.unknown')
+      } catch (error) {
+        errorMessage.value = apiErrorMessage(error)
       }
     },
   })
@@ -258,6 +380,14 @@ onMounted(() => void loadUsers())
             {{ $t('common.edit') }}
           </a-button>
           <a-button
+            v-if="canViewUserRoles && canUpdateUserRoles"
+            type="link"
+            size="small"
+            @click="openAssignRoleModal(record)"
+          >
+            {{ $t('user.assignRole') }}
+          </a-button>
+          <a-button
             v-permission="PERMISSIONS.USER_DELETE"
             type="link"
             danger
@@ -285,6 +415,60 @@ onMounted(() => void loadUsers())
         :label-col="7"
         :wrapper-col="17"
       />
+    </BasicModal>
+
+    <BasicModal
+      v-model:open="roleModalOpen"
+      :title="$t('user.assignRoleTitle')"
+      :confirm-loading="savingRoles"
+      width="560px"
+      @confirm="saveUserRoles"
+    >
+      <a-spin :spinning="loadingRoles">
+        <div v-if="roleAssignUser" class="user-role-modal__meta">
+          <div>
+            <strong>{{ $t('user.fullName') }}:</strong> {{ roleAssignUser.fullName }}
+          </div>
+          <div>
+            <strong>{{ $t('user.username') }}:</strong> {{ roleAssignUser.username }}
+          </div>
+        </div>
+
+        <div class="user-role-modal__section">
+          <div class="user-role-modal__title">{{ $t('user.userRoles') }}</div>
+          <a-checkbox-group v-model:value="selectedRoleIds" class="user-role-modal__group">
+            <a-row :gutter="[8, 8]">
+              <a-col v-for="role in roleOptions" :key="role.id" :span="24">
+                <a-checkbox :value="role.id" :disabled="role.code === 'ADMIN'">
+                  {{ role.name }} <span class="user-role-modal__code">({{ role.code }})</span>
+                </a-checkbox>
+              </a-col>
+            </a-row>
+          </a-checkbox-group>
+        </div>
+
+        <div v-if="selectedRoles.length" class="user-role-modal__section">
+          <div class="user-role-modal__title">{{ $t('user.removeRole') }}</div>
+          <div class="user-role-modal__selected-list">
+            <div
+              v-for="role in selectedRoles"
+              :key="role.id"
+              class="user-role-modal__selected-item"
+            >
+              <span>{{ role.name }}</span>
+              <a-button
+                v-if="role.code !== 'ADMIN'"
+                size="small"
+                danger
+                :loading="removingRoleId === role.id"
+                @click="removeSingleRole(role.id)"
+              >
+                {{ $t('common.delete') }}
+              </a-button>
+            </div>
+          </div>
+        </div>
+      </a-spin>
     </BasicModal>
 
     <BasicDrawer v-model:open="drawerOpen" :title="$t('user.detail')" :destroy-on-close="false">
@@ -343,5 +527,42 @@ onMounted(() => void loadUsers())
   .user-page__filters {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+.user-role-modal__meta {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.user-role-modal__section {
+  margin-top: 16px;
+}
+
+.user-role-modal__title {
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.user-role-modal__group {
+  width: 100%;
+}
+
+.user-role-modal__code {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.user-role-modal__selected-list {
+  display: grid;
+  gap: 8px;
+}
+
+.user-role-modal__selected-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
 }
 </style>
