@@ -4,16 +4,25 @@ import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import { createRole, deleteRole, getRole, getRoles, updateRole } from '@/api/role/role.api'
+import {
+  getPermissions,
+  getRolePermissions,
+  updateRolePermissions,
+} from '@/api/permission/permission.api'
 import { PERMISSIONS } from '@/constants/permissions'
 import { BasicForm, BasicModal, BasicTable, BasicDrawer, type FormSchema } from '@/components'
 import type { PageData } from '@/types/api'
+import type { Permission } from '@/types/permission'
 import type { Role, RoleSearchParams, UpdateRoleRequest } from '@/types/role'
 import { formatDateTime, formatOrdinal } from '@/utils'
+import { hasPermission } from '@/utils/permission'
+import { useAuthStore } from '@/stores/auth'
 import { type NormalizedApiError } from '@/utils/request'
 import { validationRules } from '@/utils/validate'
 import type { Rule } from 'ant-design-vue/es/form'
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 const roles = ref<Role[]>([])
 const loading = ref(false)
 const saving = ref(false)
@@ -21,12 +30,19 @@ const recordLoading = ref(false)
 const errorMessage = ref('')
 const modalOpen = ref(false)
 const drawerOpen = ref(false)
+const permissionModalOpen = ref(false)
 const editingRoleId = ref<string | null>(null)
 const selectedRole = ref<Role | null>(null)
+const permissionRole = ref<Role | null>(null)
+const permissionOptions = ref<Permission[]>([])
+const selectedPermissionIds = ref<string[]>([])
+const loadingPermissions = ref(false)
+const savingPermissions = ref(false)
 const formRef = ref<InstanceType<typeof BasicForm>>()
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const PERMISSION_PAGE_SIZE_LIMIT = 100
 const filters = reactive({ keyword: '', status: undefined as number | undefined })
 const form = ref<Record<string, unknown>>({})
 let latestListRequest = 0
@@ -97,6 +113,12 @@ const pagination = computed(() => ({
   showSizeChanger: true,
   showTotal: (count: number) => `${count}`,
 }))
+
+const selectedPermissions = computed(() =>
+  permissionOptions.value.filter((permission) =>
+    selectedPermissionIds.value.includes(permission.id),
+  ),
+)
 
 const apiErrorMessage = (error: unknown, fallback = t('errors.unknown')): string => {
   if (!(error instanceof Error)) return fallback
@@ -182,6 +204,74 @@ const openDetail = async (role: Role): Promise<void> => {
     errorMessage.value = apiErrorMessage(error)
   } finally {
     recordLoading.value = false
+  }
+}
+
+const loadAllPermissionsForAssignment = async (): Promise<Permission[]> => {
+  const allPermissions: Permission[] = []
+  let currentPage = 1
+
+  while (true) {
+    const response = await getPermissions({
+      page: currentPage,
+      pageSize: PERMISSION_PAGE_SIZE_LIMIT,
+    })
+
+    allPermissions.push(...response.items)
+
+    if (
+      allPermissions.length >= response.total ||
+      response.items.length < PERMISSION_PAGE_SIZE_LIMIT
+    ) {
+      break
+    }
+
+    currentPage += 1
+  }
+
+  return allPermissions
+}
+
+const openAssignPermissions = async (role: Role): Promise<void> => {
+  if (!hasPermission(PERMISSIONS.ROLE_UPDATE, useAuthStore().user?.permissions ?? [])) return
+
+  permissionRole.value = role
+  permissionModalOpen.value = true
+  loadingPermissions.value = true
+  selectedPermissionIds.value = []
+  permissionOptions.value = []
+
+  try {
+    const [allPermissions, currentPermissions] = await Promise.all([
+      loadAllPermissionsForAssignment(),
+      getRolePermissions(role.id),
+    ])
+    permissionOptions.value = allPermissions
+    selectedPermissionIds.value = currentPermissions.map((permission) => permission.id)
+    errorMessage.value = ''
+  } catch (error) {
+    errorMessage.value = apiErrorMessage(error)
+    permissionModalOpen.value = false
+  } finally {
+    loadingPermissions.value = false
+  }
+}
+
+const saveRolePermissions = async (): Promise<void> => {
+  if (!permissionRole.value || savingPermissions.value) return
+  if (!hasPermission(PERMISSIONS.ROLE_UPDATE, authStore.user?.permissions ?? [])) return
+
+  savingPermissions.value = true
+  try {
+    await updateRolePermissions(permissionRole.value.id, selectedPermissionIds.value)
+    message.success(t('role.assignPermissionSuccess'))
+    permissionModalOpen.value = false
+    errorMessage.value = ''
+    await loadRoles()
+  } catch (error) {
+    errorMessage.value = apiErrorMessage(error)
+  } finally {
+    savingPermissions.value = false
   }
 }
 
@@ -302,6 +392,14 @@ onMounted(() => void loadRoles())
             {{ $t('common.edit') }}
           </a-button>
           <a-button
+            v-permission="PERMISSIONS.ROLE_UPDATE"
+            type="link"
+            size="small"
+            @click="openAssignPermissions(record)"
+          >
+            {{ $t('role.assignPermission') }}
+          </a-button>
+          <a-button
             v-permission="PERMISSIONS.ROLE_DELETE"
             type="link"
             danger
@@ -329,6 +427,59 @@ onMounted(() => void loadRoles())
         :label-col="7"
         :wrapper-col="17"
       />
+    </BasicModal>
+
+    <BasicModal
+      v-model:open="permissionModalOpen"
+      :title="$t('role.assignPermissionTitle')"
+      :confirm-loading="savingPermissions"
+      width="760px"
+      @confirm="saveRolePermissions"
+    >
+      <a-spin :spinning="loadingPermissions">
+        <div v-if="permissionRole" class="role-permission-modal__meta">
+          <div>
+            <strong>{{ $t('role.name') }}:</strong> {{ permissionRole.name }}
+          </div>
+          <div>
+            <strong>{{ $t('role.code') }}:</strong> {{ permissionRole.code }}
+          </div>
+        </div>
+
+        <div v-if="permissionRole?.code === 'ADMIN'" class="role-permission-modal__notice">
+          {{ $t('role.adminRestrictedNotice') }}
+        </div>
+
+        <div class="role-permission-modal__section">
+          <div class="role-permission-modal__title">{{ $t('role.rolePermissions') }}</div>
+          <a-checkbox-group
+            v-model:value="selectedPermissionIds"
+            class="role-permission-modal__group"
+          >
+            <a-row :gutter="[8, 8]">
+              <a-col v-for="permission in permissionOptions" :key="permission.id" :span="24">
+                <a-checkbox :value="permission.id" :disabled="permissionRole?.code === 'ADMIN'">
+                  {{ permission.name }}
+                  <span class="role-permission-modal__code">({{ permission.code }})</span>
+                </a-checkbox>
+              </a-col>
+            </a-row>
+          </a-checkbox-group>
+        </div>
+
+        <div v-if="selectedPermissions.length" class="role-permission-modal__section">
+          <div class="role-permission-modal__title">{{ $t('role.rolePermissions') }}</div>
+          <div class="role-permission-modal__selected-list">
+            <span
+              v-for="permission in selectedPermissions"
+              :key="permission.id"
+              class="role-permission-modal__selected-item"
+            >
+              {{ permission.name }} ({{ permission.code }})
+            </span>
+          </div>
+        </div>
+      </a-spin>
     </BasicModal>
 
     <BasicDrawer v-model:open="drawerOpen" :title="$t('role.detail')" :destroy-on-close="false">
@@ -380,6 +531,54 @@ onMounted(() => void loadRoles())
 .role-page__actions {
   display: flex;
   gap: 4px;
+}
+
+.role-permission-modal__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.role-permission-modal__notice {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  color: #d48806;
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 6px;
+}
+
+.role-permission-modal__section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.role-permission-modal__title {
+  font-weight: 600;
+}
+
+.role-permission-modal__group {
+  display: block;
+}
+
+.role-permission-modal__code {
+  color: #8c8c8c;
+}
+
+.role-permission-modal__selected-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.role-permission-modal__selected-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f5f5f5;
 }
 
 @media (max-width: 720px) {

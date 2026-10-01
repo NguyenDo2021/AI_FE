@@ -1,6 +1,6 @@
 import type { PageData } from '@/types/api'
 
-export interface Role {
+export interface Permission {
   id: string
   name: string
   code: string
@@ -10,26 +10,26 @@ export interface Role {
   updatedAt?: string
 }
 
-export type RoleResponse = Role
-export type RoleListResponse = PageData<Role>
+export type PermissionResponse = Permission
+export type PermissionListResponse = PageData<Permission>
 
-export interface RoleSearchParams {
+export interface PermissionSearchParams {
   page: number
   pageSize: number
   keyword?: string
+  name?: string
+  code?: string
   status?: number
 }
 
-export interface CreateRoleRequest {
+export interface CreatePermissionRequest {
   name: string
   code: string
   description?: string
   status: number
 }
-export interface UpdateRolePermissionsRequest {
-  permissionIds: string[]
-}
-export interface UpdateRoleRequest {
+
+export interface UpdatePermissionRequest {
   name: string
   code: string
   description?: string

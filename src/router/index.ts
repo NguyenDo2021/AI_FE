@@ -23,13 +23,27 @@ const routes: RouteRecordRaw[] = [
         path: 'dashboard',
         name: 'dashboard',
         component: () => import('@/views/dashboard/index.vue'),
-        meta: { title: 'common.dashboard', requiresAuth: true, permissions: [PERMISSIONS.DASHBOARD_VIEW] },
+        meta: {
+          title: 'common.dashboard',
+          requiresAuth: true,
+          permissions: [PERMISSIONS.DASHBOARD_VIEW],
+        },
       },
       {
         path: 'system/user',
         name: 'system-user',
         component: () => import('@/views/system/user/index.vue'),
         meta: { title: 'common.user', requiresAuth: true, permissions: [PERMISSIONS.USER_VIEW] },
+      },
+      {
+        path: 'system/permission',
+        name: 'system-permission',
+        component: () => import('@/views/system/permission/index.vue'),
+        meta: {
+          title: 'common.permission',
+          requiresAuth: true,
+          permissions: [PERMISSIONS.PERMISSION_VIEW],
+        },
       },
       {
         path: 'system/role',

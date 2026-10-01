@@ -458,6 +458,7 @@ onMounted(() => void loadUsers())
               <span>{{ role.name }}</span>
               <a-button
                 v-if="role.code !== 'ADMIN'"
+                v-permission="PERMISSIONS.USER_UPDATE"
                 size="small"
                 danger
                 :loading="removingRoleId === role.id"

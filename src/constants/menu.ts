@@ -14,6 +14,11 @@ export const MENU_ITEMS: MenuItem[] = [
     title: 'system.title',
     children: [
       { key: '/system/user', title: 'common.user', permission: PERMISSIONS.USER_VIEW },
+      {
+        key: '/system/permission',
+        title: 'common.permission',
+        permission: PERMISSIONS.PERMISSION_VIEW,
+      },
       { key: '/system/role', title: 'common.role', permission: PERMISSIONS.ROLE_VIEW },
     ],
   },

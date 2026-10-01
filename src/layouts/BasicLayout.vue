@@ -3,6 +3,7 @@ import { computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   DashboardOutlined,
+  LockOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SettingOutlined,
@@ -41,6 +42,7 @@ const menuIcon = (key: string): ReturnType<typeof h> => {
     '/dashboard': h(DashboardOutlined),
     '/system': h(SettingOutlined),
     '/system/user': h(TeamOutlined),
+    '/system/permission': h(LockOutlined),
     '/system/role': h(UserOutlined),
   }
   return icons[key] ?? h(SettingOutlined)
