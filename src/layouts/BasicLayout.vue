@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import WarehouseSelector from '@/components/catalog/WarehouseSelector.vue'
 import { computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
@@ -31,7 +32,15 @@ const visibleMenus = computed(() => {
         children: item.children ? filter(item.children) : undefined,
       }))
       .filter((item) => {
-        if (item.permission && !can(item.permission)) return false
+        if (
+          item.permission &&
+          !(
+            item.catalogAccess &&
+            (authStore.isCatalogAdmin || (item.createPermission && can(item.createPermission)))
+          ) &&
+          !can(item.permission)
+        )
+          return false
         return !item.children || item.children.length > 0 || !item.permission
       })
   return filter(MENU_ITEMS)
@@ -97,6 +106,7 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
           <MenuFoldOutlined v-else />
         </a-button>
         <div class="admin-layout__user">
+          <WarehouseSelector />
           <span class="admin-layout__user-name">{{
             authStore.user?.fullName ?? authStore.user?.username
           }}</span>

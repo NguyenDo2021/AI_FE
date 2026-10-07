@@ -16,6 +16,7 @@ const emit = defineEmits<{
 }>()
 
 const close = (): void => {
+  if (props.confirmLoading) return
   emit('update:open', false)
   emit('cancel')
 }
@@ -26,13 +27,21 @@ const close = (): void => {
     :open="props.open"
     :title="props.title"
     :width="props.width"
+    :closable="!props.confirmLoading"
+    :mask-closable="!props.confirmLoading"
+    :keyboard="!props.confirmLoading"
     :destroy-on-close="props.destroyOnClose"
     :footer-style="{ textAlign: 'right' }"
     @close="close"
   >
     <slot />
     <template #footer>
-      <slot name="footer" :close="close" :confirm="() => emit('confirm')" :loading="props.confirmLoading">
+      <slot
+        name="footer"
+        :close="close"
+        :confirm="() => emit('confirm')"
+        :loading="props.confirmLoading"
+      >
         <a-button @click="close">{{ $t('common.cancel') }}</a-button>
         <a-button type="primary" :loading="props.confirmLoading" @click="emit('confirm')">
           {{ $t('common.save') }}

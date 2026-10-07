@@ -10,6 +10,7 @@ declare module 'vue-router' {
     title?: string
     requiresAuth?: boolean
     permissions?: string[]
+    catalogAccess?: boolean
   }
 }
 
@@ -19,6 +20,43 @@ const routes: RouteRecordRaw[] = [
     component: BasicLayout,
     redirect: '/dashboard',
     children: [
+      {
+        path: 'catalog/warehouses',
+        name: 'warehouses',
+        component: () => import('@/views/catalog/CatalogPage.vue'),
+        props: { kind: 'warehouses' },
+        meta: {
+          title: 'catalog.warehouses',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.WAREHOUSE_VIEW, PERMISSIONS.WAREHOUSE_CREATE],
+        },
+      },
+      {
+        path: 'catalog/product-groups',
+        name: 'product-groups',
+        component: () => import('@/views/catalog/CatalogPage.vue'),
+        props: { kind: 'product-groups' },
+        meta: {
+          title: 'catalog.product-groups',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.PRODUCT_GROUP_VIEW, PERMISSIONS.PRODUCT_GROUP_CREATE],
+        },
+      },
+      {
+        path: 'catalog/products',
+        name: 'products',
+        component: () => import('@/views/catalog/CatalogPage.vue'),
+        props: { kind: 'products' },
+        meta: {
+          title: 'catalog.products',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.PRODUCT_VIEW, PERMISSIONS.PRODUCT_CREATE],
+        },
+      },
+
       {
         path: 'dashboard',
         name: 'dashboard',

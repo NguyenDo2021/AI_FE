@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "type-check": "vue-tsc --noEmit",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:catalog": "node --test tests/catalog.test.mjs"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",

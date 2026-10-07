@@ -8,6 +8,12 @@ import { i18n } from '@/locales'
 import type { ApiErrorPayload } from '@/types/api'
 import { clearTokens, getAccessToken, getRefreshToken } from '@/utils/storage'
 
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    quietErrors?: boolean
+    skipAccessRefresh?: boolean
+  }
+}
 interface RetryConfig extends InternalAxiosRequestConfig {
   _retry?: boolean
 }
@@ -27,13 +33,16 @@ const http = axios.create({
 let refreshPromise: Promise<string> | null = null
 let refreshSession: (() => Promise<string>) | null = null
 let onSessionExpired: (() => void) | null = null
+let onAccessDenied: (() => void) | null = null
 
 export const configureRequestAuth = (handlers: {
   refresh: () => Promise<string>
   onSessionExpired: () => void
+  onAccessDenied?: () => void
 }): void => {
   refreshSession = handlers.refresh
   onSessionExpired = handlers.onSessionExpired
+  onAccessDenied = handlers.onAccessDenied ?? null
 }
 
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -75,7 +84,8 @@ http.interceptors.response.use(
     ) {
       config._retry = true
       try {
-        if (!refreshPromise) refreshPromise = refreshSession().finally(() => (refreshPromise = null))
+        if (!refreshPromise)
+          refreshPromise = refreshSession().finally(() => (refreshPromise = null))
         const token = await refreshPromise
         config.headers.set('Authorization', `Bearer ${token}`)
         return await http.request(config)
@@ -91,6 +101,8 @@ http.interceptors.response.use(
       clearTokens()
       onSessionExpired?.()
     }
+    if (status === 403 && !config?.skipAccessRefresh) onAccessDenied?.()
+    if (config?.quietErrors && status !== 401) return Promise.reject(normalizeError(error))
     if (status !== undefined) {
       message.error(i18n.global.t(`errors.${status}`, i18n.global.t('errors.unknown')))
     } else {

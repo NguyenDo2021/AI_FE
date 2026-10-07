@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import UserWarehousesDrawer from '@/components/catalog/UserWarehousesDrawer.vue'
+import { useCatalogPermission } from '@/composables/useCatalogPermission'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
@@ -27,6 +29,13 @@ import { validationRules } from '@/utils/validate'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+const { can: canCatalog } = useCatalogPermission()
+const warehouseDrawerOpen = ref(false)
+const warehouseUser = ref<User | null>(null)
+const openAssignedWarehouses = (user: User): void => {
+  warehouseUser.value = user
+  warehouseDrawerOpen.value = true
+}
 const users = ref<User[]>([])
 const loading = ref(false)
 const saving = ref(false)
@@ -95,7 +104,7 @@ const columns = computed<TableColumnsType<User>>(() => [
   { title: t('user.createdAt'), dataIndex: 'createdAt', key: 'createdAt' },
   { title: t('user.updatedAt'), dataIndex: 'updatedAt', key: 'updatedAt' },
   { title: t('user.updatedBy'), dataIndex: 'updatedByName', key: 'updatedByName' },
-  { title: t('common.actions'), key: 'actions', fixed: 'right', width: 260 },
+  { title: t('common.actions'), key: 'actions', fixed: 'right', width: 390 },
 ])
 
 const pagination = computed(() => ({
@@ -380,6 +389,13 @@ onMounted(() => void loadUsers())
             {{ $t('common.edit') }}
           </a-button>
           <a-button
+            v-if="canCatalog('USER_WAREHOUSE_VIEW')"
+            type="link"
+            size="small"
+            @click="openAssignedWarehouses(record)"
+            >{{ $t('catalog.assignedWarehouses') }}</a-button
+          >
+          <a-button
             v-if="canViewUserRoles && canUpdateUserRoles"
             type="link"
             size="small"
@@ -400,6 +416,7 @@ onMounted(() => void loadUsers())
       </template>
     </BasicTable>
 
+    <UserWarehousesDrawer v-model:open="warehouseDrawerOpen" :user="warehouseUser" />
     <BasicModal
       v-model:open="modalOpen"
       :title="editingUserId ? $t('user.edit') : $t('user.add')"

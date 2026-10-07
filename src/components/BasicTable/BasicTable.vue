@@ -10,6 +10,7 @@ const props = withDefaults(
     loading?: boolean
     pagination?: false | TablePaginationConfig
     rowKey?: string | ((record: T) => string)
+    scroll?: { x?: number | string; y?: number | string }
     searchable?: boolean
     searchPlaceholder?: string
     rowSelection?: {
@@ -22,6 +23,7 @@ const props = withDefaults(
     loading: false,
     pagination: false,
     rowSelection: undefined,
+    scroll: undefined,
     rowKey: 'id',
     searchable: false,
     searchPlaceholder: '',
@@ -80,6 +82,7 @@ const handleTableChange = (pagination: TablePaginationConfig): void => {
       :loading="props.loading"
       :pagination="props.pagination"
       :row-key="props.rowKey"
+      :scroll="props.scroll"
       :row-selection="props.rowSelection"
       @change="handleTableChange"
     >

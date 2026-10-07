@@ -5,6 +5,7 @@ import { message } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
 import type { LoginParams } from '@/types/auth'
 import { useAuthStore } from '@/stores/auth'
+import { getLandingPath } from '@/utils/landing'
 import { validationRules } from '@/utils/validate'
 import logo from '@/assets/logo.svg'
 
@@ -25,7 +26,10 @@ const submit = async (): Promise<void> => {
   try {
     await authStore.login(form)
     message.success(t('common.success'))
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard'
+    const redirect =
+      typeof route.query.redirect === 'string'
+        ? route.query.redirect
+        : getLandingPath(authStore.user?.permissions ?? [], authStore.isCatalogAdmin)
     await router.replace(redirect)
   } catch {
     message.error(t('auth.loginFailed'))

@@ -17,6 +17,9 @@ app.use(pinia)
 const auth = useAuthStore(pinia)
 configureRequestAuth({
   refresh: auth.refreshToken,
+  onAccessDenied: () => {
+    void auth.refreshAdmin()
+  },
   onSessionExpired: () => {
     auth.logout()
     if (router.currentRoute.value.name !== 'login') void router.replace({ name: 'login' })
