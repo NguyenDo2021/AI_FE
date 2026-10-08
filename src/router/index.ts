@@ -21,6 +21,41 @@ const routes: RouteRecordRaw[] = [
     redirect: '/dashboard',
     children: [
       {
+        path: 'stock/receipts',
+        name: 'stock-receipts',
+        component: () => import('@/views/stock/ReceiptsPage.vue'),
+        meta: {
+          title: 'stock.receipts',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.STOCK_RECEIPT_VIEW, PERMISSIONS.STOCK_RECEIPT_CREATE],
+        },
+      },
+      {
+        path: 'stock/inventory',
+        name: 'stock-inventory',
+        component: () => import('@/views/stock/InventoryPage.vue'),
+        props: { movements: false },
+        meta: {
+          title: 'stock.inventory',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.INVENTORY_VIEW],
+        },
+      },
+      {
+        path: 'stock/movements',
+        name: 'stock-movements',
+        component: () => import('@/views/stock/InventoryPage.vue'),
+        props: { movements: true },
+        meta: {
+          title: 'stock.movements',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.INVENTORY_MOVEMENT_VIEW],
+        },
+      },
+      {
         path: 'catalog/warehouses',
         name: 'warehouses',
         component: () => import('@/views/catalog/CatalogPage.vue'),

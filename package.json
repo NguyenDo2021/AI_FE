@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "type-check": "vue-tsc --noEmit",
     "format": "prettier --write .",
-    "test:catalog": "node --test tests/catalog.test.mjs"
+    "test:catalog": "node --test tests/catalog.test.mjs",
+    "test:stock": "node --test tests/stock.test.mjs"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",

@@ -8,6 +8,14 @@ export const getLandingPath = (permissions: string[], catalogAdmin: boolean): st
   ] as const
   for (const [path, view, create] of catalogs)
     if (catalogAdmin || permissions.includes(view) || permissions.includes(create)) return path
+  const stock = [
+    ['/stock/receipts', PERMISSIONS.STOCK_RECEIPT_VIEW],
+    ['/stock/receipts', PERMISSIONS.STOCK_RECEIPT_CREATE],
+    ['/stock/inventory', PERMISSIONS.INVENTORY_VIEW],
+    ['/stock/movements', PERMISSIONS.INVENTORY_MOVEMENT_VIEW],
+  ] as const
+  const stockPath = stock.find(([, permission]) => permissions.includes(permission))?.[0]
+  if (stockPath) return stockPath
   const system = [
     ['/system/user', PERMISSIONS.USER_VIEW],
     ['/system/role', PERMISSIONS.ROLE_VIEW],

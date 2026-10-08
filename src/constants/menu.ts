@@ -11,6 +11,25 @@ export interface MenuItem {
 
 export const MENU_ITEMS: MenuItem[] = [
   {
+    key: '/stock/receipts',
+    title: 'stock.receipts',
+    permission: PERMISSIONS.STOCK_RECEIPT_VIEW,
+    createPermission: PERMISSIONS.STOCK_RECEIPT_CREATE,
+    catalogAccess: true,
+  },
+  {
+    key: '/stock/inventory',
+    title: 'stock.inventory',
+    permission: PERMISSIONS.INVENTORY_VIEW,
+    catalogAccess: true,
+  },
+  {
+    key: '/stock/movements',
+    title: 'stock.movements',
+    permission: PERMISSIONS.INVENTORY_MOVEMENT_VIEW,
+    catalogAccess: true,
+  },
+  {
     key: '/catalog/warehouses',
     title: 'catalog.warehouses',
     permission: PERMISSIONS.WAREHOUSE_VIEW,
