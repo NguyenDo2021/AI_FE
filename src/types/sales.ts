@@ -48,6 +48,9 @@ export interface SalesOrder {
   subtotal: StockInteger
   discountAmount: StockInteger
   totalAmount: StockInteger
+  paidAmount: StockInteger
+  remainingAmount: StockInteger
+  paymentStatus?: import('@/types/payments').PaymentStatus | null
   version: StockInteger
   createdBy: string
   createdAt: string

@@ -1,8 +1,12 @@
 ﻿<script setup lang="ts">
+import PendingPaymentRetries from '@/components/sales/PendingPaymentRetries.vue'
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { BasicTable } from '@/components'
 import SalesOrderDialog from '@/components/sales/SalesOrderDialog.vue'
 import CustomerSelect from '@/components/sales/CustomerSelect.vue'
+import CollectPaymentDialog from '@/components/sales/CollectPaymentDialog.vue'
+import { canCollect, paymentLabel, applyPaymentSummary } from '@/utils/payments'
+import { usePaymentsStore } from '@/stores/payments'
 import { getSalesOrders, getCustomer } from '@/api/sales/sales.api'
 import { useSalesScope } from '@/composables/useSalesScope'
 import { salesCustomerName, salesError } from '@/utils/sales'
@@ -10,6 +14,9 @@ import { formatStockInteger } from '@/utils/stock'
 import type { SalesOrder, Customer } from '@/types/sales'
 import type { ReceiptStatus } from '@/types/stock'
 const { can, warehouses, scopeKey, inScope, refreshScope } = useSalesScope()
+const payments = usePaymentsStore()
+const collectOrder = ref<SalesOrder>()
+const collectOpen = ref(false)
 const rows = ref<SalesOrder[]>([])
 const customers = ref<Customer[]>([])
 const page = ref(1)
@@ -36,6 +43,9 @@ const columns = [
   'subtotal',
   'discountAmount',
   'totalAmount',
+  'paidAmount',
+  'remainingAmount',
+  'paymentStatus',
   'status',
   'actions',
 ].map((key, index) => ({
@@ -49,6 +59,9 @@ const columns = [
     'Tạm tính',
     'Giảm giá',
     'Tổng tiền',
+    'Đã thu',
+    'Còn phải trả',
+    'Thanh toán',
     'Trạng thái',
     'Thao tác',
   ][index],
@@ -93,6 +106,7 @@ const load = async (): Promise<void> => {
     })
     if (current !== sequence) return
     rows.value = result.items.filter((item) => inScope(item.warehouseId))
+    payments.syncOrders(rows.value)
     total.value = result.total
     if (can('CUSTOMER_VIEW')) {
       const ids = [
@@ -146,17 +160,42 @@ watch(
   () => {
     ++sequence
     open.value = false
+    collectOpen.value = false
+    collectOrder.value = undefined
     if (filters.warehouseId && !inScope(filters.warehouseId)) filters.warehouseId = undefined
     page.value = 1
     void load()
   },
   { immediate: true, flush: 'sync' },
 )
+watch(
+  () => warehouses.selectedId,
+  () => {
+    collectOpen.value = false
+    collectOrder.value = undefined
+  },
+  { flush: 'sync' },
+)
+watch(
+  () => payments.revision,
+  () => {
+    rows.value = rows.value.map((order) =>
+      payments.summaries[order.id]
+        ? applyPaymentSummary(order, payments.summaries[order.id]!)
+        : order,
+    )
+    void load()
+  },
+)
 onBeforeUnmount(() => ++sequence)
 const show = (value: typeof mode.value, order?: SalesOrder): void => {
   mode.value = value
   id.value = order?.id
   open.value = true
+}
+const showCollect = (order: SalesOrder): void => {
+  collectOrder.value = order
+  collectOpen.value = true
 }
 const changePage = (next: number, size: number): void => {
   page.value = size !== pageSize.value ? 1 : next
@@ -166,6 +205,7 @@ const changePage = (next: number, size: number): void => {
 </script>
 <template>
   <section>
+    <PendingPaymentRetries />
     <div class="heading">
       <h1>{{ $t('sales.orders') }}</h1>
       <a-button v-if="can('SALES_ORDER_CREATE')" type="primary" @click="show('create')"
@@ -243,9 +283,18 @@ const changePage = (next: number, size: number): void => {
             salesCustomerName(record, customers)
           }}</template>
           <template
-            v-else-if="['subtotal', 'discountAmount', 'totalAmount'].includes(String(column.key))"
-            >{{ formatStockInteger(record[column.key]) }} VND</template
+            v-else-if="
+              [
+                'subtotal',
+                'discountAmount',
+                'totalAmount',
+                'paidAmount',
+                'remainingAmount',
+              ].includes(String(column.key))
+            "
+            >{{ formatStockInteger(record[column.key] ?? 0) }} VND</template
           >
+          <template v-else-if="column.key === 'paymentStatus'">{{ paymentLabel(record) }}</template>
           <a-tag
             v-else-if="column.key === 'status'"
             :color="
@@ -260,6 +309,13 @@ const changePage = (next: number, size: number): void => {
           <a-space v-else-if="column.key === 'actions'" wrap>
             <a-button size="small" @click="show('view', record)">Chi tiết</a-button>
             <a-button
+              v-if="can('PAYMENT_CREATE') && (canCollect(record) || payments.attempts[record.id])"
+              size="small"
+              type="primary"
+              @click="showCollect(record)"
+              >{{ payments.attempts[record.id] ? 'Thử lại lần thu' : 'Thu tiền' }}</a-button
+            >
+            <a-button
               v-if="record.status === 'DRAFT' && can('SALES_ORDER_UPDATE')"
               size="small"
               @click="show('edit', record)"
@@ -273,7 +329,11 @@ const changePage = (next: number, size: number): void => {
               >Xác nhận xuất</a-button
             >
             <a-button
-              v-if="record.status !== 'CANCELLED' && can('SALES_ORDER_CANCEL')"
+              v-if="
+                record.status !== 'CANCELLED' &&
+                BigInt(record.paidAmount ?? 0) === 0n &&
+                can('SALES_ORDER_CANCEL')
+              "
               size="small"
               danger
               @click="show('cancel', record)"
@@ -283,6 +343,12 @@ const changePage = (next: number, size: number): void => {
         </template>
       </BasicTable>
     </template>
+    <CollectPaymentDialog
+      v-if="collectOrder"
+      v-model:open="collectOpen"
+      :order="collectOrder"
+      @updated="collectOrder = $event"
+    />
     <SalesOrderDialog :id="id" v-model:open="open" :mode="mode" @saved="load" />
   </section>
 </template>

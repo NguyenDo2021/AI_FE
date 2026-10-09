@@ -47,6 +47,7 @@ const context = {
     },
     isCatalogAdmin: false,
   }),
+  payments: reactive({ revision: 0, summaries: {}, attempts: {}, syncOrders() {} }),
   stock: reactive({
     revision: 0,
     invalidate() {
@@ -68,6 +69,7 @@ const mockUrl = moduleUrl(`
  export const getCatalogList = async () => ({ items: [], total: 0, page: 1, pageSize: 100 })
  export const request = { get: (url, config) => call('GET', url, undefined, config), post: (url, data, config) => call('POST', url, data, config), put: (url, data, config) => call('PUT', url, data, config) }
  export const useWarehouseStore = () => context.warehouses
+ export const usePaymentsStore = () => context.payments
  export const useStockStore = () => context.stock
  export const useAuthStore = () => context.auth
  export const useCatalogPermission = () => ({ can: (permission) => context.auth.isCatalogAdmin || context.auth.user.permissions.includes(permission) })
@@ -89,6 +91,11 @@ const apiUrl = moduleUrl(
 const salesDomainUrl = moduleUrl(
   transpile(
     (await read('src/utils/sales.ts')).replace("'@/utils/stock'", JSON.stringify(domainUrl)),
+  ),
+)
+const paymentDomainUrl = moduleUrl(
+  transpile(
+    (await read('src/utils/payments.ts')).replace("'@/utils/stock'", JSON.stringify(domainUrl)),
   ),
 )
 const salesDomain = await import(salesDomainUrl)
@@ -122,6 +129,13 @@ async function component(path, expose) {
     `from '${mockUrl}'`,
   )
   code = code
+    .replace(/from ['"]@\/utils\/payments['"]/g, 'from ' + JSON.stringify(paymentDomainUrl))
+    .replace(/from ['"]@\/stores\/payments['"]/g, 'from ' + JSON.stringify(mockUrl))
+    .replace(
+      /from ['"](?:\.\/OrderPaymentPanel.vue|@\/components\/sales\/CollectPaymentDialog.vue)['"]/g,
+      'from ' + JSON.stringify(mockUrl),
+    )
+  code = code
     .replace(/from ['"]@\/utils\/stock['"]/g, `from '${domainUrl}'`)
     .replace(/from ['"]@\/api\/stock\/stock.api['"]/g, `from '${apiUrl}'`)
   code = code
@@ -133,6 +147,10 @@ async function component(path, expose) {
       'from ' + JSON.stringify(mockUrl),
     )
     .replace(/from ['"]@\/api\/catalog\/catalog.api['"]/g, 'from ' + JSON.stringify(mockUrl))
+  code = code.replace(
+    /from ['"]@\/components\/sales\/PendingPaymentRetries.vue['"]/g,
+    'from ' + JSON.stringify(mockUrl),
+  )
   return (await import(moduleUrl(transpile(code)))).default
 }
 const SalesOrderDialog = await component(
@@ -915,4 +933,20 @@ test('shared auth interceptor refreshes session but never replays a sales creati
     config: { url: '/sales-orders/s1', headers: { set() {} } },
   })
   assert.equal(audit.replayed, 1)
+})
+
+test('orders with active payments cannot be cancelled and backend rejection explains unsupported refunds', async () => {
+  reset()
+  context.response = order({ status: 'CONFIRMED', paidAmount: 600000 })
+  const subject = mount(SalesOrderDialog, { open: true, mode: 'cancel', id: 's1' })
+  await flush()
+  subject.vm.reason = 'Attempt'
+  subject.vm.goodsReturned = true
+  await subject.vm.submit()
+  assert.equal(writes().length, 0)
+  assert.match(
+    salesDomain.salesError({ status: 409, code: 'SALES_ORDER_HAS_PAYMENTS' }),
+    /hoàn tiền/,
+  )
+  subject.unmount()
 })

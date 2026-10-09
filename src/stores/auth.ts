@@ -1,3 +1,4 @@
+import { clearPaymentRetries } from '@/utils/payments'
 import { getUser, getUserRoles } from '@/api/user/user.api'
 import { useWarehouseStore } from '@/stores/warehouse'
 import { computed, ref } from 'vue'
@@ -96,6 +97,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const logout = (): void => {
+    clearPaymentRetries()
     ++accessVersion
     ++sessionVersion
     isCatalogAdmin.value = false

@@ -10,6 +10,18 @@ export interface MenuItem {
 }
 
 export const MENU_ITEMS: MenuItem[] = [
+  {
+    key: '/sales/receivables',
+    title: 'sales.receivables',
+    permission: PERMISSIONS.RECEIVABLE_VIEW,
+    catalogAccess: true,
+  },
+  {
+    key: '/sales/payments',
+    title: 'sales.payments',
+    permission: PERMISSIONS.PAYMENT_VIEW,
+    catalogAccess: true,
+  },
   { key: '/dashboard', title: 'common.dashboard', permission: PERMISSIONS.DASHBOARD_VIEW },
   {
     key: '/sales/customers',

@@ -21,6 +21,28 @@ const routes: RouteRecordRaw[] = [
     redirect: '/dashboard',
     children: [
       {
+        path: 'sales/receivables',
+        name: 'sales-receivables',
+        component: () => import('@/views/sales/ReceivablesPage.vue'),
+        meta: {
+          title: 'sales.receivables',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.RECEIVABLE_VIEW],
+        },
+      },
+      {
+        path: 'sales/payments',
+        name: 'sales-payments',
+        component: () => import('@/views/sales/PaymentsPage.vue'),
+        meta: {
+          title: 'sales.payments',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.PAYMENT_VIEW],
+        },
+      },
+      {
         path: 'sales/customers',
         name: 'sales-customers',
         component: () => import('@/views/sales/CustomersPage.vue'),

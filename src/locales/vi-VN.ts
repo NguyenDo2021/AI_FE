@@ -1,5 +1,7 @@
 export default {
   sales: {
+    payments: 'Phiếu thu',
+    receivables: 'Công nợ',
     customers: 'Khách hàng',
     orders: 'Đơn bán hàng',
     DRAFT: 'Nháp',

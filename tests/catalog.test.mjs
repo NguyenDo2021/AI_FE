@@ -340,16 +340,17 @@ globalThis.__authMocks = {
   loginApi: async () => ({ accessToken: 'token', refreshToken: 'refresh' }),
   refreshTokenApi: () => tokenResponse(),
   useWarehouseStore: () => warehouseModule.useWarehouseStore(),
+  clearPaymentRetries: () => {},
   clearTokens: () => {},
   getAccessToken: () => 'token',
   getRefreshToken: () => 'refresh',
   saveTokens: () => {},
 }
 const authModule = await loadSource('src/stores/auth.ts', (source) => {
-  source = source.replace(/import \{[^}]+\} from '@\/(?:api|stores|utils)\/[^']+'\n/g, '')
+  source = source.replace(/import \{[^}]+\} from '@\/(?:api|stores|utils)\/[^']+'\r?\n/g, '')
   return moduleImports(source).replace(
     'export const useAuthStore',
-    'const { getUser, getUserRoles, getUserInfoApi, loginApi, refreshTokenApi, useWarehouseStore, clearTokens, getAccessToken, getRefreshToken, saveTokens } = globalThis.__authMocks\nexport const useAuthStore',
+    'const { getUser, getUserRoles, getUserInfoApi, loginApi, refreshTokenApi, useWarehouseStore, clearPaymentRetries, clearTokens, getAccessToken, getRefreshToken, saveTokens } = globalThis.__authMocks\nexport const useAuthStore',
   )
 })
 test('Admin requires active account and active database ADMIN role, independent of permissions', async () => {

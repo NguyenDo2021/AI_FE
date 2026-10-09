@@ -4,6 +4,8 @@ import { message, Modal } from 'ant-design-vue'
 import { BasicModal, BasicTable } from '@/components'
 import ProductSelect from '@/components/stock/ProductSelect.vue'
 import CustomerSelect from './CustomerSelect.vue'
+import OrderPaymentPanel from './OrderPaymentPanel.vue'
+import { usePaymentsStore } from '@/stores/payments'
 import {
   getSalesOrder,
   createSalesOrder,
@@ -36,6 +38,7 @@ const props = defineProps<{
 const emit = defineEmits<{ 'update:open': [value: boolean]; saved: [order: SalesOrder] }>()
 const { can, warehouses, scopeKey, inScope, refreshScope } = useSalesScope()
 const stock = useStockStore()
+const payments = usePaymentsStore()
 const detail = ref<SalesOrder>()
 const customer = ref<Customer>()
 const customerLookupFailed = ref(false)
@@ -81,7 +84,7 @@ const eligible = computed(
     (!!detail.value &&
       (props.mode === 'view' ||
         (props.mode === 'cancel'
-          ? detail.value.status !== 'CANCELLED'
+          ? detail.value.status !== 'CANCELLED' && BigInt(detail.value.paidAmount ?? 0) === 0n
           : detail.value.status === 'DRAFT'))),
 )
 const warehouseOptions = computed(() =>
@@ -146,6 +149,7 @@ const load = async (): Promise<void> => {
       return
     }
     detail.value = result
+    payments.syncOrders([result])
     form.value = {
       warehouseId: result.warehouseId,
       customerId: result.customerId ?? undefined,
@@ -440,6 +444,16 @@ const reload = (): void => {
             >{{ formatStockInteger(detail.totalAmount) }} VND</a-descriptions-item
           >
         </a-descriptions>
+        <OrderPaymentPanel
+          v-if="detail && mode === 'view'"
+          :order="detail"
+          @updated="detail = $event"
+        />
+        <a-alert
+          v-if="detail && mode === 'cancel' && BigInt(detail.paidAmount ?? 0) > 0n"
+          type="warning"
+          message="Đơn đã có khoản thu hiệu lực. Chức năng hủy đơn kèm hoàn tiền chưa được hỗ trợ."
+        />
         <a-form v-if="!readOnly" layout="vertical" :disabled="saving || blocked || !eligible">
           <div class="grid">
             <a-form-item label="Kho" required :help="fields.warehouseId"

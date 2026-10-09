@@ -1,5 +1,7 @@
 export default {
   sales: {
+    payments: 'Payments',
+    receivables: 'Receivables',
     customers: 'Customers',
     orders: 'Sales orders',
     DRAFT: 'Draft',
