@@ -1,5 +1,16 @@
 export default {
+  sales: {
+    customers: 'Customers',
+    orders: 'Sales orders',
+    DRAFT: 'Draft',
+    CONFIRMED: 'Confirmed / Goods dispatched',
+    CANCELLED: 'Cancelled',
+  },
   stock: {
+    SALE_CONFIRM: 'Sales confirmation',
+    SALE_CANCEL: 'Sales cancellation',
+    sourceDocument: 'Source document',
+
     receipts: 'Stock receipts',
     inventory: 'Inventory',
     movements: 'Inventory movements',

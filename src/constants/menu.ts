@@ -10,6 +10,21 @@ export interface MenuItem {
 }
 
 export const MENU_ITEMS: MenuItem[] = [
+  { key: '/dashboard', title: 'common.dashboard', permission: PERMISSIONS.DASHBOARD_VIEW },
+  {
+    key: '/sales/customers',
+    title: 'sales.customers',
+    permission: PERMISSIONS.CUSTOMER_VIEW,
+    createPermission: PERMISSIONS.CUSTOMER_CREATE,
+    catalogAccess: true,
+  },
+  {
+    key: '/sales/orders',
+    title: 'sales.orders',
+    permission: PERMISSIONS.SALES_ORDER_VIEW,
+    createPermission: PERMISSIONS.SALES_ORDER_CREATE,
+    catalogAccess: true,
+  },
   {
     key: '/stock/receipts',
     title: 'stock.receipts',
@@ -51,7 +66,6 @@ export const MENU_ITEMS: MenuItem[] = [
     catalogAccess: true,
   },
 
-  { key: '/dashboard', title: 'common.dashboard', permission: PERMISSIONS.DASHBOARD_VIEW },
   {
     key: '/system',
     title: 'system.title',

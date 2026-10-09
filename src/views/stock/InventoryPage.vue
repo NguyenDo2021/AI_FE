@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BasicTable } from '@/components'
 import ProductSelect from '@/components/stock/ProductSelect.vue'
+import SalesOrderDialog from '@/components/sales/SalesOrderDialog.vue'
 import ReceiptDialog from '@/components/stock/ReceiptDialog.vue'
 import { getInventory, getMovements } from '@/api/stock/stock.api'
 import { useWarehouseStore } from '@/stores/warehouse'
@@ -29,6 +30,8 @@ const error = ref('')
 const loading = ref(false)
 const receiptId = ref<string>()
 const detailOpen = ref(false)
+const salesOrderId = ref<string>()
+const salesDetailOpen = ref(false)
 let sequence = 0
 const permission = computed(() => (props.movements ? 'INVENTORY_MOVEMENT_VIEW' : 'INVENTORY_VIEW'))
 const columns = computed(() =>
@@ -40,7 +43,7 @@ const columns = computed(() =>
         'unit',
         'quantityChange',
         'type',
-        'receiptCode',
+        'sourceDocument',
         'performedBy',
       ]
     : ['productCode', 'productName', 'unit', 'productStatus', 'quantity']
@@ -109,6 +112,7 @@ watch(
   ],
   () => {
     detailOpen.value = false
+    salesDetailOpen.value = false
     page.value = 1
     void load()
   },
@@ -119,6 +123,10 @@ const changePage = (next: number, size: number): void => {
   page.value = size !== pageSize.value ? 1 : next
   pageSize.value = size
   void load()
+}
+const showSalesOrder = (id: string): void => {
+  salesOrderId.value = id
+  salesDetailOpen.value = true
 }
 const showReceipt = (id: string): void => {
   receiptId.value = id
@@ -186,17 +194,29 @@ const reset = (): void => {
             :color="record.productStatus === 1 ? 'green' : 'default'"
             >{{ t(record.productStatus === 1 ? 'common.active' : 'common.inactive') }}</a-tag
           >
-          <template v-else-if="column.key === 'receiptCode'"
-            ><a-button
-              v-if="can('STOCK_RECEIPT_VIEW')"
-              type="link"
-              @click="showReceipt(record.receiptId)"
-              >{{ record.receiptCode }}</a-button
-            ><span v-else>{{ record.receiptCode }}</span></template
-          >
+          <template v-else-if="column.key === 'sourceDocument'">
+            <template v-if="record.type === 'SALE_CONFIRM' || record.type === 'SALE_CANCEL'">
+              <a-button
+                v-if="record.salesOrderId && can('SALES_ORDER_VIEW')"
+                type="link"
+                @click="showSalesOrder(record.salesOrderId)"
+                >{{ record.salesOrderCode ?? record.salesOrderId }}</a-button
+              >
+              <span v-else>{{ record.salesOrderCode ?? record.salesOrderId ?? '—' }}</span>
+            </template>
+            <template v-else
+              ><a-button
+                v-if="record.receiptId && can('STOCK_RECEIPT_VIEW')"
+                type="link"
+                @click="showReceipt(record.receiptId)"
+                >{{ record.receiptCode }}</a-button
+              ><span v-else>{{ record.receiptCode ?? record.receiptId ?? '—' }}</span></template
+            >
+          </template>
         </template>
       </BasicTable>
     </template>
+    <SalesOrderDialog :id="salesOrderId" v-model:open="salesDetailOpen" mode="view" />
     <ReceiptDialog :id="receiptId" v-model:open="detailOpen" mode="view" />
   </section>
 </template>

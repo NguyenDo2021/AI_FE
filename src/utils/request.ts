@@ -11,6 +11,7 @@ import { clearTokens, getAccessToken, getRefreshToken } from '@/utils/storage'
 declare module 'axios' {
   interface AxiosRequestConfig {
     quietErrors?: boolean
+    preventAutomaticRetry?: boolean
     skipAccessRefresh?: boolean
   }
 }
@@ -88,6 +89,7 @@ http.interceptors.response.use(
           refreshPromise = refreshSession().finally(() => (refreshPromise = null))
         const token = await refreshPromise
         config.headers.set('Authorization', `Bearer ${token}`)
+        if (config.preventAutomaticRetry) return Promise.reject(normalizeError(error))
         return await http.request(config)
       } catch {
         clearTokens()

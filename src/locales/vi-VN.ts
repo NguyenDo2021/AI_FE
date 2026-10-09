@@ -1,5 +1,16 @@
 export default {
+  sales: {
+    customers: 'Khách hàng',
+    orders: 'Đơn bán hàng',
+    DRAFT: 'Nháp',
+    CONFIRMED: 'Đã xác nhận / Đã xuất hàng',
+    CANCELLED: 'Đã hủy',
+  },
   stock: {
+    SALE_CONFIRM: 'Xác nhận bán hàng',
+    SALE_CANCEL: 'Hủy đơn bán hàng',
+    sourceDocument: 'Chứng từ nguồn',
+
     receipts: 'Phiếu nhập kho',
     inventory: 'Tồn kho',
     movements: 'Lịch sử biến động',

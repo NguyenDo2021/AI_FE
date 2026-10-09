@@ -86,7 +86,7 @@ async function component(path, expose) {
   let code = compileScript(descriptor, { id: `test-${index}`, inlineTemplate: true }).content
   code = code.replace(/from ['"]vue['"]/g, `from '${vueUrl}'`)
   code = code.replace(
-    /from ['"](?:vue-i18n|ant-design-vue|@\/components|@\/stores\/warehouse|@\/stores\/stock|@\/stores\/auth|@\/composables\/useCatalogPermission|@\/utils\/date|\.\/ProductSelect.vue|@\/components\/stock\/ProductSelect.vue|@\/components\/stock\/ReceiptDialog.vue)['"]/g,
+    /from ['"](?:vue-i18n|ant-design-vue|@\/components|@\/stores\/warehouse|@\/stores\/stock|@\/stores\/auth|@\/composables\/useCatalogPermission|@\/utils\/date|\.\/ProductSelect.vue|@\/components\/stock\/ProductSelect.vue|@\/components\/stock\/ReceiptDialog.vue|@\/components\/sales\/SalesOrderDialog.vue)['"]/g,
     `from '${mockUrl}'`,
   )
   code = code
