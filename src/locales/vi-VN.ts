@@ -272,7 +272,7 @@ export default {
     title: 'Hệ thống',
   },
   dashboard: {
-    welcome: 'Chào mừng bạn đến với Frontend Base',
+    welcome: 'Chào mừng bạn đến với Hệ thống bán hàng',
     description: 'Nền tảng quản trị Vue 3 dành cho ứng dụng doanh nghiệp.',
   },
   errors: {

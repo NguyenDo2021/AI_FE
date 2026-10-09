@@ -204,7 +204,7 @@ const router = createRouter({
 })
 
 router.afterEach((to) => {
-  const title = to.meta.title ? i18n.global.t(to.meta.title) : 'Frontend Base'
+  const title = to.meta.title ? i18n.global.t(to.meta.title) : 'Hệ thống bán hàng'
   document.title = `${title} | ${import.meta.env.VITE_APP_TITLE}`
 })
 

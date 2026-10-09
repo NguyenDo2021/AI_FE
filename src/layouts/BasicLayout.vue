@@ -74,7 +74,7 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
       class="admin-layout__sider"
     >
       <div class="admin-layout__brand">
-        {{ appStore.sidebarCollapsed ? 'FB' : 'Frontend Base' }}
+        {{ appStore.sidebarCollapsed ? 'BH' : 'Hệ thống bán hàng' }}
       </div>
       <a-menu
         mode="inline"

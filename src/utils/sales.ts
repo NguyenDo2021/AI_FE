@@ -53,7 +53,7 @@ export const validateSales = (form: SalesForm): Record<string, string> => {
       errors[key + 'productId'] = 'Chọn sản phẩm, không được trùng.'
     ids.add(line.productId)
     if (!validStockInteger(line.quantity, true))
-      errors[key + 'quantity'] = 'Số cây phải là số nguyên dương trong giới hạn int64.'
+      errors[key + 'quantity'] = 'Số lượng phải là số nguyên dương trong giới hạn int64.'
     if (!validStockInteger(line.unitPrice))
       errors[key + 'unitPrice'] = 'Đơn giá phải là số nguyên không âm trong giới hạn int64.'
     if (

@@ -1,4 +1,4 @@
-# Frontend Base
+# Hệ thống bán hàng
 
 Base project quản trị doanh nghiệp xây dựng với Vue 3, TypeScript strict, Vite và Ant Design Vue.
 

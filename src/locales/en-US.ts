@@ -273,7 +273,7 @@ export default {
     title: 'System',
   },
   dashboard: {
-    welcome: 'Welcome to Frontend Base',
+    welcome: 'Welcome to Hệ thống bán hàng',
     description: 'A Vue 3 admin platform for enterprise applications.',
   },
   errors: {

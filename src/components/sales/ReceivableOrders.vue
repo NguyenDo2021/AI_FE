@@ -39,7 +39,7 @@ const columns = [
 const lineColumns = [
   ['productCode', 'Mã sản phẩm'],
   ['productName', 'Sản phẩm'],
-  ['quantity', 'Số cây'],
+  ['quantity', 'Số lượng'],
   ['unitPrice', 'Đơn giá'],
   ['lineTotal', 'Thành tiền'],
 ].map(([key, title]) => ({ key, dataIndex: key, title }))

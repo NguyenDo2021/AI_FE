@@ -110,7 +110,7 @@ const columns = ['productCode', 'productName', 'unit', 'quantity', 'unitPrice', 
   (key, index) => ({
     key,
     dataIndex: key,
-    title: ['Mã sản phẩm', 'Sản phẩm', 'Đơn vị', 'Số cây', 'Đơn giá', 'Thành tiền'][index],
+    title: ['Mã sản phẩm', 'Sản phẩm', 'Đơn vị', 'Số lượng', 'Đơn giá', 'Thành tiền'][index],
   }),
 )
 const warehouseName = (id: string) =>
@@ -509,7 +509,7 @@ const reload = (): void => {
                   }
                 "
             /></a-form-item>
-            <a-form-item label="Số cây" :help="fieldError(index, 'quantity')"
+            <a-form-item label="Số lượng" :help="fieldError(index, 'quantity')"
               ><a-input v-model:value="line.quantity" inputmode="numeric"
             /></a-form-item>
             <a-form-item label="Đơn giá" :help="fieldError(index, 'unitPrice')"

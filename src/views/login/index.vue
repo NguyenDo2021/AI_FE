@@ -43,7 +43,7 @@ const submit = async (): Promise<void> => {
   <div class="login-page">
     <a-card class="login-card" :bordered="false">
       <div class="login-card__heading">
-        <img class="login-card__logo" :src="logo" alt="Frontend Base" />
+        <img class="login-card__logo" :src="logo" alt="Hệ thống bán hàng" />
         <h1>{{ $t('auth.login') }}</h1>
         <p>{{ $t('auth.loginHint') }}</p>
       </div>
