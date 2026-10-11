@@ -906,6 +906,10 @@ test('shared auth interceptor refreshes session but never replays a sales creati
     /from ['"](?:axios|ant-design-vue|@\/locales|@\/utils\/storage)['"]/g,
     'from ' + JSON.stringify(requestMockUrl),
   )
+  source = source.replace(
+    "'@/utils/paymentReceipt'",
+    JSON.stringify(moduleUrl(transpile(await read('src/utils/paymentReceipt.ts')))),
+  )
   source = source.replace('import.meta.env.VITE_GLOB_API_URL', "'http://example.test/api'")
   const client = await import(moduleUrl(transpile(source)))
   client.configureRequestAuth({

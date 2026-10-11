@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import PaymentReceiptDialog from './PaymentReceiptDialog.vue'
+import { usePaymentReceipt } from '@/composables/usePaymentReceipt'
 import { computed, reactive, ref, watch, onBeforeUnmount } from 'vue'
 import { BasicTable } from '@/components'
 import PaymentDetailDialog from './PaymentDetailDialog.vue'
@@ -13,6 +15,7 @@ import type { NormalizedApiError } from '@/utils/request'
 const props = defineProps<{ orderId?: string }>()
 const { can, warehouses, inScope, contextKey, refreshAccess } = usePaymentScope()
 const payments = usePaymentsStore()
+const receipt = usePaymentReceipt()
 const rows = ref<Payment[]>([])
 const page = ref(1)
 const pageSize = ref(10)
@@ -134,6 +137,7 @@ const openSales = (id: string): void => {
   salesOpen.value = true
 }
 const show = (payment: Payment, cancel = false): void => {
+  receipt.close()
   detailId.value = payment.id
   cancelMode.value = cancel
   detailOpen.value = true
@@ -244,6 +248,13 @@ const show = (payment: Payment, cancel = false): void => {
           <a-space v-else-if="column.key === 'actions'">
             <a-button size="small" @click="show(record)">Chi tiết</a-button>
             <a-button
+              v-if="can('PAYMENT_VIEW')"
+              size="small"
+              :loading="receipt.state.loading && receipt.state.paymentId === record.id"
+              @click="receipt.show(record)"
+              >In biên lai</a-button
+            >
+            <a-button
               v-if="record.status === 'ACTIVE' && can('PAYMENT_CANCEL')"
               size="small"
               danger
@@ -254,6 +265,7 @@ const show = (payment: Payment, cancel = false): void => {
         </template>
       </BasicTable>
     </template>
+    <PaymentReceiptDialog :receipt="receipt" />
     <PaymentDetailDialog :id="detailId" v-model:open="detailOpen" :cancel="cancelMode" />
     <SalesOrderDialog
       v-if="salesOpen && can('SALES_ORDER_VIEW')"

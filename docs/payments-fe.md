@@ -65,3 +65,35 @@ Test payment kiểm tra trạng thái UNPAID/PARTIALLY_PAID/PAID, đơn nháp/h�
 Các test dùng API mock và Vue renderer của project. Chưa chạy API thật, trình duyệt end-to-end, kiểm tra CORS Idempotency-Key, hai request đồng thời tại database hoặc việc thu hồi quyền bằng JWT cũ trên backend. Cần kiểm tra các tình huống này với backend và tài khoản/kho được cấu hình theo tài liệu API.
 
 Retry phục hồi trong cùng phiên/tab. Đóng phiên trình duyệt hoặc đăng xuất xóa dữ liệu retry; nếu trước đó kết quả còn chưa xác định, cần đối chiếu phiếu hiện có trước khi ghi nhận khoản thu mới. Trường hợp IDEMPOTENCY_CONFLICT giữ request để điều tra, frontend không tự giải phóng hay đổi key. Chưa triển khai hoàn tiền/trả hàng/in hóa đơn/hóa đơn điện tử theo phạm vi yêu cầu.
+
+## Xem trước, tải và in biên lai thu tiền
+
+Danh sách và chi tiết phiếu thu có nút **In biên lai** khi có PAYMENT_VIEW. Cả ACTIVE và CANCELLED dùng cùng luồng; không cần SALES_ORDER_VIEW. Modal mở ngay với loading riêng, có **Tải PDF**, **In**, **Mở PDF riêng**, **Đóng** và **Thử lại** khi lỗi có thể thử lại. Đóng trong lúc tải hủy request và loại bỏ response đến muộn.
+
+API duy nhất cho thao tác này là GET /payments/{UUID}/print trên client xác thực hiện có. Các env hiện tại đã chứa /api, nên không thêm /api vào endpoint. Không có body hoặc API đọc đơn/khách/user để dựng bản in. Refresh identity/kho chỉ xảy ra theo cơ chế phạm vi khi lỗi 403; refresh token vẫn dùng luồng phiên hiện có.
+
+request.getBlob trả AxiosResponse<Blob> kèm headers, bật preserveResponse riêng. Interceptor chỉ đọc Blob JSON trên nhánh này, rồi chuẩn hóa status/code/message/details như client hiện có. JSON API thông thường giữ cơ chế unwrap. Lỗi 401 giữ refresh/expire session, nhưng lỗi tải PDF sau khi refresh thành công không bị hiểu nhầm là lỗi refresh.
+
+Trước khi tạo object URL, FE kiểm tra Blob không rỗng, Content-Type application/pdf và chữ ký %PDF-. FE dùng toàn bộ bytes từ BE; không tạo template, nhãn hủy, nội dung tiếng Việt, định dạng tiền hoặc phân trang. Native PDF viewer trong iframe hỗ trợ cuộn qua các trang theo khả năng trình duyệt và giữ kích thước trang PDF. Nút In chỉ bật sau load của iframe, gọi contentWindow.print() của iframe; không gọi print ở cửa sổ ứng dụng. Nếu trình duyệt không hỗ trợ hoặc không mở hộp thoại, dùng Mở PDF riêng hoặc tải file rồi in bằng trình xem PDF. Chọn kích thước theo PDF A5 ngang trong hộp thoại in; FE không báo “in thành công”.
+
+Tên tải lấy từ Content-Disposition: ưu tiên filename* UTF-8, fallback filename, lọc ký tự đường dẫn/control không an toàn, rồi fallback bien-lai-<payment.code>.pdf. Nếu API khác origin và BE không expose Content-Disposition qua CORS, tên fallback vẫn hoạt động.
+
+URL viewer được gỡ khỏi iframe rồi revoke sau Vue nextTick khi thay/đóng/unmount. Request có AbortController và sequence guard. Logout, thay user/quyền/kho hoặc đổi kho được chọn đóng viewer và cửa sổ PDF riêng. PDF riêng có URL độc lập, được revoke khi cửa sổ đóng hoặc controller đóng. Tải file có URL độc lập được giữ 60 giây cho trình duyệt nhận file rồi revoke, kể cả khi viewer đóng/unmount. Không lưu PDF vào localStorage/sessionStorage; không đưa token vào URL.
+
+File tích hợp:
+
+- src/utils/request.ts
+- src/api/payments/paymentReceipt.api.ts
+- src/utils/paymentReceipt.ts
+- src/composables/usePaymentReceipt.ts
+- src/components/sales/PaymentReceiptDialog.vue
+- src/components/sales/PaymentHistory.vue
+- src/components/sales/PaymentDetailDialog.vue
+- tests/payments.test.mjs
+- tests/payment-receipt-request.test.mjs
+- tests/sales.test.mjs (test loader nhận import Blob error utility)
+- docs/payments-fe.md
+
+Kiểm tra tự động cho biên lai: Blob/MIME/chữ ký, malformed JSON Blob, các mã lỗi, filename*, fallback và lọc đường dẫn; client Axios thật với adapter giả kiểm tra Bearer/baseURL/headers/responseType, unwrap JSON không đổi, refresh 401 và hết phiên. Vue renderer kiểm tra quyền PAYMENT_VIEW độc lập, scope mất quyền/logout, ACTIVE/CANCELLED dùng GET không mutation nghiệp vụ, đóng khi tải, response cũ, retry, cleanup URL viewer/tải/popup, popup bị chặn, gate load trước in và in iframe thay vì trang ứng dụng. Fixture Blob là dữ liệu tổng hợp để kiểm tra bytes và vòng đời, không phải bằng chứng đã render được PDF thực nhiều trang.
+
+Chưa kiểm tra API BE thật và trình duyệt end-to-end: cần đối chiếu PDF ACTIVE một trang; CANCELLED có “ĐÃ HỦY — BẢN LƯU”; A5 ngang nhiều trang, font tiếng Việt và số tiền lớn; tài khoản PAYMENT_VIEW không có SALES_ORDER_VIEW; kho bị thu hồi trên BE; tên file qua CORS; in trên Chrome/Edge/Firefox, popup bị chặn và tắt native PDF viewer. Không tích hợp API in hóa đơn bán hàng.

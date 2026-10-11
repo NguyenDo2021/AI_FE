@@ -83,14 +83,19 @@ const mockUrl = moduleUrl(`
   return config.transformResponse[0](json)
  }
  export const getCatalogList = async () => ({ items: [], total: 0, page: 1, pageSize: 100 })
- export const request = { get: (url, config) => call('GET', url, undefined, config), post: (url, data, config) => call('POST', url, data, config), put: (url, data, config) => call('PUT', url, data, config) }
+ export const request = {
+ getBlob: async (url, config) => {
+   context.calls.push({ method: 'GET', url, config })
+   return context.handler ? await context.handler({ method: 'GET', url, config }) : context.response
+ },
+ get: (url, config) => call('GET', url, undefined, config), post: (url, data, config) => call('POST', url, data, config), put: (url, data, config) => call('PUT', url, data, config) }
  export const useWarehouseStore = () => context.warehouses
  export const usePaymentsStore = () => context.payments
  export const useStockStore = () => context.stock
  export const useAuthStore = () => context.auth
  export const useCatalogPermission = () => ({ can: (permission) => context.auth.isCatalogAdmin || context.auth.user.permissions.includes(permission) })
  export const useI18n = () => ({ t: key => key })
- export const message = { success() {}, info() {} }
+ export const message = { success() {}, info() {}, error() {} }
  export const Modal = { confirm: options => { context.confirmation = options } }
  export const formatDateTime = value => value
  export const BasicModal = defineComponent({ setup(_, { slots }) { return () => h('modal', [slots.default?.(), slots.footer?.()]) } })
@@ -163,12 +168,52 @@ const paymentScopeUrl = moduleUrl(
   ),
 )
 
+const receiptDomainUrl = moduleUrl(transpile(await read('src/utils/paymentReceipt.ts')))
+const receiptDomain = await import(receiptDomainUrl)
+const receiptApiUrl = moduleUrl(
+  transpile(
+    (await read('src/api/payments/paymentReceipt.api.ts'))
+      .replace("'@/utils/request'", JSON.stringify(mockUrl))
+      .replace("'@/utils/paymentReceipt'", JSON.stringify(receiptDomainUrl)),
+  ),
+)
+const receiptControllerUrl = moduleUrl(
+  transpile(
+    (await read('src/composables/usePaymentReceipt.ts'))
+      .replace("'vue'", JSON.stringify(vueUrl))
+      .replace("'ant-design-vue'", JSON.stringify(mockUrl))
+      .replace("'@/composables/usePaymentScope'", JSON.stringify(paymentScopeUrl))
+      .replace("'@/api/payments/paymentReceipt.api'", JSON.stringify(receiptApiUrl))
+      .replace("'@/utils/paymentReceipt'", JSON.stringify(receiptDomainUrl)),
+  ),
+)
+const { usePaymentReceipt } = await import(receiptControllerUrl)
+const ReceiptHarness = defineComponent({
+  setup(_, { expose }) {
+    const receipt = usePaymentReceipt()
+    expose(receipt)
+    return () => null
+  },
+})
+
 async function component(path, expose) {
   let source = await read(path)
   source = source.replace('</script>', `defineExpose({ ${expose} })\n</script>`)
   const { descriptor } = parse(source)
   let code = compileScript(descriptor, { id: `test-${index}`, inlineTemplate: true }).content
+  code = code
+    .replace(
+      /from ['"]@\/composables\/usePaymentReceipt['"]/g,
+      'from ' + JSON.stringify(receiptControllerUrl),
+    )
+    .replace(/from ['"]\.\/PaymentReceiptDialog.vue['"]/g, 'from ' + JSON.stringify(mockUrl))
   code = code.replace(/from ['"]vue['"]/g, `from '${vueUrl}'`)
+  code = code
+    .replace(
+      /from ['"]@\/composables\/usePaymentReceipt['"]/g,
+      'from ' + JSON.stringify(receiptControllerUrl),
+    )
+    .replace(/from ['"]\.\/PaymentReceiptDialog.vue['"]/g, 'from ' + JSON.stringify(mockUrl))
   code = code.replace(
     /from ['"](?:vue-i18n|ant-design-vue|@\/components|@\/stores\/warehouse|@\/stores\/stock|@\/stores\/auth|@\/composables\/useCatalogPermission|@\/utils\/date|\.\/ProductSelect.vue|@\/components\/stock\/ProductSelect.vue|@\/components\/stock\/ReceiptDialog.vue|@\/components\/sales\/SalesOrderDialog.vue)['"]/g,
     `from '${mockUrl}'`,
@@ -205,6 +250,12 @@ async function component(path, expose) {
       /from ['"](?:\.\/(?:PaymentDetailDialog|SalesOrderDialog|ReceivableOrders|CollectPaymentDialog|PaymentHistory).vue|@\/components\/sales\/(?:ReceivableOrders|CustomerReceivablesDialog).vue)['"]/g,
       'from ' + JSON.stringify(mockUrl),
     )
+  code = code
+    .replace(
+      /from ['"]@\/composables\/usePaymentReceipt['"]/g,
+      'from ' + JSON.stringify(receiptControllerUrl),
+    )
+    .replace(/from ['"]\.\/PaymentReceiptDialog.vue['"]/g, 'from ' + JSON.stringify(mockUrl))
   code = code.replace(
     /from ['"]@\/components\/sales\/PendingPaymentRetries.vue['"]/g,
     'from ' + JSON.stringify(mockUrl),
@@ -808,4 +859,354 @@ test('a definitive business rejection resolves an uncertain retry and permits re
   await assert.rejects(store.collect(attempt()))
   assert.equal(writes()[0].raw, writes()[1].raw)
   assert.equal(store.attempts.s1, undefined)
+})
+
+const pdfResponse = (
+  text = '%PDF-1.7\nreceipt',
+  disposition = 'inline; filename="bien-lai-PT1.pdf"',
+) => ({
+  data: new Blob([text], { type: 'application/pdf' }),
+  headers: { 'content-type': 'application/pdf', 'content-disposition': disposition },
+})
+
+test('receipt PDF validates MIME, nonempty Blob and signature; JSON errors are decoded safely', async () => {
+  const pdf = pdfResponse().data
+  assert.equal(await receiptDomain.validateReceiptPdf(pdf, 'application/pdf'), pdf)
+  for (const data of [
+    new Blob([], { type: 'application/pdf' }),
+    new Blob(['{}'], { type: 'application/pdf' }),
+    '{}',
+  ]) {
+    await assert.rejects(receiptDomain.validateReceiptPdf(data, 'application/pdf'), /PDF/)
+  }
+  await assert.rejects(receiptDomain.validateReceiptPdf(pdf, 'application/json'), /PDF/)
+  const payload = {
+    status: 403,
+    code: 'WAREHOUSE_ACCESS_DENIED',
+    message: 'Denied',
+    details: { warehouseId: 'w1' },
+  }
+  const decoded = await receiptDomain.readBlobError(
+    new Blob([JSON.stringify(payload)], { type: 'application/json' }),
+    'application/json',
+  )
+  assert.equal(decoded.code, payload.code)
+  assert.deepEqual(decoded.details, payload.details)
+  assert.equal(
+    await receiptDomain.readBlobError(new Blob(['{invalid']), 'application/json'),
+    undefined,
+  )
+  assert.equal(await receiptDomain.readBlobError(pdf, 'application/pdf'), undefined)
+  for (const code of [
+    'INVALID_REQUEST',
+    'UNAUTHORIZED',
+    'FORBIDDEN',
+    'WAREHOUSE_ACCESS_DENIED',
+    'PAYMENT_NOT_FOUND',
+    'PAYMENT_PDF_FAILED',
+    'INTERNAL_ERROR',
+  ]) {
+    assert.notEqual(
+      receiptDomain.receiptError({ code }),
+      'Không tải được biên lai. Kiểm tra kết nối và thử lại.',
+    )
+  }
+})
+
+test('receipt filenames prefer UTF-8 filename*, fall back safely, and remove unsafe paths', () => {
+  assert.equal(
+    receiptDomain.receiptFilename(
+      "inline; filename=old.pdf; filename*=UTF-8''bi%C3%AAn-lai.pdf",
+      'PT1',
+    ),
+    'biên-lai.pdf',
+  )
+  assert.equal(
+    receiptDomain.receiptFilename("inline; filename=old.pdf; filename*=UTF-8''%ZZ", 'PT1'),
+    'old.pdf',
+  )
+  assert.equal(receiptDomain.receiptFilename('', 'PT001'), 'bien-lai-PT001.pdf')
+  assert.equal(
+    /[\\/<>:"|?*]/.test(
+      receiptDomain.receiptFilename('inline; filename="../../secret\\file.pdf"', '../PT1'),
+    ),
+    false,
+  )
+})
+
+test('receipt-only permission supports ACTIVE and CANCELLED, returns BE bytes unchanged and uses only GET', async () => {
+  reset(['PAYMENT_VIEW'])
+  const subject = mount(ReceiptHarness, {})
+  for (const status of ['ACTIVE', 'CANCELLED']) {
+    const response = pdfResponse(
+      '%PDF-1.7\nĐÃ HỦY — BẢN LƯU\nTiếng Việt 9223372036854775807\n/Page /Page',
+    )
+    context.response = response
+    await subject.vm.show(receipt({ status }))
+    assert.equal(subject.vm.state.open, true)
+    assert.equal(await (await fetch(subject.vm.state.url)).text(), await response.data.text())
+    assert.equal(subject.vm.state.filename, 'bien-lai-PT1.pdf')
+  }
+  assert.ok(
+    context.calls.every((call) => call.method === 'GET' && call.url === '/payments/p1/print'),
+  )
+  assert.equal(context.calls[0].config.headers.Accept, 'application/pdf')
+  assert.equal(context.calls[0].config.signal instanceof AbortSignal, true)
+  assert.equal(context.stock.revision, 0)
+  subject.unmount()
+})
+
+test('closing during receipt fetch aborts and never reopens on a late response', async () => {
+  reset(['PAYMENT_VIEW'])
+  let finish
+  context.handler = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const subject = mount(ReceiptHarness, {})
+  const pending = subject.vm.show(receipt())
+  subject.vm.close()
+  assert.equal(context.calls[0].config.signal.aborted, true)
+  finish(pdfResponse())
+  await pending
+  assert.equal(subject.vm.state.open, false)
+  assert.equal(subject.vm.state.url, '')
+  subject.unmount()
+})
+
+test('newer receipt wins; replacement, close and unmount release viewer URLs', async () => {
+  reset(['PAYMENT_VIEW'])
+  let finish
+  context.handler = ({ url }) =>
+    url.includes('/p1/')
+      ? new Promise((resolve) => {
+          finish = resolve
+        })
+      : pdfResponse('%PDF-1.7\nsecond')
+  const subject = mount(ReceiptHarness, {})
+  const pending = subject.vm.show(receipt())
+  await subject.vm.show(receipt({ id: 'p2', code: 'PT2' }))
+  const secondUrl = subject.vm.state.url
+  finish(pdfResponse())
+  await pending
+  assert.equal(subject.vm.state.url, secondUrl)
+  context.handler = undefined
+  context.response = pdfResponse()
+  await subject.vm.show(receipt())
+  await nextTick()
+  await assert.rejects(fetch(secondUrl))
+  const currentUrl = subject.vm.state.url
+  subject.unmount()
+  await nextTick()
+  await assert.rejects(fetch(currentUrl))
+})
+
+test('logout, revoked PAYMENT_VIEW, warehouse loss and selected scope changes clear receipts', async () => {
+  for (const revoke of [
+    () => {
+      context.auth.user = null
+    },
+    () => {
+      context.auth.user.permissions = []
+    },
+    () => {
+      context.warehouses.warehouses = []
+    },
+    () => {
+      context.warehouses.selectedId = 'w2'
+    },
+  ]) {
+    reset(['PAYMENT_VIEW'])
+    context.response = pdfResponse()
+    const subject = mount(ReceiptHarness, {})
+    await subject.vm.show(receipt())
+    const url = subject.vm.state.url
+    revoke()
+    assert.equal(subject.vm.state.open, false)
+    assert.equal(subject.vm.state.url, '')
+    await nextTick()
+    await assert.rejects(fetch(url))
+    subject.unmount()
+  }
+})
+
+test('receipt denial closes preview and refreshes access; invalid success and network failure allow retry', async () => {
+  reset(['PAYMENT_VIEW'])
+  const subject = mount(ReceiptHarness, {})
+  context.handler = () => {
+    throw Object.assign(new Error('Denied'), { status: 403, code: 'WAREHOUSE_ACCESS_DENIED' })
+  }
+  await subject.vm.show(receipt())
+  assert.equal(subject.vm.state.open, false)
+  assert.equal(context.refreshes, 2)
+  context.handler = undefined
+  context.response = {
+    data: new Blob(['{}'], { type: 'application/json' }),
+    headers: { 'content-type': 'application/json' },
+  }
+  await subject.vm.show(receipt())
+  assert.equal(subject.vm.state.url, '')
+  assert.match(subject.vm.state.error, /PDF/)
+  context.handler = () => {
+    throw new Error('Network unavailable')
+  }
+  await subject.vm.show(receipt())
+  assert.match(subject.vm.state.error, /Network/)
+  context.handler = undefined
+  context.response = pdfResponse()
+  subject.vm.retry()
+  await flush()
+  assert.ok(subject.vm.state.url)
+  assert.equal(subject.vm.state.error, '')
+  subject.unmount()
+})
+
+test('receipt checks scope locally before fetching and ignores late response after scope loss', async () => {
+  reset([])
+  const subject = mount(ReceiptHarness, {})
+  await subject.vm.show(receipt())
+  assert.equal(context.calls.length, 0)
+  context.auth.user.permissions = ['PAYMENT_VIEW']
+  await subject.vm.show(receipt({ warehouseId: 'unassigned' }))
+  assert.equal(context.calls.length, 0)
+  let finish
+  context.handler = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const pending = subject.vm.show(receipt())
+  context.auth.user.permissions = []
+  finish(pdfResponse())
+  await pending
+  assert.equal(subject.vm.state.open, false)
+  assert.equal(subject.vm.state.url, '')
+  subject.unmount()
+})
+
+test('download uses the server filename and keeps a separate URL until its delayed release', async () => {
+  reset(['PAYMENT_VIEW'])
+  context.response = pdfResponse()
+  const subject = mount(ReceiptHarness, {})
+  await subject.vm.show(receipt())
+  const originalDocument = globalThis.document
+  const originalTimeout = globalThis.setTimeout
+  const anchor = {
+    click() {
+      this.clicked = true
+    },
+    remove() {
+      this.removed = true
+    },
+  }
+  let release
+  try {
+    globalThis.document = { createElement: () => anchor, body: { appendChild() {} } }
+    globalThis.setTimeout = (callback, delay) => {
+      assert.equal(delay, 60_000)
+      release = callback
+    }
+    subject.vm.download()
+    assert.equal(anchor.download, 'bien-lai-PT1.pdf')
+    assert.equal(anchor.clicked, true)
+    assert.equal(anchor.removed, true)
+    const viewerUrl = subject.vm.state.url
+    assert.notEqual(anchor.href, viewerUrl)
+    subject.vm.close()
+    await nextTick()
+    await assert.rejects(fetch(viewerUrl))
+    assert.equal(await (await fetch(anchor.href)).text(), '%PDF-1.7\nreceipt')
+    release()
+    await assert.rejects(fetch(anchor.href))
+  } finally {
+    globalThis.document = originalDocument
+    globalThis.setTimeout = originalTimeout
+    subject.unmount()
+  }
+})
+
+test('blocked popup is retryable; separate PDF has no opener and is released on scope loss', async () => {
+  reset(['PAYMENT_VIEW'])
+  context.response = pdfResponse()
+  const subject = mount(ReceiptHarness, {})
+  await subject.vm.show(receipt())
+  const originalWindow = globalThis.window
+  let url
+  const popup = {
+    opener: 'app',
+    location: {
+      replace(value) {
+        url = value
+      },
+    },
+    close() {
+      this.closed = true
+    },
+  }
+  try {
+    globalThis.window = { open: () => null }
+    subject.vm.openPdf()
+    assert.match(subject.vm.state.printHint, /chặn/)
+    globalThis.window.open = () => popup
+    subject.vm.openPdf()
+    assert.equal(popup.opener, null)
+    assert.equal(await (await fetch(url)).text(), '%PDF-1.7\nreceipt')
+    context.auth.user.permissions = []
+    assert.equal(popup.closed, true)
+    await assert.rejects(fetch(url))
+  } finally {
+    globalThis.window = originalWindow
+    subject.unmount()
+  }
+})
+
+test('print waits for viewer load, prints only its frame and offers a separate PDF on unsupported printing', async () => {
+  reset(['PAYMENT_VIEW'])
+  context.response = pdfResponse()
+  const controller = mount(ReceiptHarness, {})
+  await controller.vm.show(receipt())
+  const ReceiptDialog = await component(
+    'src/components/sales/PaymentReceiptDialog.vue',
+    'print, frame',
+  )
+  const subject = mount(ReceiptDialog, { receipt: controller.vm })
+  let prints = 0
+  let appPrints = 0
+  let opened = 0
+  const originalWindow = globalThis.window
+  try {
+    globalThis.window = {
+      print() {
+        appPrints++
+      },
+      open() {
+        opened++
+        return null
+      },
+    }
+    subject.vm.frame.contentWindow = {
+      focus() {},
+      print() {
+        prints++
+      },
+    }
+    subject.vm.print()
+    assert.equal(prints, 0)
+    controller.vm.loaded('blob:wrong')
+    assert.equal(controller.vm.state.ready, false)
+    controller.vm.loaded(controller.vm.state.url)
+    subject.vm.print()
+    assert.equal(prints, 1)
+    assert.equal(appPrints, 0)
+    assert.doesNotMatch(controller.vm.state.printHint, /thành công/)
+    subject.vm.frame.contentWindow.print = () => {
+      throw new Error('Unsupported')
+    }
+    subject.vm.print()
+    assert.equal(opened, 1)
+    assert.match(controller.vm.state.printHint, /chặn/)
+  } finally {
+    globalThis.window = originalWindow
+    subject.unmount()
+    controller.unmount()
+  }
 })

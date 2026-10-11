@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import PaymentReceiptDialog from './PaymentReceiptDialog.vue'
+import { usePaymentReceipt } from '@/composables/usePaymentReceipt'
 import { ref, watch, onBeforeUnmount } from 'vue'
 import { message } from 'ant-design-vue'
 import { BasicModal } from '@/components'
@@ -14,6 +16,7 @@ const props = defineProps<{ open: boolean; id?: string; cancel?: boolean }>()
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 const { can, inScope, contextKey, refreshAccess } = usePaymentScope()
 const payments = usePaymentsStore()
+const receipt = usePaymentReceipt()
 const detail = ref<Payment>()
 const loading = ref(false)
 const saving = ref(false)
@@ -42,6 +45,7 @@ const load = async (): Promise<void> => {
 watch(
   () => [props.open, props.id],
   () => {
+    receipt.close()
     reason.value = ''
     fields.value = {}
     cancelling.value = !!props.cancel
@@ -161,6 +165,12 @@ const submit = async (): Promise<void> => {
       <a-button :disabled="saving" @click="emit('update:open', false)">Đóng</a-button>
       <a-button :disabled="saving || loading" @click="load">Tải lại phiếu</a-button>
       <a-button
+        v-if="detail && can('PAYMENT_VIEW')"
+        :loading="receipt.state.loading"
+        @click="receipt.show(detail)"
+        >In biên lai</a-button
+      >
+      <a-button
         v-if="detail?.status === 'ACTIVE' && can('PAYMENT_CANCEL')"
         danger
         :loading="saving"
@@ -169,4 +179,5 @@ const submit = async (): Promise<void> => {
       >
     </template>
   </BasicModal>
+  <PaymentReceiptDialog :receipt="receipt" />
 </template>

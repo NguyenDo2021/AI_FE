@@ -1,8 +1,10 @@
 import axios, {
   type AxiosError,
+  type AxiosResponse,
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
 } from 'axios'
+import { readBlobError } from '@/utils/paymentReceipt'
 import { message } from 'ant-design-vue'
 import { i18n } from '@/locales'
 import type { ApiErrorPayload } from '@/types/api'
@@ -10,6 +12,7 @@ import { clearTokens, getAccessToken, getRefreshToken } from '@/utils/storage'
 
 declare module 'axios' {
   interface AxiosRequestConfig {
+    preserveResponse?: boolean
     quietErrors?: boolean
     preventAutomaticRetry?: boolean
     skipAccessRefresh?: boolean
@@ -67,9 +70,16 @@ const normalizeError = (error: AxiosError<ApiErrorPayload>): NormalizedApiError 
 }
 
 http.interceptors.response.use(
-  (response) => response.data,
+  (response) => (response.config.preserveResponse ? response : response.data),
   async (error: AxiosError<ApiErrorPayload>) => {
     const config = error.config as RetryConfig | undefined
+    if (config?.preserveResponse && error.response) {
+      const payload = await readBlobError(
+        error.response.data,
+        String(error.response.headers['content-type'] ?? ''),
+      )
+      if (payload) error.response.data = payload
+    }
     const status = error.response?.status
     const isAuthEndpoint =
       config?.url?.includes('/auth/login') || config?.url?.includes('/auth/refresh')
@@ -90,6 +100,8 @@ http.interceptors.response.use(
         const token = await refreshPromise
         config.headers.set('Authorization', `Bearer ${token}`)
         if (config.preventAutomaticRetry) return Promise.reject(normalizeError(error))
+        // Keep PDF retry failures outside this catch; JSON calls retain their existing behavior.
+        if (config.preserveResponse) return http.request(config)
         return await http.request(config)
       } catch {
         clearTokens()
@@ -115,6 +127,13 @@ http.interceptors.response.use(
 )
 
 export const request = {
+  getBlob(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
+    return http.get<Blob, AxiosResponse<Blob>>(url, {
+      ...config,
+      responseType: 'blob',
+      preserveResponse: true,
+    })
+  },
   get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return http.get<T, T>(url, config)
   },
