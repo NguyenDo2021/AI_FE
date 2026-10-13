@@ -10,6 +10,7 @@ export interface MenuItem {
 }
 
 export const MENU_ITEMS: MenuItem[] = [
+  { key: '/dashboard', title: 'common.dashboard', permission: PERMISSIONS.DASHBOARD_VIEW },
   {
     key: '/reports',
     title: 'reports.title',
@@ -64,7 +65,6 @@ export const MENU_ITEMS: MenuItem[] = [
     permission: PERMISSIONS.PAYMENT_VIEW,
     catalogAccess: true,
   },
-  { key: '/dashboard', title: 'common.dashboard', permission: PERMISSIONS.DASHBOARD_VIEW },
   {
     key: '/sales/customers',
     title: 'sales.customers',

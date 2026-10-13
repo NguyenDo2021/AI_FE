@@ -21,6 +21,16 @@ const routes: RouteRecordRaw[] = [
     redirect: '/dashboard',
     children: [
       {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: () => import('@/views/dashboard/index.vue'),
+        meta: {
+          title: 'common.dashboard',
+          requiresAuth: true,
+          permissions: [PERMISSIONS.DASHBOARD_VIEW],
+        },
+      },
+      {
         path: 'reports/dashboard',
         name: 'reports-dashboard',
         component: () => import('@/views/reports/ReportsPage.vue'),
@@ -216,17 +226,6 @@ const routes: RouteRecordRaw[] = [
           requiresAuth: true,
           catalogAccess: true,
           permissions: [PERMISSIONS.PRODUCT_VIEW, PERMISSIONS.PRODUCT_CREATE],
-        },
-      },
-
-      {
-        path: 'dashboard',
-        name: 'dashboard',
-        component: () => import('@/views/dashboard/index.vue'),
-        meta: {
-          title: 'common.dashboard',
-          requiresAuth: true,
-          permissions: [PERMISSIONS.DASHBOARD_VIEW],
         },
       },
       {
