@@ -76,6 +76,17 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
+        path: 'stock/stocktakes',
+        name: 'stock-stocktakes',
+        component: () => import('@/views/stock/StocktakesPage.vue'),
+        meta: {
+          title: 'stocktake.title',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.STOCKTAKE_VIEW, PERMISSIONS.STOCKTAKE_CREATE],
+        },
+      },
+      {
         path: 'stock/inventory',
         name: 'stock-inventory',
         component: () => import('@/views/stock/InventoryPage.vue'),

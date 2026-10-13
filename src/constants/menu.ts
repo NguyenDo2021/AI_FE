@@ -45,6 +45,13 @@ export const MENU_ITEMS: MenuItem[] = [
     catalogAccess: true,
   },
   {
+    key: '/stock/stocktakes',
+    title: 'stocktake.title',
+    permission: PERMISSIONS.STOCKTAKE_VIEW,
+    createPermission: PERMISSIONS.STOCKTAKE_CREATE,
+    catalogAccess: true,
+  },
+  {
     key: '/stock/inventory',
     title: 'stock.inventory',
     permission: PERMISSIONS.INVENTORY_VIEW,

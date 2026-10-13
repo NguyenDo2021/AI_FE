@@ -1,4 +1,74 @@
 export default {
+  stocktake: {
+    title: 'Stocktakes',
+    create: 'Create stocktake',
+    edit: 'Enter counts',
+    view: 'Stocktake details',
+    productCode: 'Product code',
+    productName: 'Product name',
+    unit: 'Unit',
+    systemQuantity: 'Snapshot quantity',
+    countedQuantity: 'Counted quantity',
+    difference: 'Difference',
+    reason: 'Reason',
+    actions: 'Actions',
+    version: 'Version',
+    updatedAt: 'Updated at',
+    updatedBy: 'Updated by',
+    instructions:
+      'Pause physical receiving and shipping for products being counted. If stock changes, refresh the system snapshot and count again.',
+    refresh: 'Refresh system snapshot',
+    confirm: 'Confirm stocktake',
+    cancel: 'Cancel draft',
+    refreshWarning: 'This clears all saved counts and reasons. You must count every product again.',
+    confirmWarning:
+      'Confirmation adjusts inventory to saved physical counts. Complete counting and pause physical receiving and shipping before confirming.',
+    cancelWarning:
+      'Cancelling a draft does not change inventory. A cancelled stocktake cannot be edited.',
+    unsaved: 'Unsaved changes',
+    discard: 'Continuing discards unsaved changes.',
+    saveFirst: 'Save your changes before confirming.',
+    saveSuccess: 'Draft saved. Inventory is unchanged.',
+    refreshSuccess:
+      'Snapshot refreshed; all counts and reasons cleared. Count every product again.',
+    confirmSuccess: 'Stocktake confirmed and inventory adjusted.',
+    cancelSuccess: 'Draft cancelled.',
+    required: 'Required field.',
+    tooLong: 'Maximum 2000 characters.',
+    lineLimit: 'Select 1 to 1000 products.',
+    duplicate: 'Duplicate product.',
+    countRequired: 'Product has not been counted.',
+    invalidQuantity: 'Enter an integer from 0 to 9223372036854775807.',
+    reasonRequired: 'A difference requires a reason before saving.',
+    saveNewLine: 'Save new lines so the backend takes their snapshot before entering counts.',
+    pendingSnapshot: 'Awaiting backend snapshot',
+    currentQuantity: 'Current quantity',
+    revisionChanged: 'Stock changed (revision)',
+    needUpdater: 'A user with STOCKTAKE_UPDATE must refresh the snapshot and count again.',
+    cancelReason: 'Cancellation reason is required, nonblank, and at most 2000 characters.',
+    productPermission:
+      'INVENTORY_VIEW is required to select eligible products by warehouse. Contact your administrator.',
+    addProduct: 'Select product',
+    finalStatus:
+      'This stocktake is final and cannot be edited or reversed. Create a new stocktake and count again to correct mistakes.',
+    unknownResult:
+      'Confirmation/cancellation result is unknown. Reload details to check; do not automatically retry.',
+    unknownCreate:
+      'Creation result is unknown. Check the list or ask a user with STOCKTAKE_VIEW before creating another stocktake.',
+    errors: {
+      VERSION_CONFLICT:
+        'Another user updated this stocktake. Your input is preserved for review. Reload before continuing.',
+      STOCKTAKE_STALE: 'Inventory changed after the snapshot. Explicitly refresh and count again.',
+      DUPLICATE_PRODUCT: 'Duplicate product.',
+      STOCKTAKE_COUNT_REQUIRED: 'Some products have not been counted.',
+      STOCKTAKE_REASON_REQUIRED: 'A difference is missing its reason.',
+      WAREHOUSE_INACTIVE: 'Warehouse is inactive.',
+      PRODUCT_INACTIVE: 'Product is no longer eligible.',
+      NUMERIC_OVERFLOW: 'Integer exceeds the 64-bit limit.',
+      INVALID_STOCKTAKE_STATUS: 'Stocktake status changed. Reload details.',
+      WAREHOUSE_ACCESS_DENIED: 'Warehouse access was revoked. Warehouse data has been cleared.',
+    },
+  },
   sales: {
     payments: 'Payments',
     receivables: 'Receivables',
@@ -9,6 +79,7 @@ export default {
     CANCELLED: 'Cancelled',
   },
   stock: {
+    STOCKTAKE_ADJUSTMENT: 'Stocktake adjustment',
     SALE_CONFIRM: 'Sales confirmation',
     SALE_CANCEL: 'Sales cancellation',
     sourceDocument: 'Source document',

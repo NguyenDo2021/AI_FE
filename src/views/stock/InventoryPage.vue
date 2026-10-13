@@ -195,7 +195,15 @@ const reset = (): void => {
             >{{ t(record.productStatus === 1 ? 'common.active' : 'common.inactive') }}</a-tag
           >
           <template v-else-if="column.key === 'sourceDocument'">
-            <template v-if="record.type === 'SALE_CONFIRM' || record.type === 'SALE_CANCEL'">
+            <template v-if="record.type === 'STOCKTAKE_ADJUSTMENT'">
+              <router-link
+                v-if="record.stocktakeId && can('STOCKTAKE_VIEW')"
+                :to="{ path: '/stock/stocktakes', query: { stocktakeId: record.stocktakeId } }"
+                >{{ record.stocktakeCode ?? record.stocktakeId }}</router-link
+              >
+              <span v-else>{{ record.stocktakeCode ?? record.stocktakeId ?? '-' }}</span>
+            </template>
+            <template v-else-if="record.type === 'SALE_CONFIRM' || record.type === 'SALE_CANCEL'">
               <a-button
                 v-if="record.salesOrderId && can('SALES_ORDER_VIEW')"
                 type="link"

@@ -1,4 +1,75 @@
 export default {
+  stocktake: {
+    title: 'Kiểm kê kho',
+    create: 'Tạo phiếu kiểm kê',
+    edit: 'Nhập số đếm',
+    view: 'Chi tiết kiểm kê',
+    productCode: 'Mã sản phẩm',
+    productName: 'Tên sản phẩm',
+    unit: 'Đơn vị',
+    systemQuantity: 'Tồn snapshot',
+    countedQuantity: 'Thực tế',
+    difference: 'Chênh lệch',
+    reason: 'Lý do',
+    actions: 'Thao tác',
+    version: 'Phiên bản',
+    updatedAt: 'Thời gian cập nhật',
+    updatedBy: 'Người cập nhật',
+    instructions:
+      'Tạm ngừng nhập/xuất thực tế các sản phẩm đang kiểm kê. Nếu tồn phát sinh biến động, cần lấy lại tồn hệ thống và đếm lại.',
+    refresh: 'Lấy lại tồn hệ thống',
+    confirm: 'Xác nhận kiểm kê',
+    cancel: 'Hủy nháp',
+    refreshWarning:
+      'Thao tác này xóa toàn bộ số đếm và lý do đã lưu. Bạn cần đếm lại tất cả sản phẩm.',
+    confirmWarning:
+      'Xác nhận sẽ điều chỉnh tồn kho về số thực tế đã lưu. Hãy hoàn tất kiểm đếm và tạm ngừng nhập/xuất thực tế các sản phẩm này trước khi xác nhận.',
+    cancelWarning: 'Hủy phiếu nháp không thay đổi tồn kho. Phiếu đã hủy không thể sửa.',
+    unsaved: 'Có thay đổi chưa lưu',
+    discard: 'Tiếp tục sẽ bỏ các thay đổi chưa lưu.',
+    saveFirst: 'Hãy lưu thay đổi trước khi xác nhận.',
+    saveSuccess: 'Đã lưu phiếu nháp. Tồn kho chưa thay đổi.',
+    refreshSuccess: 'Đã lấy snapshot mới, xóa số đếm và lý do. Hãy đếm lại tất cả sản phẩm.',
+    confirmSuccess: 'Đã xác nhận và điều chỉnh tồn kho.',
+    cancelSuccess: 'Đã hủy phiếu nháp.',
+    required: 'Thông tin bắt buộc.',
+    tooLong: 'Tối đa 2000 ký tự.',
+    lineLimit: 'Chọn từ 1 đến 1000 sản phẩm.',
+    duplicate: 'Sản phẩm bị trùng.',
+    countRequired: 'Sản phẩm chưa được đếm.',
+    invalidQuantity: 'Nhập số nguyên từ 0 đến 9223372036854775807.',
+    reasonRequired: 'Dòng chênh lệch bắt buộc có lý do trước khi lưu.',
+    saveNewLine: 'Lưu dòng mới trước để backend lấy snapshot, rồi nhập số đếm.',
+    pendingSnapshot: 'Chờ snapshot từ backend',
+    currentQuantity: 'Tồn hiện tại',
+    revisionChanged: 'Đã có biến động (revision)',
+    needUpdater: 'Cần người có quyền STOCKTAKE_UPDATE lấy lại snapshot và đếm lại.',
+    cancelReason: 'Lý do hủy bắt buộc, không để trắng, tối đa 2000 ký tự.',
+    productPermission:
+      'Cần INVENTORY_VIEW để chọn sản phẩm hợp lệ theo kho. Hãy liên hệ quản trị viên để gán quyền.',
+    addProduct: 'Chọn sản phẩm',
+    finalStatus:
+      'Phiếu đã kết thúc, không thể sửa hoặc hủy đảo. Nếu kiểm kê sai, lập phiếu kiểm kê mới và đếm lại.',
+    unknownResult:
+      'Chưa xác định được kết quả xác nhận/hủy. Tải lại chi tiết để kiểm tra; không tự gửi lại thao tác.',
+    unknownCreate:
+      'Chưa xác định được kết quả tạo phiếu. Kiểm tra danh sách hoặc nhờ người có STOCKTAKE_VIEW kiểm tra trước khi tạo lại.',
+    errors: {
+      VERSION_CONFLICT:
+        'Phiếu đã được người khác cập nhật. Bản nhập được giữ lại để xem xét. Tải lại chi tiết trước khi tiếp tục.',
+      STOCKTAKE_STALE:
+        'Tồn kho đã có biến động sau snapshot. Chủ động lấy lại tồn hệ thống và đếm lại.',
+      DUPLICATE_PRODUCT: 'Sản phẩm bị trùng.',
+      STOCKTAKE_COUNT_REQUIRED: 'Có sản phẩm chưa được đếm.',
+      STOCKTAKE_REASON_REQUIRED: 'Dòng chênh lệch thiếu lý do.',
+      WAREHOUSE_INACTIVE: 'Kho không còn hoạt động.',
+      PRODUCT_INACTIVE: 'Sản phẩm không còn hợp lệ để kiểm kê.',
+      NUMERIC_OVERFLOW: 'Số nguyên vượt giới hạn 64-bit.',
+      INVALID_STOCKTAKE_STATUS: 'Trạng thái phiếu đã thay đổi. Tải lại chi tiết.',
+      WAREHOUSE_ACCESS_DENIED:
+        'Quyền truy cập kho đã bị thu hồi. Dữ liệu kho đã được xóa khỏi màn hình.',
+    },
+  },
   sales: {
     payments: 'Phiếu thu',
     receivables: 'Công nợ',
@@ -9,6 +80,7 @@ export default {
     CANCELLED: 'Đã hủy',
   },
   stock: {
+    STOCKTAKE_ADJUSTMENT: 'Điều chỉnh kiểm kê',
     SALE_CONFIRM: 'Xác nhận bán hàng',
     SALE_CANCEL: 'Hủy đơn bán hàng',
     sourceDocument: 'Chứng từ nguồn',

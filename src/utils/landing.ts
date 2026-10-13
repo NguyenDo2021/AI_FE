@@ -17,6 +17,8 @@ export const getLandingPath = (permissions: string[], catalogAdmin: boolean): st
     ['/sales/orders', PERMISSIONS.SALES_ORDER_CREATE],
     ['/stock/receipts', PERMISSIONS.STOCK_RECEIPT_VIEW],
     ['/stock/receipts', PERMISSIONS.STOCK_RECEIPT_CREATE],
+    ['/stock/stocktakes', PERMISSIONS.STOCKTAKE_VIEW],
+    ['/stock/stocktakes', PERMISSIONS.STOCKTAKE_CREATE],
     ['/stock/inventory', PERMISSIONS.INVENTORY_VIEW],
     ['/stock/movements', PERMISSIONS.INVENTORY_MOVEMENT_VIEW],
   ] as const
