@@ -11,6 +11,48 @@ export interface MenuItem {
 
 export const MENU_ITEMS: MenuItem[] = [
   {
+    key: '/reports',
+    title: 'reports.title',
+    children: [
+      {
+        key: '/reports/dashboard',
+        title: 'reports.dashboard',
+        permission: PERMISSIONS.REPORT_DASHBOARD_VIEW,
+        catalogAccess: true,
+      },
+      {
+        key: '/reports/inventory',
+        title: 'reports.inventory',
+        permission: PERMISSIONS.REPORT_INVENTORY_VIEW,
+        catalogAccess: true,
+      },
+      {
+        key: '/reports/sales',
+        title: 'reports.sales',
+        permission: PERMISSIONS.REPORT_SALES_VIEW,
+        catalogAccess: true,
+      },
+      {
+        key: '/reports/payments',
+        title: 'reports.payments',
+        permission: PERMISSIONS.REPORT_PAYMENT_VIEW,
+        catalogAccess: true,
+      },
+      {
+        key: '/reports/receivables-summary',
+        title: 'reports.receivables-summary',
+        permission: PERMISSIONS.REPORT_RECEIVABLE_VIEW,
+        catalogAccess: true,
+      },
+      {
+        key: '/reports/low-stock',
+        title: 'reports.low-stock',
+        permission: PERMISSIONS.REPORT_LOW_STOCK_VIEW,
+        catalogAccess: true,
+      },
+    ],
+  },
+  {
     key: '/sales/receivables',
     title: 'sales.receivables',
     permission: PERMISSIONS.RECEIVABLE_VIEW,

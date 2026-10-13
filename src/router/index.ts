@@ -21,6 +21,78 @@ const routes: RouteRecordRaw[] = [
     redirect: '/dashboard',
     children: [
       {
+        path: 'reports/dashboard',
+        name: 'reports-dashboard',
+        component: () => import('@/views/reports/ReportsPage.vue'),
+        props: { kind: 'dashboard' },
+        meta: {
+          title: 'reports.dashboard',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.REPORT_DASHBOARD_VIEW],
+        },
+      },
+      {
+        path: 'reports/inventory',
+        name: 'reports-inventory',
+        component: () => import('@/views/reports/ReportsPage.vue'),
+        props: { kind: 'inventory' },
+        meta: {
+          title: 'reports.inventory',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.REPORT_INVENTORY_VIEW],
+        },
+      },
+      {
+        path: 'reports/sales',
+        name: 'reports-sales',
+        component: () => import('@/views/reports/ReportsPage.vue'),
+        props: { kind: 'sales' },
+        meta: {
+          title: 'reports.sales',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.REPORT_SALES_VIEW],
+        },
+      },
+      {
+        path: 'reports/payments',
+        name: 'reports-payments',
+        component: () => import('@/views/reports/ReportsPage.vue'),
+        props: { kind: 'payments' },
+        meta: {
+          title: 'reports.payments',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.REPORT_PAYMENT_VIEW],
+        },
+      },
+      {
+        path: 'reports/receivables-summary',
+        name: 'reports-receivables-summary',
+        component: () => import('@/views/reports/ReportsPage.vue'),
+        props: { kind: 'receivables-summary' },
+        meta: {
+          title: 'reports.receivables-summary',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.REPORT_RECEIVABLE_VIEW],
+        },
+      },
+      {
+        path: 'reports/low-stock',
+        name: 'reports-low-stock',
+        component: () => import('@/views/reports/ReportsPage.vue'),
+        props: { kind: 'low-stock' },
+        meta: {
+          title: 'reports.low-stock',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.REPORT_LOW_STOCK_VIEW],
+        },
+      },
+      {
         path: 'sales/receivables',
         name: 'sales-receivables',
         component: () => import('@/views/sales/ReceivablesPage.vue'),

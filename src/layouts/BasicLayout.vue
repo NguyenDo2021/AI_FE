@@ -41,7 +41,7 @@ const visibleMenus = computed(() => {
           !can(item.permission)
         )
           return false
-        return !item.children || item.children.length > 0 || !item.permission
+        return !item.children || item.children.length > 0
       })
   return filter(MENU_ITEMS)
 })
@@ -80,7 +80,7 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
         mode="inline"
         theme="dark"
         :selected-keys="[route.path]"
-        :open-keys="appStore.sidebarCollapsed ? [] : ['/system']"
+        :open-keys="appStore.sidebarCollapsed ? [] : ['/system', '/reports']"
         @click="({ key }: { key: string }) => router.push(String(key))"
       >
         <template v-for="item in visibleMenus" :key="item.key">
