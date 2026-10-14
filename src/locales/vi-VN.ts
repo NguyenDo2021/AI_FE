@@ -1,5 +1,8 @@
 export default {
   reports: {
+    exportExcel: 'Xuất Excel',
+    applyBeforeExport: 'Hãy áp dụng bộ lọc bằng nút Tải lại và chờ bảng tải xong trước khi xuất.',
+    downloadStarted: 'Đã bắt đầu tải file',
     title: 'Báo cáo',
     dashboard: 'Tổng quan',
     inventory: 'Nhập–xuất–tồn',

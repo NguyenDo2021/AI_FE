@@ -226,3 +226,67 @@ test('ordinary JSON errors and network failures remain normalized', async () => 
     (error) => error.status === undefined && error.message === 'errors.network',
   )
 })
+
+test('XLSX exports preserve headers and Blob, authenticate, omit body and refresh 401 once', async () => {
+  reset()
+  const mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  const blob = new Blob([new Uint8Array([0x50, 0x4b, 3, 4])], { type: mime })
+  const disposition = "attachment; filename*=UTF-8''b%C3%A1o-c%C3%A1o.xlsx"
+  context.handler = (config) =>
+    config.headers.Authorization === 'Bearer old'
+      ? failure(401, 'UNAUTHORIZED')
+      : {
+          status: 200,
+          data: blob,
+          headers: { 'content-type': mime, 'content-disposition': disposition },
+        }
+  const params = { from: '2026-10-01', to: '2026-10-14', warehouseId: 'w1' }
+  const result = await request.getBlob('/reports/inventory/export', {
+    ...config,
+    params,
+    headers: { Accept: mime },
+  })
+  assert.equal(result.data, blob)
+  assert.equal(result.headers['content-type'], mime)
+  assert.equal(result.headers['content-disposition'], disposition)
+  assert.equal(context.refreshes, 1)
+  assert.equal(context.calls.length, 2)
+  for (const sent of context.calls) {
+    assert.equal(sent.baseURL, '/api')
+    assert.equal(sent.url, '/reports/inventory/export')
+    assert.equal(sent.method, 'get')
+    assert.equal(sent.data, undefined)
+    assert.equal(sent.responseType, 'blob')
+    assert.equal(sent.preserveResponse, true)
+    assert.deepEqual(sent.params, params)
+    assert.equal(sent.headers.Accept, mime)
+  }
+})
+
+test('export Blob errors keep optional codes and details even when MIME is incorrectly labelled', async () => {
+  reset()
+  for (const [status, code] of [
+    [403, 'FORBIDDEN'],
+    [403, 'WAREHOUSE_ACCESS_DENIED'],
+    [400, 'INVALID_REQUEST'],
+    [409, 'INVENTORY_HISTORY_INCONSISTENT'],
+    [413, 'EXPORT_TOO_LARGE'],
+    [500, 'NUMERIC_OVERFLOW'],
+    [500, 'INTERNAL_ERROR'],
+  ]) {
+    context.handler = () => {
+      const result = failure(status, code)
+      result.headers['content-type'] = 'application/octet-stream'
+      result.data = new Blob([
+        JSON.stringify({ status, code, message: 'Backend: ' + code, details: { id: 'w1' } }),
+      ])
+      return result
+    }
+    await assert.rejects(
+      request.getBlob('/reports/sales/export', config),
+      (error) => error.status === status && error.code === code && error.details.id === 'w1',
+    )
+  }
+  assert.equal(context.denied, 0)
+  assert.deepEqual(context.notices, [])
+})

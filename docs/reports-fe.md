@@ -60,4 +60,37 @@ Kho lấy từ store dùng GET /api/users/me/warehouses. “Tất cả kho” lu
 
 Chưa gọi API backend thật, chưa kiểm tra trực tiếp bằng trình duyệt. Các quy tắc xác nhận/hủy ở kỳ sau không làm đổi kỳ trước và snapshot nhất quán thuộc backend; FE hiển thị nguyên kết quả API. Cần kiểm thử tích hợp bằng tài khoản Admin và nhân viên có phạm vi kho khác nhau khi backend sẵn sàng.
 
-Không thiếu endpoint cho phạm vi đã triển khai theo tài liệu. Xuất Excel/PDF, lợi nhuận, giá vốn và biểu đồ chuỗi thời gian chưa nằm trong phạm vi này; API hiện chưa cung cấp chuỗi thời gian.
+Xuất Excel đã được bổ sung cho nhập–xuất–tồn, bán hàng, thu tiền và tồn thấp theo mô tả bên dưới. PDF báo cáo, lợi nhuận, giá vốn và biểu đồ chuỗi thời gian chưa nằm trong phạm vi này.
+
+## Xuất Excel (14/10/2026)
+
+- Nút **Xuất Excel** xuất hiện ở bốn báo cáo, theo REPORT_INVENTORY_VIEW / REPORT_SALES_VIEW / REPORT_PAYMENT_VIEW / REPORT_LOW_STOCK_VIEW và ngoại lệ Admin đã xác minh.
+- GET /reports/{inventory|sales|payments|low-stock}/export qua client chung; baseURL đã có /api. Không body; JWT trong Authorization, không đưa token vào URL.
+- Query lấy snapshot lần tải bảng thành công, whitelist theo endpoint. Không page/pageSize, keyword, sort; productId chỉ nhập–xuất–tồn và tồn thấp; tồn thấp không có from/to. Bỏ warehouseId khi chọn tất cả kho. Ngày giữ YYYY-MM-DD; kiểm tra thiếu/ngày sai/thứ tự ngày.
+- Bộ lọc hiện có tự tải bảng khi đổi. Khi đang tải hoặc không khớp snapshot bảng, yêu cầu áp dụng bằng Tải lại và chờ tải thành công. Bảng rỗng vẫn xuất được. File do BE dựng cho toàn bộ dữ liệu khớp query; FE không đọc tableData hoặc lặp trang.
+- Tái sử dụng request.getBlob, preserveResponse, quietErrors và refresh/logout 401; không sửa interceptor toàn cục. Loading riêng, chặn click lặp; đổi user/quyền/phạm vi/kind hoặc unmount thì abort và bỏ kết quả đến muộn.
+- Content-Type bắt buộc application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; Blob không rỗng và có chữ ký ZIP. Kiểm tra chữ ký chỉ phát hiện phản hồi sai rõ ràng, không chứng minh cấu trúc workbook đầy đủ. Header thiếu hoặc khác bị chặn với thông báo cần BE xác nhận, không tự chấp nhận octet-stream.
+- Parser tên file được tái sử dụng từ biên lai PDF: ưu tiên filename* UTF-8, fallback filename, lọc đường dẫn/ký tự điều khiển. Không có header thì nhap-xuat-ton_<from>_<to>.xlsx, ban-hang_<from>_<to>.xlsx, thu-tien_<from>_<to>.xlsx, ton-thap_<ngày-giờ-Việt-Nam>.xlsx.
+- Tái sử dụng helper downloadBlob đã tách từ tải PDF: object URL, anchor click, remove anchor; giữ URL 60 giây trước revoke theo cơ chế hiện có. Browser không cung cấp sự kiện xác nhận đã lưu xong; lease có thời hạn là cách dọn tài nguyên hiện tại. Thông báo chỉ “Đã bắt đầu tải file”. Không localStorage.
+- JSON lỗi được đọc an toàn, kể cả header MIME sai; giữ timestamp/status/code/message/details, không tải thành XLSX. WAREHOUSE_ACCESS_DENIED làm mới phạm vi kho. INVENTORY_HISTORY_INCONSISTENT yêu cầu Admin đối soát; NUMERIC_OVERFLOW báo vượt giới hạn. EXPORT_TOO_LARGE, lỗi validation/dựng file được xử lý nếu BE trả; không khẳng định những mã tùy chọn đã được endpoint cam kết. Không chia request hoặc tự sửa tồn. Lỗi cho phép bấm xuất lại thủ công.
+
+### File bổ sung/chỉnh sửa cho xuất Excel
+
+- src/api/reports/reportExport.api.ts, src/utils/reportExport.ts: API Blob, whitelist query, kiểm tra XLSX, tên mặc định và lỗi.
+- src/views/reports/ReportsPage.vue, src/types/reports.ts: snapshot bộ lọc áp dụng, nút xuất và vòng đời request.
+- src/utils/paymentReceipt.ts, src/composables/usePaymentReceipt.ts, src/types/api.ts: tái sử dụng parser tên/tải Blob, bổ sung đọc timestamp/status và nhận diện JSON sai MIME.
+- src/locales/{vi-VN,en-US}.ts: nhãn nút và thông báo.
+- tests/reports.test.mjs, tests/payment-receipt-request.test.mjs: kiểm thử Vue/API và Axios interceptor thật với adapter giả.
+- docs/reports-fe.md: bàn giao.
+
+### Kiểm tra và phần BE cần xác nhận
+
+Typecheck, lint, build và toàn bộ bộ kiểm thử Node được chạy sau thay đổi (162 kiểm thử). Test giả lập chỉ kiểm tra luồng FE; không xác nhận workbook thực tế mở được.
+
+BE tại http://localhost:8080 có phản hồi; GET inventory/export không kèm token trả HTTP 401, Content-Type application/json. Chưa có phiên BE đăng nhập được cấp cho kiểm tra tích hợp, nên chưa xác minh phản hồi thành công hoặc mở file XLSX thật.
+
+Cần kiểm tra bằng tài khoản đã đăng nhập:
+
+1. Content-Type thành công chính xác như trên, dữ liệu XLSX hợp lệ và mở được bằng Excel/LibreOffice.
+2. Content-Disposition thực tế, đặc biệt filename* UTF-8. Nếu cross-origin, Access-Control-Expose-Headers phải cho JavaScript đọc Content-Disposition (Content-Type vốn là CORS safelisted response header). Nếu không đọc được tên, FE dùng tên mặc định.
+3. File chứa toàn bộ dữ liệu đúng bộ lọc; tài khoản Admin/nhân viên đúng phạm vi kho; quy tắc giới hạn export và các mã lỗi tùy chọn thực tế.

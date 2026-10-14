@@ -2,7 +2,7 @@ import { message } from 'ant-design-vue'
 import { nextTick, onBeforeUnmount, reactive, watch } from 'vue'
 import { getPaymentReceipt } from '@/api/payments/paymentReceipt.api'
 import { usePaymentScope } from '@/composables/usePaymentScope'
-import { receiptError } from '@/utils/paymentReceipt'
+import { downloadBlob, receiptError } from '@/utils/paymentReceipt'
 import type { Payment } from '@/types/payments'
 import type { NormalizedApiError } from '@/utils/request'
 
@@ -98,17 +98,7 @@ export const usePaymentReceipt = () => {
   const download = (): void => {
     if (!blob || !state.url || state.loading) return
     // A separate lease keeps a started download valid even if the viewer closes.
-    const downloadUrl = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = downloadUrl
-    anchor.download = state.filename
-    document.body.appendChild(anchor)
-    try {
-      anchor.click()
-    } finally {
-      anchor.remove()
-      setTimeout(() => URL.revokeObjectURL(downloadUrl), 60_000)
-    }
+    downloadBlob(blob, state.filename)
   }
   const openPdf = (): void => {
     if (!blob || !state.url || state.loading) return

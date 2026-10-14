@@ -96,3 +96,9 @@ export interface ReportFilters {
   page: number
   pageSize: number
 }
+
+export type ExportReportKind = 'inventory' | 'sales' | 'payments' | 'low-stock'
+export interface ReportExport {
+  blob: Blob
+  filename: string
+}

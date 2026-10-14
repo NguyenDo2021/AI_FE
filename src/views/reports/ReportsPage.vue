@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { TableColumnsType } from 'ant-design-vue'
+import { message, type TableColumnsType } from 'ant-design-vue'
+import { getReportExport } from '@/api/reports/reportExport.api'
+import { canExportReport, exportQuery, reportExportError } from '@/utils/reportExport'
+import { downloadBlob } from '@/utils/paymentReceipt'
+import type { NormalizedApiError } from '@/utils/request'
 import BasicTable from '@/components/BasicTable/BasicTable.vue'
 import ProductSelect from '@/components/stock/ProductSelect.vue'
 import { useSalesScope } from '@/composables/useSalesScope'
@@ -11,6 +15,7 @@ import type {
   InventoryReportRow,
   LowStockRow,
   ReportKind,
+  ReportFilters,
   SalesSummary,
   PaymentSummary,
   ReceivablesSummary,
@@ -55,6 +60,18 @@ const receivables = ref<ReceivablesSummary>()
 const period = ref<ReportPeriod>()
 const loading = ref(false)
 const ready = ref(false)
+const appliedFilters = ref<ReportFilters>()
+const exportLoading = ref(false)
+const exportError = ref('')
+let exportSequence = 0
+let exportAbort: AbortController | undefined
+const cancelExport = (): void => {
+  ++exportSequence
+  exportAbort?.abort()
+  exportAbort = undefined
+  exportLoading.value = false
+  exportError.value = ''
+}
 const error = ref('')
 let sequence = 0
 let scopeRefreshing = false
@@ -67,6 +84,7 @@ const clear = (): void => {
   receivables.value = undefined
   period.value = undefined
   ready.value = false
+  appliedFilters.value = undefined
 }
 const options = computed(() =>
   warehouses.warehouses.map((item) => ({
@@ -129,6 +147,7 @@ const load = async (): Promise<void> => {
       rows.value = result.items
       total.value = result.total
     }
+    appliedFilters.value = snapshot
     ready.value = true
   } catch (cause) {
     if (current !== sequence) return
@@ -147,6 +166,62 @@ const load = async (): Promise<void> => {
     }
   } finally {
     if (current === sequence) loading.value = false
+  }
+}
+const exportExcel = async (): Promise<void> => {
+  if (exportLoading.value || !authorized.value || !canExportReport(props.kind)) return
+  exportError.value = ''
+  const kind = props.kind
+  const snapshot = appliedFilters.value && { ...appliedFilters.value }
+  try {
+    const draft = { ...filters, productId: can('PRODUCT_VIEW') ? filters.productId : undefined }
+    const draftQuery = exportQuery(kind, draft)
+    if (
+      !snapshot ||
+      !ready.value ||
+      loading.value ||
+      JSON.stringify(draftQuery) !== JSON.stringify(exportQuery(kind, snapshot))
+    ) {
+      exportError.value = t('reports.applyBeforeExport')
+      return
+    }
+  } catch (cause) {
+    exportError.value = reportExportError(cause)
+    return
+  }
+  if (!snapshot || !warehouses.loaded || warehouses.ownerId !== auth.user?.id) return
+  const current = ++exportSequence
+  const userId = auth.user?.id
+  const context = scopeKey.value
+  const controller = new AbortController()
+  exportAbort = controller
+  exportLoading.value = true
+  try {
+    const result = await getReportExport(kind, snapshot, controller.signal)
+    if (
+      current !== exportSequence ||
+      controller.signal.aborted ||
+      auth.user?.id !== userId ||
+      scopeKey.value !== context ||
+      props.kind !== kind ||
+      !authorized.value
+    )
+      return
+    downloadBlob(result.blob, result.filename)
+    message.success(t('reports.downloadStarted'))
+  } catch (cause) {
+    if (current !== exportSequence || controller.signal.aborted) return
+    exportError.value = reportExportError(cause)
+    if ((cause as NormalizedApiError | undefined)?.code === 'WAREHOUSE_ACCESS_DENIED') {
+      const denial = exportError.value
+      await reloadScope()
+      if (auth.user?.id === userId && props.kind === kind) exportError.value = denial
+    }
+  } finally {
+    if (current === exportSequence) {
+      exportLoading.value = false
+      exportAbort = undefined
+    }
   }
 }
 const reloadScope = async (): Promise<void> => {
@@ -210,9 +285,11 @@ watch(
   },
   { flush: 'sync' },
 )
+watch(() => props.kind, cancelExport, { flush: 'sync' })
 watch(
   scopeKey,
   () => {
+    cancelExport()
     ++sequence
     clear()
     if (!can('PRODUCT_VIEW')) filters.productId = undefined
@@ -227,6 +304,7 @@ watch(
   { immediate: true, flush: 'sync' },
 )
 onBeforeUnmount(() => {
+  cancelExport()
   ++sequence
 })
 </script>
@@ -267,6 +345,13 @@ onBeforeUnmount(() => {
         </a-space>
       </template>
       <a-button :loading="loading" @click="load">{{ t('common.reload') }}</a-button>
+      <a-button
+        v-if="canExportReport(kind) && authorized"
+        :loading="exportLoading"
+        :disabled="exportLoading"
+        @click="exportExcel"
+        >{{ t('reports.exportExcel') }}</a-button
+      >
     </a-form>
     <small>{{ t('reports.scopeNote') }}</small>
     <a-alert v-if="error" type="error" show-icon :message="error">
@@ -275,6 +360,7 @@ onBeforeUnmount(() => {
         ><a-button @click="reloadScope">{{ t('reports.refreshScope') }}</a-button></template
       >
     </a-alert>
+    <a-alert v-if="exportError" type="error" show-icon :message="exportError" />
     <a-spin v-if="loading" :tip="t('reports.loading')" />
     <template v-if="ready">
       <p v-if="period">{{ period.from }} – {{ period.to }} ({{ period.timezone }})</p>

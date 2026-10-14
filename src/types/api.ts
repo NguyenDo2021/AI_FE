@@ -11,6 +11,8 @@ export interface PageData<T> {
 }
 
 export interface ApiErrorPayload {
+  timestamp?: string
+  status?: number
   message?: string
   code?: string
   details?: unknown

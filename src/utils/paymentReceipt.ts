@@ -7,17 +7,22 @@ export const readBlobError = async (
   data: unknown,
   contentType: string,
 ): Promise<ApiErrorPayload | undefined> => {
-  if (
-    !(data instanceof Blob) ||
-    ![mime(contentType), mime(data.type)].some(
+  if (!(data instanceof Blob)) return undefined
+  try {
+    const jsonMime = [mime(contentType), mime(data.type)].some(
       (type) => type === 'application/json' || type.endsWith('+json'),
     )
-  )
-    return undefined
-  try {
+    // Some file endpoints return JSON errors with absent or incorrect MIME headers.
+    if (!jsonMime && !/^\s*[{[]/.test(await data.slice(0, 64).text())) return undefined
     const payload: unknown = JSON.parse(await data.text())
     if (!payload || typeof payload !== 'object') return undefined
     return {
+      timestamp:
+        'timestamp' in payload && typeof payload.timestamp === 'string'
+          ? payload.timestamp
+          : undefined,
+      status:
+        'status' in payload && typeof payload.status === 'number' ? payload.status : undefined,
       message:
         'message' in payload && typeof payload.message === 'string' ? payload.message : undefined,
       code: 'code' in payload && typeof payload.code === 'string' ? payload.code : undefined,
@@ -48,7 +53,11 @@ const safeFilename = (value: string): string =>
     .replace(/^\.+|[. ]+$/g, '')
     .trim()
 
-export const receiptFilename = (disposition: string, code: string): string => {
+export const downloadFilename = (
+  disposition: string,
+  fallbackName: string,
+  extension: string,
+): string => {
   const extended = /(?:^|;)\s*filename\*\s*=\s*(?:"([^"]*)"|([^;]*))/i.exec(disposition)
   let name = ''
   if (extended) {
@@ -66,9 +75,27 @@ export const receiptFilename = (disposition: string, code: string): string => {
     const ordinary = /(?:^|;)\s*filename\s*=\s*(?:"((?:\\.|[^"])*)"|([^;]*))/i.exec(disposition)
     name = (ordinary?.[1] ?? ordinary?.[2] ?? '').trim()
   }
-  const fallback = safeFilename('bien-lai-' + code) || 'bien-lai'
-  const safe = safeFilename(name)
-  return safe ? (/\.pdf$/i.test(safe) ? safe : safe + '.pdf') : fallback + '.pdf'
+  const fallback = safeFilename(fallbackName) || 'download'
+  const safe = safeFilename(name) || fallback
+  return safe.toLowerCase().endsWith('.' + extension) ? safe : safe + '.' + extension
+}
+
+export const receiptFilename = (disposition: string, code: string): string =>
+  downloadFilename(disposition, 'bien-lai-' + code, 'pdf')
+
+export const downloadBlob = (blob: Blob, filename: string): void => {
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  try {
+    anchor.href = url
+    anchor.download = filename
+    document.body.appendChild(anchor)
+    anchor.click()
+  } finally {
+    anchor.remove()
+    // Same lease as receipt downloads: allow the browser to consume the URL before cleanup.
+    setTimeout(() => URL.revokeObjectURL(url), 60_000)
+  }
 }
 
 export const receiptError = (cause: unknown): string => {

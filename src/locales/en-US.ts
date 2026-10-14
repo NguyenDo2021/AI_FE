@@ -1,5 +1,9 @@
 export default {
   reports: {
+    exportExcel: 'Export Excel',
+    applyBeforeExport:
+      'Apply the filters with Reload and wait for the table to finish loading before exporting.',
+    downloadStarted: 'File download started',
     title: 'Reports',
     dashboard: 'Overview',
     inventory: 'Inventory movements',
