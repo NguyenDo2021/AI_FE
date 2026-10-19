@@ -64,6 +64,11 @@ export const usePaymentsStore = defineStore('payments', () => {
         salesOrderId: order.id,
         totalAmount: order.totalAmount,
         paidAmount: order.paidAmount,
+        returnedAmount: order.returnedAmount,
+        adjustedTotalAmount: order.adjustedTotalAmount,
+        refundedAmount: order.refundedAmount,
+        netPaidAmount: order.netPaidAmount,
+        refundableAmount: order.refundableAmount,
         remainingAmount: order.remainingAmount,
         paymentStatus: order.paymentStatus,
       }

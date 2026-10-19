@@ -724,3 +724,64 @@ test('download uses object URL, removes anchor and delays cleanup, even when cli
     globalThis.setTimeout = previousTimeout
   }
 })
+
+test('return/refund reporting keeps exact negative cash flow and separate authoritative metrics', async () => {
+  reset()
+  context.handler = async () =>
+    page({
+      summary: {
+        netRecordedAmount: 100,
+        netRefundedAmount: 250,
+        netCashFlowAmount: -150,
+        createdRefundCount: 2,
+        cancelledRefundCount: 1,
+      },
+    })
+  const payments = mount('payments')
+  await flush()
+  assert.equal(payments.vm.payments.netRecordedAmount, 100)
+  assert.equal(payments.vm.payments.netRefundedAmount, 250)
+  assert.equal(payments.vm.payments.netCashFlowAmount, -150)
+  assert.ok(utils.paymentMetrics.includes('netRefundedBankTransferAmount'))
+  assert.ok(utils.paymentMetrics.includes('reversedRefundCashAmount'))
+  assert.equal(utils.reportValue(-9223372036854775807n, true), '-9.223.372.036.854.775.807 ₫')
+  payments.unmount()
+  context.handler = async () =>
+    page({
+      items: [
+        {
+          warehouseId: 'w1',
+          productId: 'p1',
+          openingQuantity: 0,
+          saleReturnQuantity: 7,
+          closingQuantity: 87,
+        },
+      ],
+    })
+  const inventory = mount('inventory')
+  await flush()
+  assert.equal(inventory.vm.rows[0].saleReturnQuantity, 7)
+  assert.equal(inventory.vm.rows[0].closingQuantity, 87)
+  inventory.unmount()
+})
+
+test('refund dashboard section is optional and available without SALES_ORDER_VIEW', async () => {
+  reset()
+  context.auth.user.permissions = ['REPORT_DASHBOARD_VIEW', 'REFUND_VIEW']
+  context.handler = async () => ({
+    generatedAt: '2026-10-16T03:00:00Z',
+    period,
+    currentSections: {
+      refunds: { refundableOrderCount: 1, refundableAmount: 300000, asOf: '2026-10-16T03:00:00Z' },
+    },
+  })
+  const dashboard = mount('dashboard')
+  await flush()
+  assert.equal(dashboard.vm.dashboard.currentSections.refunds.refundableAmount, 300000)
+  assert.equal(context.calls.length, 1)
+  assert.equal(dashboard.vm.dashboard.currentSections.receivables, undefined)
+  context.handler = async () => ({ generatedAt: '2026-10-16T03:00:00Z', period })
+  await dashboard.vm.load()
+  assert.equal(dashboard.vm.dashboard.currentSections, undefined)
+  dashboard.unmount()
+})

@@ -88,6 +88,8 @@ export const salesCustomerName = (order: SalesOrder, customers: Customer[]): str
 export const salesError = (cause: unknown): string => {
   const error = cause as NormalizedApiError
   const message = cause instanceof Error ? cause.message : 'Không thể thực hiện thao tác.'
+  if (error?.code === 'SALES_ORDER_HAS_RETURNS')
+    return 'Không thể hủy đơn có phiếu trả đã xác nhận, kể cả giá trị trả bằng 0.'
   if (error?.code === 'SALES_ORDER_HAS_PAYMENTS')
     return 'Đơn đã có khoản thu hiệu lực. Chức năng hủy đơn kèm hoàn tiền chưa được hỗ trợ.'
   return error?.status === 409

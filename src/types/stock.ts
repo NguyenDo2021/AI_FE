@@ -63,11 +63,18 @@ export interface Movement {
   productId: string
   quantityChange: StockInteger
   type:
-    'RECEIPT_CONFIRM' | 'RECEIPT_CANCEL' | 'SALE_CONFIRM' | 'SALE_CANCEL' | 'STOCKTAKE_ADJUSTMENT'
+    | 'RECEIPT_CONFIRM'
+    | 'RECEIPT_CANCEL'
+    | 'SALE_CONFIRM'
+    | 'SALE_CANCEL'
+    | 'STOCKTAKE_ADJUSTMENT'
+    | 'SALE_RETURN'
   receiptId?: string
   receiptCode?: string
   stocktakeId?: string
   stocktakeCode?: string
+  salesReturnId?: string | null
+  salesReturnCode?: string | null
   salesOrderId?: string
   salesOrderCode?: string
   productCode: string

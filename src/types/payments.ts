@@ -25,6 +25,11 @@ export interface Payment {
 export interface OrderPaymentSummary {
   salesOrderId: string
   totalAmount: StockInteger
+  returnedAmount: StockInteger
+  adjustedTotalAmount: StockInteger
+  refundedAmount: StockInteger
+  netPaidAmount: StockInteger
+  refundableAmount: StockInteger
   paidAmount: StockInteger
   remainingAmount: StockInteger
   paymentStatus?: PaymentStatus | null

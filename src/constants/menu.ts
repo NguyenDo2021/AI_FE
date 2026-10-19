@@ -12,6 +12,25 @@ export interface MenuItem {
 export const MENU_ITEMS: MenuItem[] = [
   { key: '/dashboard', title: 'common.dashboard', permission: PERMISSIONS.DASHBOARD_VIEW },
   {
+    key: '/sales/returns',
+    title: 'sales.salesReturns',
+    permission: PERMISSIONS.SALES_RETURN_VIEW,
+    catalogAccess: true,
+  },
+  {
+    key: '/sales/refunds',
+    title: 'sales.refunds',
+    permission: PERMISSIONS.REFUND_VIEW,
+    catalogAccess: true,
+  },
+  {
+    key: '/sales/refundables',
+    title: 'sales.refundables',
+    permission: PERMISSIONS.REFUND_VIEW,
+    catalogAccess: true,
+  },
+
+  {
     key: '/reports',
     title: 'reports.title',
     children: [

@@ -43,6 +43,11 @@ const columns = [
   'subtotal',
   'discountAmount',
   'totalAmount',
+  'returnedAmount',
+  'adjustedTotalAmount',
+  'refundedAmount',
+  'netPaidAmount',
+  'refundableAmount',
   'paidAmount',
   'remainingAmount',
   'paymentStatus',
@@ -59,6 +64,11 @@ const columns = [
     'Tạm tính',
     'Giảm giá',
     'Tổng tiền',
+    'Giá trị hàng trả',
+    'Tổng sau trả',
+    'Đã hoàn',
+    'Thu ròng',
+    'Còn cần hoàn',
     'Đã thu',
     'Còn phải trả',
     'Thanh toán',
@@ -288,13 +298,29 @@ const changePage = (next: number, size: number): void => {
                 'subtotal',
                 'discountAmount',
                 'totalAmount',
+                'returnedAmount',
+                'adjustedTotalAmount',
+                'refundedAmount',
+                'netPaidAmount',
+                'refundableAmount',
                 'paidAmount',
                 'remainingAmount',
               ].includes(String(column.key))
             "
-            >{{ formatStockInteger(record[column.key] ?? 0) }} VND</template
+            >{{
+              record[column.key] === undefined || record[column.key] === null
+                ? '—'
+                : formatStockInteger(record[column.key]) + ' VND'
+            }}</template
           >
-          <template v-else-if="column.key === 'paymentStatus'">{{ paymentLabel(record) }}</template>
+          <template v-else-if="column.key === 'paymentStatus'"
+            >{{ paymentLabel(record)
+            }}<a-tag
+              v-if="record.refundableAmount !== undefined && BigInt(record.refundableAmount) > 0n"
+              color="orange"
+              >Cần hoàn tiền</a-tag
+            ></template
+          >
           <a-tag
             v-else-if="column.key === 'status'"
             :color="

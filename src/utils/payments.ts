@@ -5,7 +5,8 @@ import type { NormalizedApiError } from '@/utils/request'
 export const PAYMENT_RETRY_PREFIX = 'payment-retry:'
 export const clearPaymentRetries = (): void => {
   for (const key of Object.keys(sessionStorage))
-    if (key.startsWith(PAYMENT_RETRY_PREFIX)) sessionStorage.removeItem(key)
+    if (key.startsWith(PAYMENT_RETRY_PREFIX) || key.startsWith('refund-retry:'))
+      sessionStorage.removeItem(key)
 }
 export const canCollect = (order: SalesOrder): boolean =>
   order.status === 'CONFIRMED' && BigInt(order.remainingAmount ?? 0) > 0n
@@ -23,6 +24,11 @@ export const applyPaymentSummary = (order: SalesOrder, summary: OrderPaymentSumm
         ...order,
         totalAmount: summary.totalAmount,
         paidAmount: summary.paidAmount,
+        returnedAmount: summary.returnedAmount,
+        adjustedTotalAmount: summary.adjustedTotalAmount,
+        refundedAmount: summary.refundedAmount,
+        netPaidAmount: summary.netPaidAmount,
+        refundableAmount: summary.refundableAmount,
         remainingAmount: summary.remainingAmount,
         paymentStatus: summary.paymentStatus,
       }
@@ -57,6 +63,9 @@ export const paymentError = (cause: unknown): string => {
   const error = cause as NormalizedApiError
   const messages: Record<string, string> = {
     INVALID_IDEMPOTENCY_KEY: 'Khóa thu tiền không đúng định dạng UUID. Giữ dữ liệu để kiểm tra.',
+    PAYMENT_BELOW_REFUNDED: 'Không thể hủy phiếu thu vì tổng thu sẽ thấp hơn tổng đã hoàn.',
+    SALES_ORDER_HAS_RETURNS:
+      'Không thể hủy đơn có phiếu trả đã xác nhận, kể cả giá trị trả bằng 0.',
     PAYMENT_EXCEEDS_REMAINING:
       'Số tiền vượt số còn phải trả hiện tại. Kiểm tra số liệu mới trước khi gửi lại.',
     INVALID_SALES_ORDER_STATUS: 'Trạng thái đơn không còn cho phép thu tiền.',

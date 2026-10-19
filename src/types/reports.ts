@@ -27,6 +27,7 @@ export interface InventoryReportRow extends WarehouseFields, ProductFields {
   saleCancellationQuantity: StockInteger
   adjustmentIncreaseQuantity: StockInteger
   adjustmentDecreaseQuantity: StockInteger
+  saleReturnQuantity: StockInteger
   closingQuantity: StockInteger
 }
 export interface SalesSummary {
@@ -38,6 +39,7 @@ export interface SalesSummary {
   discountAmount: StockInteger
   confirmedSalesAmount: StockInteger
   cancelledSalesAmount: StockInteger
+  returnedSalesAmount: StockInteger
   netSalesAmount: StockInteger
 }
 export interface PaymentSummary {
@@ -50,6 +52,16 @@ export interface PaymentSummary {
   netCashAmount: StockInteger
   netBankTransferAmount: StockInteger
   netRecordedAmount: StockInteger
+  createdRefundCount: StockInteger
+  cancelledRefundCount: StockInteger
+  recordedRefundCashAmount: StockInteger
+  recordedRefundBankTransferAmount: StockInteger
+  reversedRefundCashAmount: StockInteger
+  reversedRefundBankTransferAmount: StockInteger
+  netRefundedCashAmount: StockInteger
+  netRefundedBankTransferAmount: StockInteger
+  netRefundedAmount: StockInteger
+  netCashFlowAmount: StockInteger
 }
 export interface ReceivablesSummary {
   customerRemainingAmount: StockInteger
@@ -70,6 +82,7 @@ export interface DashboardReport {
   period: ReportPeriod
   periodSections?: { sales?: SalesSummary; payments?: PaymentSummary; timeBasis: string }
   currentSections?: {
+    refunds?: { refundableOrderCount: StockInteger; refundableAmount: StockInteger; asOf: string }
     receivables?: ReceivablesSummary
     lowStock?: { lowStockPairCount: StockInteger; asOf: string }
     timeBasis: string

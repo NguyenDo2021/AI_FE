@@ -15,7 +15,8 @@
     "test:stock": "node --test tests/stock.test.mjs",
     "test:sales": "node --test tests/sales.test.mjs",
     "test:payments": "node --test tests/payments.test.mjs",
-    "test:stocktake": "node --test tests/stocktake.test.mjs"
+    "test:stocktake": "node --test tests/stocktake.test.mjs",
+    "test:returns": "node --test tests/returns-refunds.test.mjs"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",

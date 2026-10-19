@@ -1,5 +1,20 @@
 export default {
   reports: {
+    saleReturnQuantity: 'Khách trả hàng',
+    returnedSalesAmount: 'Giá trị hàng đã trả',
+    createdRefundCount: 'Số phiếu hoàn tạo',
+    cancelledRefundCount: 'Số phiếu hoàn hủy',
+    recordedRefundCashAmount: 'Hoàn tiền mặt ghi nhận',
+    recordedRefundBankTransferAmount: 'Hoàn chuyển khoản ghi nhận',
+    reversedRefundCashAmount: 'Hoàn tiền mặt đảo ghi nhận',
+    reversedRefundBankTransferAmount: 'Hoàn chuyển khoản đảo ghi nhận',
+    netRefundedCashAmount: 'Hoàn tiền mặt ròng',
+    netRefundedBankTransferAmount: 'Hoàn chuyển khoản ròng',
+    netRefundedAmount: 'Hoàn ròng',
+    netCashFlowAmount: 'Dòng tiền ghi nhận ròng',
+    refundableOrderCount: 'Số đơn cần hoàn',
+    refundableAmount: 'Còn cần hoàn',
+
     exportExcel: 'Xuất Excel',
     applyBeforeExport: 'Hãy áp dụng bộ lọc bằng nút Tải lại và chờ bảng tải xong trước khi xuất.',
     downloadStarted: 'Đã bắt đầu tải file',
@@ -7,7 +22,7 @@ export default {
     dashboard: 'Tổng quan',
     inventory: 'Nhập–xuất–tồn',
     sales: 'Hoạt động bán hàng',
-    payments: 'Thu tiền ghi nhận theo thời gian hệ thống',
+    payments: 'Thu / hoàn theo thời gian hệ thống',
     'receivables-summary': 'Tổng công nợ hiện tại',
     'low-stock': 'Hàng tồn thấp',
     warehouse: 'Kho',
@@ -32,15 +47,16 @@ export default {
     asOf: 'Thời điểm dữ liệu',
     periodActivity: 'Hoạt động trong kỳ',
     currentData: 'Số liệu hiện tại',
-    currentNote: 'Công nợ và tồn thấp là số liệu hiện tại, không theo kỳ ngày đã chọn.',
+    currentNote:
+      'Công nợ, khoản cần hoàn và tồn thấp là số liệu hiện tại, không theo kỳ ngày đã chọn.',
     noSections: 'Chưa có quyền xem các chỉ số.',
     receivableDetail: 'Xem công nợ chi tiết',
     inventoryNote:
-      'Tồn cuối = tồn đầu + nhập − hủy nhập − xuất bán + hủy bán + kiểm kê tăng − kiểm kê giảm. Số liệu theo lịch sử biến động, không phải tồn hiện tại; không có tổng toàn báo cáo.',
+      'Tồn cuối = tồn đầu + nhập − hủy nhập − xuất bán + hủy bán + khách trả hàng + kiểm kê tăng − kiểm kê giảm. Số liệu theo lịch sử biến động, không phải tồn hiện tại; không có tổng toàn báo cáo.',
     salesNote:
-      'Tính theo thời điểm xác nhận/hủy đơn, không theo ngày bán nhập trên form. Giá trị bán ròng chưa phải lợi nhuận.',
+      'Tính theo thời điểm xác nhận/hủy đơn và xác nhận phiếu trả, không theo ngày bán/ngày trả nhập trên form. Bán ròng đã trừ hủy bán và hàng trả. Giá trị bán ròng chưa phải lợi nhuận.',
     paymentNote:
-      'Tính theo thời điểm tạo/hủy phiếu, không theo ngày thu nhập trên form. Hủy phiếu là đảo ghi nhận sai, không phải hoàn tiền.',
+      'Tính theo thời điểm tạo/hủy phiếu thu/hoàn, không theo ngày thu/ngày hoàn. Thu ròng, hoàn ròng và dòng tiền ghi nhận ròng là các khoản riêng; có thể âm. Hủy phiếu chỉ sửa ghi nhận sai. Số liệu chưa khẳng định đối soát ngân hàng.',
     lowStockNote: 'Tồn thấp hiện tại. Thiếu tới ngưỡng không phải lượng đặt hàng tối ưu.',
     openingQuantity: 'Tồn đầu kỳ',
     receiptQuantity: 'Nhập',
@@ -151,6 +167,9 @@ export default {
     },
   },
   sales: {
+    salesReturns: 'Trả hàng',
+    refunds: 'Phiếu hoàn tiền',
+    refundables: 'Đơn cần hoàn tiền',
     payments: 'Phiếu thu',
     receivables: 'Công nợ',
     customers: 'Khách hàng',
@@ -162,6 +181,7 @@ export default {
   stock: {
     STOCKTAKE_ADJUSTMENT: 'Điều chỉnh kiểm kê',
     SALE_CONFIRM: 'Xác nhận bán hàng',
+    SALE_RETURN: 'Khách trả hàng',
     SALE_CANCEL: 'Hủy đơn bán hàng',
     sourceDocument: 'Chứng từ nguồn',
 
