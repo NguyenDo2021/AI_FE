@@ -19,6 +19,8 @@ export const getLandingPath = (permissions: string[], catalogAdmin: boolean): st
   for (const [path, view, create] of catalogs)
     if (catalogAdmin || permissions.includes(view) || permissions.includes(create)) return path
   const stock = [
+    ['/sales/returns', PERMISSIONS.SALES_RETURN_VIEW],
+    ['/sales/refundables', PERMISSIONS.REFUND_VIEW],
     ['/sales/receivables', PERMISSIONS.RECEIVABLE_VIEW],
     ['/sales/payments', PERMISSIONS.PAYMENT_VIEW],
     ['/sales/customers', PERMISSIONS.CUSTOMER_VIEW],

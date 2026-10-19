@@ -1,5 +1,20 @@
 export default {
   reports: {
+    saleReturnQuantity: 'Customer returns',
+    returnedSalesAmount: 'Returned sales amount',
+    createdRefundCount: 'Refunds created',
+    cancelledRefundCount: 'Refunds cancelled',
+    recordedRefundCashAmount: 'Recorded cash refunds',
+    recordedRefundBankTransferAmount: 'Recorded bank transfer refunds',
+    reversedRefundCashAmount: 'Reversed cash refunds',
+    reversedRefundBankTransferAmount: 'Reversed bank transfer refunds',
+    netRefundedCashAmount: 'Net cash refunded',
+    netRefundedBankTransferAmount: 'Net bank transfer refunded',
+    netRefundedAmount: 'Net refunded',
+    netCashFlowAmount: 'Net recorded cash flow',
+    refundableOrderCount: 'Orders requiring refunds',
+    refundableAmount: 'Amount requiring refund',
+
     exportExcel: 'Export Excel',
     applyBeforeExport:
       'Apply the filters with Reload and wait for the table to finish loading before exporting.',
@@ -38,11 +53,11 @@ export default {
     noSections: 'You do not have permission to view any metrics.',
     receivableDetail: 'View receivable details',
     inventoryNote:
-      'Closing = opening + receipts − receipt cancellations − sales + sale cancellations + stocktake increases − stocktake decreases. Historical data; no report-wide summary.',
+      'Closing = opening + receipts - receipt cancellations - sales + sales cancellations + customer returns + adjustment increases - adjustment decreases. Use backend closing balances.',
     salesNote:
-      'Based on order confirmation/cancellation time, not the entered sale date. Net sales value is not profit.',
+      'Sales use order confirmation/cancellation and return confirmation times. Net sales subtract cancellations and returns; this is not profit.',
     paymentNote:
-      'Based on payment creation/cancellation time, not the entered payment date. Cancellation reverses an incorrect record; it is not a refund.',
+      'Based on receipt/refund creation and cancellation times, not entered transaction dates. Net receipts, net refunds and recorded cash flow are separate and may be negative. These are system records, not bank reconciliation.',
     lowStockNote: 'Current low stock. Shortage to threshold is not an optimal purchase quantity.',
     openingQuantity: 'Opening stock',
     receiptQuantity: 'Receipts',
@@ -152,6 +167,9 @@ export default {
     },
   },
   sales: {
+    salesReturns: 'Sales returns',
+    refunds: 'Refund records',
+    refundables: 'Orders requiring refunds',
     payments: 'Payments',
     receivables: 'Receivables',
     customers: 'Customers',
@@ -163,6 +181,7 @@ export default {
   stock: {
     STOCKTAKE_ADJUSTMENT: 'Stocktake adjustment',
     SALE_CONFIRM: 'Sales confirmation',
+    SALE_RETURN: 'Customer return',
     SALE_CANCEL: 'Sales cancellation',
     sourceDocument: 'Source document',
 

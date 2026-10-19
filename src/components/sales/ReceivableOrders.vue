@@ -31,7 +31,12 @@ const columns = [
   ['code', 'Mã đơn'],
   ['saleDate', 'Ngày bán'],
   ['totalAmount', 'Tổng tiền đơn'],
+  ['returnedAmount', 'Hàng đã trả'],
+  ['adjustedTotalAmount', 'Tổng sau trả'],
   ['paidAmount', 'Đã thu'],
+  ['refundedAmount', 'Đã hoàn'],
+  ['netPaidAmount', 'Thu ròng'],
+  ['refundableAmount', 'Còn cần hoàn'],
   ['remainingAmount', 'Còn phải trả'],
   ['paymentStatus', 'Thanh toán'],
   ['actions', 'Thao tác'],
@@ -80,8 +85,24 @@ const showCollect = (order: SalesOrder): void => {
     @page-change="(page, size) => emit('pageChange', page, size)"
   >
     <template #bodyCell="{ column, record }">
-      <template v-if="['totalAmount', 'paidAmount', 'remainingAmount'].includes(String(column.key))"
-        >{{ formatStockInteger(record[column.key] ?? 0) }} VND</template
+      <template
+        v-if="
+          [
+            'totalAmount',
+            'returnedAmount',
+            'adjustedTotalAmount',
+            'paidAmount',
+            'refundedAmount',
+            'netPaidAmount',
+            'refundableAmount',
+            'remainingAmount',
+          ].includes(String(column.key))
+        "
+        >{{
+          record[column.key] === undefined || record[column.key] === null
+            ? '—'
+            : formatStockInteger(record[column.key]) + ' VND'
+        }}</template
       >
       <template v-else-if="column.key === 'paymentStatus'">{{ paymentLabel(record) }}</template>
       <a-space v-else-if="column.key === 'actions'">

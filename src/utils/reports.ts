@@ -99,6 +99,7 @@ export const inventoryMetrics = [
   'adjustmentIncreaseQuantity',
   'adjustmentDecreaseQuantity',
   'closingQuantity',
+  'saleReturnQuantity',
 ] as const
 export const salesMetrics = [
   'confirmedOrderCount',
@@ -110,6 +111,7 @@ export const salesMetrics = [
   'confirmedSalesAmount',
   'cancelledSalesAmount',
   'netSalesAmount',
+  'returnedSalesAmount',
 ] as const
 export const paymentMetrics = [
   'createdPaymentCount',
@@ -121,6 +123,16 @@ export const paymentMetrics = [
   'netCashAmount',
   'netBankTransferAmount',
   'netRecordedAmount',
+  'createdRefundCount',
+  'cancelledRefundCount',
+  'recordedRefundCashAmount',
+  'recordedRefundBankTransferAmount',
+  'reversedRefundCashAmount',
+  'reversedRefundBankTransferAmount',
+  'netRefundedCashAmount',
+  'netRefundedBankTransferAmount',
+  'netRefundedAmount',
+  'netCashFlowAmount',
 ] as const
 export const receivableMetrics = [
   'customerCount',

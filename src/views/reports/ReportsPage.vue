@@ -373,6 +373,7 @@ onBeforeUnmount(() => {
               v-for="card in cards(dashboard.periodSections.sales, [
                 'confirmedOrderCount',
                 'cancelledConfirmedOrderCount',
+                'returnedSalesAmount',
                 'netSalesAmount',
               ])"
               :key="card.key"
@@ -384,6 +385,8 @@ onBeforeUnmount(() => {
             <a-card
               v-for="card in cards(dashboard.periodSections.payments, [
                 'netRecordedAmount',
+                'netRefundedAmount',
+                'netCashFlowAmount',
                 'netCashAmount',
                 'netBankTransferAmount',
               ])"
@@ -396,7 +399,11 @@ onBeforeUnmount(() => {
           <p v-if="dashboard.periodSections.payments">{{ t('reports.paymentNote') }}</p>
         </template>
         <template
-          v-if="dashboard.currentSections?.receivables || dashboard.currentSections?.lowStock"
+          v-if="
+            dashboard.currentSections?.receivables ||
+            dashboard.currentSections?.lowStock ||
+            (can('REFUND_VIEW') && dashboard.currentSections?.refunds)
+          "
         >
           <h2>{{ t('reports.currentData') }}</h2>
           <p>{{ t('reports.currentNote') }}</p>
@@ -415,6 +422,21 @@ onBeforeUnmount(() => {
           <p v-if="dashboard.currentSections.receivables">
             {{ t('reports.asOf') }}: {{ timestamp(dashboard.currentSections.receivables.asOf) }}
           </p>
+          <a-card
+            v-if="can('REFUND_VIEW') && dashboard.currentSections.refunds"
+            :title="t('sales.refundables')"
+          >
+            <p>
+              {{ t('reports.refundableOrderCount') }}:
+              {{ reportValue(dashboard.currentSections.refunds.refundableOrderCount) }}
+            </p>
+            <p>
+              {{ t('reports.refundableAmount') }}:
+              {{ reportValue(dashboard.currentSections.refunds.refundableAmount, true) }}
+            </p>
+            <p>{{ t('reports.asOf') }}: {{ timestamp(dashboard.currentSections.refunds.asOf) }}</p>
+            <router-link to="/sales/refundables">{{ t('sales.refundables') }}</router-link>
+          </a-card>
           <a-card v-if="dashboard.currentSections.lowStock" :title="t('reports.lowStockPairCount')">
             {{ reportValue(dashboard.currentSections.lowStock.lowStockPairCount) }}
             <p>{{ t('reports.asOf') }}: {{ timestamp(dashboard.currentSections.lowStock.asOf) }}</p>
@@ -425,7 +447,8 @@ onBeforeUnmount(() => {
             !dashboard.periodSections?.sales &&
             !dashboard.periodSections?.payments &&
             !dashboard.currentSections?.receivables &&
-            !dashboard.currentSections?.lowStock
+            !dashboard.currentSections?.lowStock &&
+            !(can('REFUND_VIEW') && dashboard.currentSections?.refunds)
           "
           :description="t('reports.noSections')"
         />

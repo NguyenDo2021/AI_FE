@@ -48,6 +48,11 @@ export interface SalesOrder {
   subtotal: StockInteger
   discountAmount: StockInteger
   totalAmount: StockInteger
+  returnedAmount: StockInteger
+  adjustedTotalAmount: StockInteger
+  refundedAmount: StockInteger
+  netPaidAmount: StockInteger
+  refundableAmount: StockInteger
   paidAmount: StockInteger
   remainingAmount: StockInteger
   paymentStatus?: import('@/types/payments').PaymentStatus | null

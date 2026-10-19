@@ -448,6 +448,7 @@ const reload = (): void => {
           v-if="detail && mode === 'view'"
           :order="detail"
           @updated="detail = $event"
+          @refresh-requested="load"
         />
         <a-alert
           v-if="detail && mode === 'cancel' && BigInt(detail.paidAmount ?? 0) > 0n"

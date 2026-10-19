@@ -31,6 +31,43 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
+        path: 'sales/returns',
+        name: 'sales-returns',
+        component: () => import('@/views/sales/ReturnsPage.vue'),
+        props: {},
+        meta: {
+          title: 'sales.salesReturns',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.SALES_RETURN_VIEW],
+        },
+      },
+      {
+        path: 'sales/refunds',
+        name: 'sales-refunds',
+        component: () => import('@/views/sales/RefundsPage.vue'),
+        props: { refundable: false },
+        meta: {
+          title: 'sales.refunds',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.REFUND_VIEW],
+        },
+      },
+      {
+        path: 'sales/refundables',
+        name: 'sales-refundables',
+        component: () => import('@/views/sales/RefundsPage.vue'),
+        props: { refundable: true },
+        meta: {
+          title: 'sales.refundables',
+          requiresAuth: true,
+          catalogAccess: true,
+          permissions: [PERMISSIONS.REFUND_VIEW],
+        },
+      },
+
+      {
         path: 'reports/dashboard',
         name: 'reports-dashboard',
         component: () => import('@/views/reports/ReportsPage.vue'),
