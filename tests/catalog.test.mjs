@@ -408,8 +408,9 @@ const landing = await loadSource('src/utils/landing.ts', (source) =>
     'const PERMISSIONS = globalThis.__permissions',
   ),
 )
-test('login landing allows Admin and create-only users without granting dashboard access', () => {
-  assert.equal(landing.getLandingPath([], true), '/catalog/warehouses')
+test('login landing prioritizes business dashboard for verified Admin and preserves create-only access', () => {
+  assert.equal(landing.getLandingPath([], true), '/dashboard')
+  assert.equal(landing.getLandingPath(['REPORT_DASHBOARD_VIEW'], false), '/dashboard')
   assert.equal(landing.getLandingPath(['WAREHOUSE_CREATE'], false), '/catalog/warehouses')
   assert.equal(landing.getLandingPath(['PRODUCT_GROUP_CREATE'], false), '/catalog/product-groups')
   assert.equal(landing.getLandingPath(['PRODUCT_VIEW'], false), '/catalog/products')

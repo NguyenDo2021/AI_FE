@@ -17,6 +17,10 @@ export const installRouterGuards = (router: Router): void => {
         return { name: 'login', query: { redirect: to.fullPath } }
       }
     }
+    if (to.name === 'dashboard' && auth.user) {
+      const landing = getLandingPath(auth.user.permissions, auth.isCatalogAdmin)
+      if (landing !== '/dashboard') return landing
+    }
     if (to.meta.requiresAuth && to.meta.permissions && auth.user) {
       const required = to.meta.permissions
       const allowed = to.meta.catalogAccess

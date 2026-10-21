@@ -1,0 +1,54 @@
+{
+  "checks": [
+    "Default landing chooses permitted business dashboard",
+    "All 205 warehouse rows are fetched across 3 pages",
+    "Top 10 label is explicit",
+    "Exact large negative KPI matches API",
+    "Receipt ratios use recorded amounts",
+    "Receivable card does not grant target screen access",
+    "Chart instance is mounted",
+    "Overview is the first standalone selected menu item",
+    "Legend toggles payment series",
+    "Tooltip uses exact raw VND",
+    "No horizontal overflow at 768px",
+    "Chart resizes at 768px",
+    "No horizontal overflow at 390px",
+    "Chart resizes at 390px",
+    "No horizontal overflow at 320px",
+    "Chart resizes at 320px",
+    "Seven-day preset sends seven inclusive dates",
+    "Warehouse changes update every report API",
+    "Trend errors preserve summary and warehouse chart",
+    "Zero recorded total does not render a donut",
+    "Revoked warehouse clears data and makes no request loop",
+    "Old dashboard link redirects to the canonical path and preserves query",
+    "Dashboard-only user does not request trends or sales",
+    "Missing permission sections never become zero KPI cards",
+    "User without report permission keeps valid existing landing",
+    "No application exceptions"
+  ],
+  "errors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "calls": [
+    {
+      "path": "/auth/me",
+      "params": {}
+    },
+    {
+      "path": "/users/u1",
+      "params": {}
+    },
+    {
+      "path": "/users/u1/roles",
+      "params": {}
+    },
+    {
+      "path": "/users/me/warehouses",
+      "params": {}
+    }
+  ]
+}

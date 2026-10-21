@@ -10,6 +10,12 @@ export interface MenuItem {
 }
 
 export const MENU_ITEMS: MenuItem[] = [
+  {
+    key: '/dashboard',
+    title: 'reports.dashboard',
+    permission: PERMISSIONS.REPORT_DASHBOARD_VIEW,
+    catalogAccess: true,
+  },
   { key: '/dashboard', title: 'common.dashboard', permission: PERMISSIONS.DASHBOARD_VIEW },
   {
     key: '/sales/returns',
@@ -34,12 +40,6 @@ export const MENU_ITEMS: MenuItem[] = [
     key: '/reports',
     title: 'reports.title',
     children: [
-      {
-        key: '/reports/dashboard',
-        title: 'reports.dashboard',
-        permission: PERMISSIONS.REPORT_DASHBOARD_VIEW,
-        catalogAccess: true,
-      },
       {
         key: '/reports/inventory',
         title: 'reports.inventory',

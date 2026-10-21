@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import WarehouseSelector from '@/components/catalog/WarehouseSelector.vue'
-import { computed, h } from 'vue'
+import { computed, h, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   AccountBookOutlined,
@@ -28,6 +28,7 @@ import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { usePermission } from '@/composables/usePermission'
 
+const smallScreen = ref(false)
 const route = useRoute()
 const router = useRouter()
 const appStore = useAppStore()
@@ -42,6 +43,11 @@ const visibleMenus = computed(() => {
         children: item.children ? filter(item.children) : undefined,
       }))
       .filter((item) => {
+        if (
+          item.permission === 'DASHBOARD_VIEW' &&
+          (authStore.isCatalogAdmin || can('REPORT_DASHBOARD_VIEW'))
+        )
+          return false
         if (
           item.permission &&
           !(
@@ -60,7 +66,6 @@ const menuIcon = (key: string): ReturnType<typeof h> => {
   const icons: Record<string, ReturnType<typeof h>> = {
     '/dashboard': h(DashboardOutlined),
     '/reports': h(BarChartOutlined),
-    '/reports/dashboard': h(BarChartOutlined),
     '/reports/inventory': h(DatabaseOutlined),
     '/reports/sales': h(BarChartOutlined),
     '/reports/payments': h(CreditCardOutlined),
@@ -100,8 +105,24 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
       :trigger="null"
       collapsible
       class="admin-layout__sider"
+      breakpoint="md"
+      :collapsed-width="smallScreen ? 0 : 80"
+      @breakpoint="
+        (broken: boolean) => {
+          smallScreen = broken
+          appStore.sidebarCollapsed = broken
+        }
+      "
     >
       <div class="admin-layout__brand">
+        <a-button
+          v-if="smallScreen"
+          type="text"
+          class="mobile-close"
+          aria-label="Đóng menu"
+          @click="appStore.toggleSidebar"
+          >×</a-button
+        >
         {{ appStore.sidebarCollapsed ? 'BH' : 'Hệ thống bán hàng' }}
       </div>
       <a-menu
@@ -150,7 +171,14 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
           <a-button type="text" @click="logout">{{ $t('common.logout') }}</a-button>
         </div>
       </a-layout-header>
-      <a-layout-content class="admin-layout__content">
+      <a-layout-content
+        class="admin-layout__content"
+        :class="{
+          'admin-layout__content--overview':
+            route.name === 'dashboard' &&
+            (authStore.isCatalogAdmin || can('REPORT_DASHBOARD_VIEW')),
+        }"
+      >
         <RouterView />
       </a-layout-content>
     </a-layout>
@@ -158,6 +186,10 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
 </template>
 
 <style scoped>
+.mobile-close {
+  color: white;
+  margin-left: -12px;
+}
 .admin-layout {
   min-height: 100vh;
 }
@@ -197,5 +229,49 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
   padding: 24px;
   background: #fff;
   border-radius: 8px;
+}
+</style>
+
+<style scoped>
+.admin-layout > :deep(.ant-layout),
+.admin-layout__content {
+  min-width: 0;
+}
+.admin-layout__content--overview {
+  background: #f4f5fa;
+  padding: 24px;
+}
+@media (max-width: 767px) {
+  .admin-layout__sider {
+    position: fixed !important;
+    z-index: 20;
+    height: 100vh;
+  }
+  .admin-layout__sider.ant-layout-sider-collapsed {
+    display: none;
+  }
+  .admin-layout__header {
+    padding: 8px 12px;
+    height: auto;
+    min-height: 64px;
+    line-height: normal;
+  }
+  .admin-layout__user {
+    gap: 6px;
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .admin-layout__user-name {
+    display: none;
+  }
+  .admin-layout__user :deep(.ant-select) {
+    max-width: 110px;
+    min-width: 0 !important;
+  }
+  .admin-layout__content--overview {
+    margin: 12px;
+    padding: 12px;
+  }
 }
 </style>

@@ -115,3 +115,17 @@ export interface ReportExport {
   blob: Blob
   filename: string
 }
+
+export interface DashboardTrendItem {
+  date: string
+  sales?: Pick<
+    SalesSummary,
+    'confirmedSalesAmount' | 'cancelledSalesAmount' | 'returnedSalesAmount' | 'netSalesAmount'
+  >
+  payments?: Pick<PaymentSummary, 'netRecordedAmount' | 'netRefundedAmount' | 'netCashFlowAmount'>
+}
+export interface DashboardTrends {
+  generatedAt: string
+  period: ReportPeriod
+  items: DashboardTrendItem[]
+}
