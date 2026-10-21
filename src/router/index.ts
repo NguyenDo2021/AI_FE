@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import BasicLayout from '@/layouts/BasicLayout.vue'
 import BlankLayout from '@/layouts/BlankLayout.vue'
 import { PERMISSIONS } from '@/constants/permissions'
 import { installRouterGuards } from './guards'
@@ -17,7 +16,7 @@ declare module 'vue-router' {
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: BasicLayout,
+    component: () => import('@/layouts/BasicLayout.vue'),
     redirect: '/dashboard',
     children: [
       {

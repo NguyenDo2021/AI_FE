@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import DashboardChart from '@/components/reports/DashboardChart.vue'
+import { computed, defineAsyncComponent } from 'vue'
 import { useBusinessDashboard } from '@/composables/useBusinessDashboard'
 import { reportValue } from '@/utils/reports'
 import {
@@ -11,6 +10,8 @@ import {
   trendOption,
   warehouseOption,
 } from '@/utils/dashboard'
+const DashboardChart = defineAsyncComponent(() => import('@/components/reports/DashboardChart.vue'))
+
 const {
   filters,
   snapshot,

@@ -1,0 +1,191 @@
+{
+  "base": "http://127.0.0.1:4173",
+  "viewport": "1440x1100",
+  "cacheDisabled": true,
+  "api": "Controlled responses, no real backend or credentials",
+  "results": [
+    {
+      "scenario": "login",
+      "requestCount": 3,
+      "decodedBodyBytes": 1760945,
+      "encodedBodyBytes": 549991,
+      "transferBytes": 550891,
+      "files": [
+        {
+          "file": "/assets/index-CGC2wDkb.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 547062,
+          "networkBytes": 547868,
+          "decodedBodyBytes": 1754608,
+          "transferBytes": 547362
+        },
+        {
+          "file": "/assets/validate-BywcUFSk.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 393,
+          "networkBytes": 714,
+          "decodedBodyBytes": 393,
+          "transferBytes": 693
+        },
+        {
+          "file": "/assets/index-CfjjBjmE.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2536,
+          "networkBytes": 2906,
+          "decodedBodyBytes": 5944,
+          "transferBytes": 2836
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenario": "dashboard-direct",
+      "requestCount": 6,
+      "decodedBodyBytes": 2367789,
+      "encodedBodyBytes": 759679,
+      "transferBytes": 761479,
+      "files": [
+        {
+          "file": "/assets/index-CGC2wDkb.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 547062,
+          "networkBytes": 547868,
+          "decodedBodyBytes": 1754608,
+          "transferBytes": 547362
+        },
+        {
+          "file": "/assets/useCatalogPermission-CwbBs-CW.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 187,
+          "networkBytes": 508,
+          "decodedBodyBytes": 187,
+          "transferBytes": 487
+        },
+        {
+          "file": "/assets/index-Ci1qnW2K.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 613,
+          "networkBytes": 983,
+          "decodedBodyBytes": 1062,
+          "transferBytes": 913
+        },
+        {
+          "file": "/assets/useSalesScope-BmD7hfAm.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 500,
+          "networkBytes": 821,
+          "decodedBodyBytes": 500,
+          "transferBytes": 800
+        },
+        {
+          "file": "/assets/reports-BSKBaUJg.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1841,
+          "networkBytes": 2211,
+          "decodedBodyBytes": 3858,
+          "transferBytes": 2141
+        },
+        {
+          "file": "/assets/BusinessDashboard-DLMcuoZy.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 209476,
+          "networkBytes": 210008,
+          "decodedBodyBytes": 607574,
+          "transferBytes": 209776
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenario": "login-to-dashboard",
+      "requestCount": 8,
+      "decodedBodyBytes": 2374126,
+      "encodedBodyBytes": 762608,
+      "transferBytes": 765008,
+      "files": [
+        {
+          "file": "/assets/index-CGC2wDkb.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 547062,
+          "networkBytes": 547868,
+          "decodedBodyBytes": 1754608,
+          "transferBytes": 547362
+        },
+        {
+          "file": "/assets/validate-BywcUFSk.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 393,
+          "networkBytes": 714,
+          "decodedBodyBytes": 393,
+          "transferBytes": 693
+        },
+        {
+          "file": "/assets/index-CfjjBjmE.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2536,
+          "networkBytes": 2906,
+          "decodedBodyBytes": 5944,
+          "transferBytes": 2836
+        },
+        {
+          "file": "/assets/useCatalogPermission-CwbBs-CW.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 187,
+          "networkBytes": 508,
+          "decodedBodyBytes": 187,
+          "transferBytes": 487
+        },
+        {
+          "file": "/assets/index-Ci1qnW2K.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 613,
+          "networkBytes": 983,
+          "decodedBodyBytes": 1062,
+          "transferBytes": 913
+        },
+        {
+          "file": "/assets/useSalesScope-BmD7hfAm.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 500,
+          "networkBytes": 821,
+          "decodedBodyBytes": 500,
+          "transferBytes": 800
+        },
+        {
+          "file": "/assets/reports-BSKBaUJg.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1841,
+          "networkBytes": 2211,
+          "decodedBodyBytes": 3858,
+          "transferBytes": 2141
+        },
+        {
+          "file": "/assets/BusinessDashboard-DLMcuoZy.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 209476,
+          "networkBytes": 210008,
+          "decodedBodyBytes": 607574,
+          "transferBytes": 209776
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

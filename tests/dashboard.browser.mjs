@@ -19,7 +19,8 @@ const context = await browser.newContext({
 await context.addInitScript(() => {
   localStorage.setItem('frontend-base:access-token', 'browser-test-token')
 })
-const artifacts = 'docs/dashboard-artifacts'
+const base = process.env.DASHBOARD_TEST_URL || 'http://127.0.0.1:5173'
+const artifacts = process.env.DASHBOARD_TEST_ARTIFACTS || 'docs/dashboard-artifacts'
 await mkdir(artifacts, { recursive: true })
 const calls = [],
   errors = [],
@@ -44,7 +45,7 @@ const stringify = (value) =>
   JSON.stringify(value, (_key, item) =>
     typeof item === 'bigint' ? '__integer__' + item : item,
   ).replace(/"__integer__(-?\d+)"/g, '$1')
-await context.route('http://localhost:8080/api/**', async (route) => {
+await context.route('**/api/**', async (route) => {
   const url = new URL(route.request().url()),
     path = url.pathname.slice(4),
     params = url.searchParams
@@ -177,7 +178,7 @@ const ready = async () => {
   await page.waitForFunction(() => !document.querySelector('.ant-skeleton'))
 }
 try {
-  await page.goto('http://127.0.0.1:5173/')
+  await page.goto(base + '/')
   await page.waitForURL('**/dashboard')
   await ready()
   check('Default landing chooses permitted business dashboard', page.url().endsWith('/dashboard'))
@@ -206,14 +207,7 @@ try {
     'Receivable card does not grant target screen access',
     (await page.locator('a[href="/sales/receivables"]').count()) === 0,
   )
-  const chartState = await page.evaluate(() => {
-    const root = document.querySelector('.trend-chart .dashboard-chart')
-    return {
-      keys: Object.keys(root.__vueParentComponent.setupState),
-      hasChart: !!root.__vueParentComponent.setupState.chart,
-    }
-  })
-  check('Chart instance is mounted', chartState.hasChart)
+  check('Three SVG charts are mounted', (await page.locator('.dashboard-chart svg').count()) === 3)
   check(
     'Overview is the first standalone selected menu item',
     (await page.locator('.ant-menu-root > .ant-menu-item').first().innerText()).includes(
@@ -221,28 +215,22 @@ try {
     ) && (await page.locator('.ant-menu-root > .ant-menu-item-selected').count()) === 1,
   )
 
-  await page
-    .locator('.trend-chart svg text')
-    .filter({ hasText: /^Thu ròng$/ })
-    .click()
-  check(
-    'Legend toggles payment series',
-    await page.evaluate(
-      () =>
-        document
-          .querySelector('.trend-chart .dashboard-chart')
-          .__vueParentComponent.setupState.chart.getOption().legend[0].selected['Thu ròng'] ===
-        false,
-    ),
+  // Test rendered SVG instead of Vue development-only component internals.
+  const paymentPaths = page.locator('.trend-chart svg path[stroke="#27aaa1"]')
+  const paymentPathCount = await paymentPaths.count()
+  const paymentLegend = page.locator('.trend-chart svg text').filter({ hasText: /^Thu r\u00f2ng$/ })
+  await paymentLegend.click()
+  await page.waitForFunction(
+    (count) => document.querySelectorAll('.trend-chart svg path[stroke="#27aaa1"]').length < count,
+    paymentPathCount,
   )
-  const hover = await page.evaluate(() => {
-    const element = document.querySelector('.trend-chart .dashboard-chart')
-    const chart = element.__vueParentComponent.setupState.chart
-    const point = chart.convertToPixel({ seriesIndex: 0 }, [0, chart.getOption().series[0].data[0]])
-    const rect = element.getBoundingClientRect()
-    return { x: rect.x + point[0] + 2, y: rect.y + point[1] - 2 }
-  })
-  await page.mouse.move(hover.x, hover.y)
+  check('Legend hides payment series', (await paymentPaths.count()) < paymentPathCount)
+  const point = await page
+    .locator('.trend-chart svg path[fill="#7861df"][transform]')
+    .first()
+    .boundingBox()
+  assert.ok(point, 'First sales point is rendered')
+  await page.mouse.move(point.x + point.width / 2 + 2, point.y + point.height / 2 - 2)
   await page.waitForTimeout(150)
   check(
     'Tooltip uses exact raw VND',
@@ -323,7 +311,7 @@ try {
     (await page.locator('.kpi-value').count()) === 0 && calls.length === afterDenied,
   )
   scenario = 'normal'
-  await page.goto('http://127.0.0.1:5173/reports/dashboard?source=legacy')
+  await page.goto(base + '/reports/dashboard?source=legacy')
   await page.waitForURL('**/dashboard?source=legacy')
   await ready()
   check(
@@ -348,7 +336,7 @@ try {
   )
   permissions = ['DASHBOARD_VIEW']
   calls.length = 0
-  await page.goto('http://127.0.0.1:5173/')
+  await page.goto(base + '/')
   await page.waitForURL('**/dashboard')
   await page.waitForTimeout(250)
   check(
