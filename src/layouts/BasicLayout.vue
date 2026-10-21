@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import WarehouseSelector from '@/components/catalog/WarehouseSelector.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import BrandLogo from '@/components/layout/BrandLogo.vue'
 import { computed, h, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
@@ -13,8 +14,6 @@ import {
   HistoryOutlined,
   InboxOutlined,
   LockOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   ScanOutlined,
   SettingOutlined,
   ShoppingCartOutlined,
@@ -23,11 +22,11 @@ import {
 } from '@ant-design/icons-vue'
 import type { MenuItem } from '@/constants/menu'
 import { MENU_ITEMS } from '@/constants/menu'
-import { setLocale } from '@/locales'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { usePermission } from '@/composables/usePermission'
 
+const appTitle = import.meta.env.VITE_APP_TITLE
 const smallScreen = ref(false)
 const route = useRoute()
 const router = useRouter()
@@ -89,18 +88,12 @@ const menuIcon = (key: string): ReturnType<typeof h> => {
   }
   return icons[key] ?? h(SettingOutlined)
 }
-
-const logout = (): void => {
-  authStore.logout()
-  void router.replace({ name: 'login' })
-}
-
-const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'en-US' : 'vi-VN')
 </script>
 
 <template>
   <a-layout class="admin-layout">
     <a-layout-sider
+      id="app-sidebar"
       v-model:collapsed="appStore.sidebarCollapsed"
       :trigger="null"
       collapsible
@@ -123,7 +116,13 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
           @click="appStore.toggleSidebar"
           >×</a-button
         >
-        {{ appStore.sidebarCollapsed ? 'BH' : 'Hệ thống bán hàng' }}
+        <BrandLogo variant="inverse" :decorative="!appStore.sidebarCollapsed" />
+        <span
+          v-if="!appStore.sidebarCollapsed"
+          class="admin-layout__brand-name"
+          :title="appTitle"
+          >{{ appTitle }}</span
+        >
       </div>
       <a-menu
         mode="inline"
@@ -148,29 +147,8 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
         </template>
       </a-menu>
     </a-layout-sider>
-    <a-layout>
-      <a-layout-header class="admin-layout__header">
-        <a-button type="text" @click="appStore.toggleSidebar">
-          <MenuUnfoldOutlined v-if="appStore.sidebarCollapsed" />
-          <MenuFoldOutlined v-else />
-        </a-button>
-        <div class="admin-layout__user">
-          <WarehouseSelector />
-          <span class="admin-layout__user-name">{{
-            authStore.user?.fullName ?? authStore.user?.username
-          }}</span>
-          <a-select
-            :value="$i18n.locale"
-            size="small"
-            :aria-label="$t('common.language')"
-            @change="changeLocale"
-          >
-            <a-select-option value="vi-VN">Tiếng Việt</a-select-option>
-            <a-select-option value="en-US">English</a-select-option>
-          </a-select>
-          <a-button type="text" @click="logout">{{ $t('common.logout') }}</a-button>
-        </div>
-      </a-layout-header>
+    <a-layout class="admin-layout__main">
+      <AppHeader />
       <a-layout-content
         class="admin-layout__content"
         :class="{
@@ -197,31 +175,36 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
 .admin-layout__sider {
   min-height: 100vh;
 }
+.admin-layout__main {
+  container: workspace / inline-size;
+}
 
 .admin-layout__brand {
-  height: 64px;
-  padding: 0 20px;
-  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 64px;
+  padding: 10px 12px;
   color: #fff;
-  font-size: 18px;
+}
+.admin-layout__brand :deep(.brand-logo) {
+  width: 40px;
+  height: 40px;
+}
+.admin-layout__brand-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
   font-weight: 600;
-  line-height: 64px;
-  white-space: nowrap;
+  line-height: 1.4;
 }
-
-.admin-layout__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
-}
-
-.admin-layout__user {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.admin-layout__brand .mobile-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
 }
 
 .admin-layout__content {
@@ -249,25 +232,6 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
   }
   .admin-layout__sider.ant-layout-sider-collapsed {
     display: none;
-  }
-  .admin-layout__header {
-    padding: 8px 12px;
-    height: auto;
-    min-height: 64px;
-    line-height: normal;
-  }
-  .admin-layout__user {
-    gap: 6px;
-    min-width: 0;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-  .admin-layout__user-name {
-    display: none;
-  }
-  .admin-layout__user :deep(.ant-select) {
-    max-width: 110px;
-    min-width: 0 !important;
   }
   .admin-layout__content--overview {
     margin: 12px;

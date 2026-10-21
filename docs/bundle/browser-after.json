@@ -1,0 +1,822 @@
+{
+  "base": "http://127.0.0.1:4173",
+  "viewport": "1440x1100",
+  "cacheDisabled": true,
+  "api": "Controlled responses, no real backend or credentials",
+  "results": [
+    {
+      "scenario": "login",
+      "requestCount": 12,
+      "decodedBodyBytes": 660648,
+      "encodedBodyBytes": 225698,
+      "transferBytes": 229298,
+      "files": [
+        {
+          "file": "/assets/index-CWnxEuoS.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 147207,
+          "networkBytes": 147684,
+          "decodedBodyBytes": 428364,
+          "transferBytes": 147507
+        },
+        {
+          "file": "/assets/BrandLogo-DshdrZ1-.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1795,
+          "networkBytes": 2165,
+          "decodedBodyBytes": 4625,
+          "transferBytes": 2095
+        },
+        {
+          "file": "/assets/index-CrI6MV69.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2888,
+          "networkBytes": 3258,
+          "decodedBodyBytes": 7181,
+          "transferBytes": 3188
+        },
+        {
+          "file": "/assets/validate-BywcUFSk.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 393,
+          "networkBytes": 714,
+          "decodedBodyBytes": 393,
+          "transferBytes": 693
+        },
+        {
+          "file": "/assets/hasIn-Ik44Rnm9.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1793,
+          "networkBytes": 2163,
+          "decodedBodyBytes": 3826,
+          "transferBytes": 2093
+        },
+        {
+          "file": "/assets/useState-sM5oUR_0.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2317,
+          "networkBytes": 2687,
+          "decodedBodyBytes": 5482,
+          "transferBytes": 2617
+        },
+        {
+          "file": "/assets/responsiveObserve-im6ZwQoX.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 533,
+          "networkBytes": 903,
+          "decodedBodyBytes": 1028,
+          "transferBytes": 833
+        },
+        {
+          "file": "/assets/collapseMotion-CaiIFo2Q.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 24474,
+          "networkBytes": 24861,
+          "decodedBodyBytes": 76079,
+          "transferBytes": 24774
+        },
+        {
+          "file": "/assets/index-B87w1y_w.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 31639,
+          "networkBytes": 32022,
+          "decodedBodyBytes": 94198,
+          "transferBytes": 31939
+        },
+        {
+          "file": "/assets/statusUtils-CmB7toxy.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2557,
+          "networkBytes": 2927,
+          "decodedBodyBytes": 6669,
+          "transferBytes": 2857
+        },
+        {
+          "file": "/assets/index-BNBsFq9z.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 3294,
+          "networkBytes": 3665,
+          "decodedBodyBytes": 12872,
+          "transferBytes": 3594
+        },
+        {
+          "file": "/assets/index-BtntQqkK.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 6808,
+          "networkBytes": 7180,
+          "decodedBodyBytes": 19931,
+          "transferBytes": 7108
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenario": "dashboard-direct",
+      "requestCount": 24,
+      "decodedBodyBytes": 1548228,
+      "encodedBodyBytes": 524059,
+      "transferBytes": 531259,
+      "files": [
+        {
+          "file": "/assets/index-CWnxEuoS.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 147207,
+          "networkBytes": 147684,
+          "decodedBodyBytes": 428364,
+          "transferBytes": 147507
+        },
+        {
+          "file": "/assets/BasicLayout-BHgt-h-s.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 17640,
+          "networkBytes": 18019,
+          "decodedBodyBytes": 57382,
+          "transferBytes": 17940
+        },
+        {
+          "file": "/assets/useState-sM5oUR_0.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2317,
+          "networkBytes": 2687,
+          "decodedBodyBytes": 5482,
+          "transferBytes": 2617
+        },
+        {
+          "file": "/assets/statusUtils-CmB7toxy.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2557,
+          "networkBytes": 2927,
+          "decodedBodyBytes": 6669,
+          "transferBytes": 2857
+        },
+        {
+          "file": "/assets/index-pYac-3kt.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 16643,
+          "networkBytes": 17022,
+          "decodedBodyBytes": 50321,
+          "transferBytes": 16943
+        },
+        {
+          "file": "/assets/collapseMotion-CaiIFo2Q.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 24474,
+          "networkBytes": 24861,
+          "decodedBodyBytes": 76079,
+          "transferBytes": 24774
+        },
+        {
+          "file": "/assets/index-DxxOW-gW.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 23567,
+          "networkBytes": 23954,
+          "decodedBodyBytes": 73951,
+          "transferBytes": 23867
+        },
+        {
+          "file": "/assets/index-BtntQqkK.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 6808,
+          "networkBytes": 7180,
+          "decodedBodyBytes": 19931,
+          "transferBytes": 7108
+        },
+        {
+          "file": "/assets/responsiveObserve-im6ZwQoX.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 533,
+          "networkBytes": 903,
+          "decodedBodyBytes": 1028,
+          "transferBytes": 833
+        },
+        {
+          "file": "/assets/ReloadOutlined-DEXM-XmU.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 5518,
+          "networkBytes": 5890,
+          "decodedBodyBytes": 16516,
+          "transferBytes": 5818
+        },
+        {
+          "file": "/assets/isNumeric-DjvBa-1E.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 62,
+          "networkBytes": 381,
+          "decodedBodyBytes": 62,
+          "transferBytes": 362
+        },
+        {
+          "file": "/assets/BrandLogo-DshdrZ1-.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1795,
+          "networkBytes": 2165,
+          "decodedBodyBytes": 4625,
+          "transferBytes": 2095
+        },
+        {
+          "file": "/assets/useCatalogPermission-BBFXxSuB.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 187,
+          "networkBytes": 508,
+          "decodedBodyBytes": 187,
+          "transferBytes": 487
+        },
+        {
+          "file": "/assets/index-BLK-anP4.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2699,
+          "networkBytes": 3069,
+          "decodedBodyBytes": 5975,
+          "transferBytes": 2999
+        },
+        {
+          "file": "/assets/index-BhJGXnop.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 5906,
+          "networkBytes": 6278,
+          "decodedBodyBytes": 18737,
+          "transferBytes": 6206
+        },
+        {
+          "file": "/assets/hasIn-Ik44Rnm9.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1793,
+          "networkBytes": 2163,
+          "decodedBodyBytes": 3826,
+          "transferBytes": 2093
+        },
+        {
+          "file": "/assets/index-DEgE4Kcx.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 10865,
+          "networkBytes": 11237,
+          "decodedBodyBytes": 33660,
+          "transferBytes": 11165
+        },
+        {
+          "file": "/assets/useSalesScope-CgJqmPAw.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 500,
+          "networkBytes": 821,
+          "decodedBodyBytes": 500,
+          "transferBytes": 800
+        },
+        {
+          "file": "/assets/reports-D5leDoW8.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1838,
+          "networkBytes": 2208,
+          "decodedBodyBytes": 3859,
+          "transferBytes": 2138
+        },
+        {
+          "file": "/assets/index-BRhZjyw8.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 6780,
+          "networkBytes": 7152,
+          "decodedBodyBytes": 17124,
+          "transferBytes": 7080
+        },
+        {
+          "file": "/assets/index-BNBsFq9z.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 3294,
+          "networkBytes": 3665,
+          "decodedBodyBytes": 12872,
+          "transferBytes": 3594
+        },
+        {
+          "file": "/assets/BusinessDashboard-DPlvQ5Ml.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 8705,
+          "networkBytes": 9077,
+          "decodedBodyBytes": 23468,
+          "transferBytes": 9005
+        },
+        {
+          "file": "/assets/dayjs-BrolOpqM.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 31100,
+          "networkBytes": 31489,
+          "decodedBodyBytes": 103072,
+          "transferBytes": 31400
+        },
+        {
+          "file": "/assets/DashboardChart-FjGtBlnL.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 201271,
+          "networkBytes": 201796,
+          "decodedBodyBytes": 584538,
+          "transferBytes": 201571
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenario": "login-to-dashboard",
+      "requestCount": 27,
+      "decodedBodyBytes": 1650000,
+      "encodedBodyBytes": 558979,
+      "transferBytes": 567079,
+      "files": [
+        {
+          "file": "/assets/index-CWnxEuoS.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 147207,
+          "networkBytes": 147684,
+          "decodedBodyBytes": 428364,
+          "transferBytes": 147507
+        },
+        {
+          "file": "/assets/index-CrI6MV69.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2888,
+          "networkBytes": 3258,
+          "decodedBodyBytes": 7181,
+          "transferBytes": 3188
+        },
+        {
+          "file": "/assets/BrandLogo-DshdrZ1-.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1795,
+          "networkBytes": 2165,
+          "decodedBodyBytes": 4625,
+          "transferBytes": 2095
+        },
+        {
+          "file": "/assets/validate-BywcUFSk.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 393,
+          "networkBytes": 714,
+          "decodedBodyBytes": 393,
+          "transferBytes": 693
+        },
+        {
+          "file": "/assets/responsiveObserve-im6ZwQoX.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 533,
+          "networkBytes": 903,
+          "decodedBodyBytes": 1028,
+          "transferBytes": 833
+        },
+        {
+          "file": "/assets/hasIn-Ik44Rnm9.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1793,
+          "networkBytes": 2163,
+          "decodedBodyBytes": 3826,
+          "transferBytes": 2093
+        },
+        {
+          "file": "/assets/useState-sM5oUR_0.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2317,
+          "networkBytes": 2687,
+          "decodedBodyBytes": 5482,
+          "transferBytes": 2617
+        },
+        {
+          "file": "/assets/collapseMotion-CaiIFo2Q.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 24474,
+          "networkBytes": 24861,
+          "decodedBodyBytes": 76079,
+          "transferBytes": 24774
+        },
+        {
+          "file": "/assets/index-B87w1y_w.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 31639,
+          "networkBytes": 32022,
+          "decodedBodyBytes": 94198,
+          "transferBytes": 31939
+        },
+        {
+          "file": "/assets/index-BNBsFq9z.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 3294,
+          "networkBytes": 3665,
+          "decodedBodyBytes": 12872,
+          "transferBytes": 3594
+        },
+        {
+          "file": "/assets/statusUtils-CmB7toxy.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2557,
+          "networkBytes": 2927,
+          "decodedBodyBytes": 6669,
+          "transferBytes": 2857
+        },
+        {
+          "file": "/assets/index-BtntQqkK.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 6808,
+          "networkBytes": 7180,
+          "decodedBodyBytes": 19931,
+          "transferBytes": 7108
+        },
+        {
+          "file": "/assets/isNumeric-DjvBa-1E.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 62,
+          "networkBytes": 381,
+          "decodedBodyBytes": 62,
+          "transferBytes": 362
+        },
+        {
+          "file": "/assets/ReloadOutlined-DEXM-XmU.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 5518,
+          "networkBytes": 5890,
+          "decodedBodyBytes": 16516,
+          "transferBytes": 5818
+        },
+        {
+          "file": "/assets/BasicLayout-BHgt-h-s.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 17640,
+          "networkBytes": 18019,
+          "decodedBodyBytes": 57382,
+          "transferBytes": 17940
+        },
+        {
+          "file": "/assets/index-pYac-3kt.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 16643,
+          "networkBytes": 17022,
+          "decodedBodyBytes": 50321,
+          "transferBytes": 16943
+        },
+        {
+          "file": "/assets/index-DxxOW-gW.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 23567,
+          "networkBytes": 23954,
+          "decodedBodyBytes": 73951,
+          "transferBytes": 23867
+        },
+        {
+          "file": "/assets/useCatalogPermission-BBFXxSuB.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 187,
+          "networkBytes": 508,
+          "decodedBodyBytes": 187,
+          "transferBytes": 487
+        },
+        {
+          "file": "/assets/index-BLK-anP4.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2699,
+          "networkBytes": 3069,
+          "decodedBodyBytes": 5975,
+          "transferBytes": 2999
+        },
+        {
+          "file": "/assets/index-BhJGXnop.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 5906,
+          "networkBytes": 6278,
+          "decodedBodyBytes": 18737,
+          "transferBytes": 6206
+        },
+        {
+          "file": "/assets/index-DEgE4Kcx.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 10865,
+          "networkBytes": 11237,
+          "decodedBodyBytes": 33660,
+          "transferBytes": 11165
+        },
+        {
+          "file": "/assets/useSalesScope-CgJqmPAw.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 500,
+          "networkBytes": 821,
+          "decodedBodyBytes": 500,
+          "transferBytes": 800
+        },
+        {
+          "file": "/assets/reports-D5leDoW8.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1838,
+          "networkBytes": 2208,
+          "decodedBodyBytes": 3859,
+          "transferBytes": 2138
+        },
+        {
+          "file": "/assets/BusinessDashboard-DPlvQ5Ml.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 8705,
+          "networkBytes": 9077,
+          "decodedBodyBytes": 23468,
+          "transferBytes": 9005
+        },
+        {
+          "file": "/assets/index-BRhZjyw8.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 6780,
+          "networkBytes": 7152,
+          "decodedBodyBytes": 17124,
+          "transferBytes": 7080
+        },
+        {
+          "file": "/assets/dayjs-BrolOpqM.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 31100,
+          "networkBytes": 31489,
+          "decodedBodyBytes": 103072,
+          "transferBytes": 31400
+        },
+        {
+          "file": "/assets/DashboardChart-FjGtBlnL.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 201271,
+          "networkBytes": 201796,
+          "decodedBodyBytes": 584538,
+          "transferBytes": 201571
+        }
+      ],
+      "errors": []
+    },
+    {
+      "scenario": "dashboard-empty",
+      "requestCount": 23,
+      "decodedBodyBytes": 963690,
+      "encodedBodyBytes": 322788,
+      "transferBytes": 329688,
+      "files": [
+        {
+          "file": "/assets/index-CWnxEuoS.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 147207,
+          "networkBytes": 147684,
+          "decodedBodyBytes": 428364,
+          "transferBytes": 147507
+        },
+        {
+          "file": "/assets/useState-sM5oUR_0.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2317,
+          "networkBytes": 2687,
+          "decodedBodyBytes": 5482,
+          "transferBytes": 2617
+        },
+        {
+          "file": "/assets/statusUtils-CmB7toxy.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2557,
+          "networkBytes": 2927,
+          "decodedBodyBytes": 6669,
+          "transferBytes": 2857
+        },
+        {
+          "file": "/assets/BasicLayout-BHgt-h-s.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 17640,
+          "networkBytes": 18019,
+          "decodedBodyBytes": 57382,
+          "transferBytes": 17940
+        },
+        {
+          "file": "/assets/index-DxxOW-gW.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 23567,
+          "networkBytes": 23954,
+          "decodedBodyBytes": 73951,
+          "transferBytes": 23867
+        },
+        {
+          "file": "/assets/index-pYac-3kt.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 16643,
+          "networkBytes": 17022,
+          "decodedBodyBytes": 50321,
+          "transferBytes": 16943
+        },
+        {
+          "file": "/assets/collapseMotion-CaiIFo2Q.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 24474,
+          "networkBytes": 24861,
+          "decodedBodyBytes": 76079,
+          "transferBytes": 24774
+        },
+        {
+          "file": "/assets/index-BtntQqkK.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 6808,
+          "networkBytes": 7180,
+          "decodedBodyBytes": 19931,
+          "transferBytes": 7108
+        },
+        {
+          "file": "/assets/responsiveObserve-im6ZwQoX.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 533,
+          "networkBytes": 903,
+          "decodedBodyBytes": 1028,
+          "transferBytes": 833
+        },
+        {
+          "file": "/assets/ReloadOutlined-DEXM-XmU.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 5518,
+          "networkBytes": 5890,
+          "decodedBodyBytes": 16516,
+          "transferBytes": 5818
+        },
+        {
+          "file": "/assets/isNumeric-DjvBa-1E.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 62,
+          "networkBytes": 381,
+          "decodedBodyBytes": 62,
+          "transferBytes": 362
+        },
+        {
+          "file": "/assets/BrandLogo-DshdrZ1-.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1795,
+          "networkBytes": 2165,
+          "decodedBodyBytes": 4625,
+          "transferBytes": 2095
+        },
+        {
+          "file": "/assets/index-BLK-anP4.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 2699,
+          "networkBytes": 3069,
+          "decodedBodyBytes": 5975,
+          "transferBytes": 2999
+        },
+        {
+          "file": "/assets/useCatalogPermission-BBFXxSuB.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 187,
+          "networkBytes": 508,
+          "decodedBodyBytes": 187,
+          "transferBytes": 487
+        },
+        {
+          "file": "/assets/index-BhJGXnop.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 5906,
+          "networkBytes": 6278,
+          "decodedBodyBytes": 18737,
+          "transferBytes": 6206
+        },
+        {
+          "file": "/assets/hasIn-Ik44Rnm9.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1793,
+          "networkBytes": 2163,
+          "decodedBodyBytes": 3826,
+          "transferBytes": 2093
+        },
+        {
+          "file": "/assets/index-DEgE4Kcx.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 10865,
+          "networkBytes": 11237,
+          "decodedBodyBytes": 33660,
+          "transferBytes": 11165
+        },
+        {
+          "file": "/assets/useSalesScope-CgJqmPAw.js",
+          "contentEncoding": "identity",
+          "fromCache": false,
+          "encodedBodyBytes": 500,
+          "networkBytes": 821,
+          "decodedBodyBytes": 500,
+          "transferBytes": 800
+        },
+        {
+          "file": "/assets/reports-D5leDoW8.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 1838,
+          "networkBytes": 2208,
+          "decodedBodyBytes": 3859,
+          "transferBytes": 2138
+        },
+        {
+          "file": "/assets/index-BNBsFq9z.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 3294,
+          "networkBytes": 3665,
+          "decodedBodyBytes": 12872,
+          "transferBytes": 3594
+        },
+        {
+          "file": "/assets/BusinessDashboard-DPlvQ5Ml.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 8705,
+          "networkBytes": 9077,
+          "decodedBodyBytes": 23468,
+          "transferBytes": 9005
+        },
+        {
+          "file": "/assets/index-BRhZjyw8.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 6780,
+          "networkBytes": 7152,
+          "decodedBodyBytes": 17124,
+          "transferBytes": 7080
+        },
+        {
+          "file": "/assets/dayjs-BrolOpqM.js",
+          "contentEncoding": "gzip",
+          "fromCache": false,
+          "encodedBodyBytes": 31100,
+          "networkBytes": 31489,
+          "decodedBodyBytes": 103072,
+          "transferBytes": 31400
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

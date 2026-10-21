@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <g transform="rotate(-8 32 32)">
+    <rect
+      x="6"
+      y="6"
+      width="52"
+      height="52"
+      rx="14"
+      fill="#FFFFFF"
+      fill-opacity=".1"
+      stroke="#FFFFFF"
+      stroke-opacity=".24"
+    />
+    <path d="M16 25.5Q16 24 17.5 23.5L22 22V45L16 47Z" fill="#EEE6FF" />
+    <path d="M22 22L25 24V43L22 45Z" fill="#BAA2E3" />
+    <path d="M28 19.5Q28 18 29.5 17.5L34 16V47L28 49Z" fill="#C4F2DF" />
+    <path d="M34 16L37 18V45L34 47Z" fill="#8CCFB4" />
+    <path d="M40 25.5Q40 24 41.5 23.5L46 22V45L40 47Z" fill="#EEE6FF" />
+    <path d="M46 22L49 24V43L46 45Z" fill="#BAA2E3" />
+  </g>
+</svg>

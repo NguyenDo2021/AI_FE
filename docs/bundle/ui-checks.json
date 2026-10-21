@@ -1,0 +1,116 @@
+{
+  "api": "Controlled read-only fixtures; list rendering and available create dialogs, no real mutations",
+  "results": [
+    {
+      "route": "/catalog/warehouses",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/catalog/product-groups",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/catalog/products",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/stock/receipts",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/stock/stocktakes",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/stock/inventory",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/stock/movements",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/sales/customers",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/sales/orders",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/sales/payments",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/sales/receivables",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/sales/returns",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/sales/refunds",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/sales/refundables",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/reports/inventory",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/reports/sales",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/reports/payments",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/reports/receivables-summary",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/reports/low-stock",
+      "dialogOpened": false,
+      "componentErrors": 0
+    },
+    {
+      "route": "/system/user",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/system/role",
+      "dialogOpened": true,
+      "componentErrors": 0
+    },
+    {
+      "route": "/system/permission",
+      "dialogOpened": true,
+      "componentErrors": 0
+    }
+  ],
+  "errors": []
+}
