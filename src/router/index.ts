@@ -70,8 +70,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'reports/dashboard',
         name: 'reports-dashboard',
-        component: () => import('@/views/reports/ReportsPage.vue'),
-        props: { kind: 'dashboard' },
+        component: () => import('@/views/reports/BusinessDashboard.vue'),
         meta: {
           title: 'reports.dashboard',
           requiresAuth: true,

@@ -17,7 +17,7 @@ export const hasReportProducts = (kind: ReportKind): boolean =>
 export const isPagedReport = (kind: ReportKind): boolean =>
   !['dashboard', 'receivables-summary'].includes(kind)
 export const reportRange = (
-  preset: 'today' | 'month' | 'previous',
+  preset: 'today' | 'week' | 'month' | 'previous',
   now = new Date(),
 ): { from: string; to: string } => {
   const parts = new Intl.DateTimeFormat('en-US', {
@@ -31,6 +31,11 @@ export const reportRange = (
     month = Number(part('month'))
   const today = `${part('year')}-${part('month')}-${part('day')}`
   if (preset === 'today') return { from: today, to: today }
+  if (preset === 'week')
+    return {
+      from: new Date(Date.parse(today + 'T00:00:00Z') - 6 * 86400000).toISOString().slice(0, 10),
+      to: today,
+    }
   if (preset === 'month') return { from: `${part('year')}-${part('month')}-01`, to: today }
   const previous = new Date(Date.UTC(year, month - 2, 1))
   return {
@@ -73,6 +78,9 @@ export const reportQuery = (
 export const reportError = (cause: unknown): string => {
   const error = cause as NormalizedApiError | undefined
   const messages: Record<string, string> = {
+    INVALID_DATE_RANGE: 'Khoảng ngày không hợp lệ.',
+    REPORT_PERIOD_TOO_LARGE: 'Chọn tối đa 366 ngày, tính cả ngày đầu và ngày cuối.',
+    WAREHOUSE_NOT_FOUND: 'Kho đã chọn không còn tồn tại. Hãy làm mới phạm vi kho.',
     FORBIDDEN: 'Bạn chưa có quyền xem báo cáo này.',
     WAREHOUSE_ACCESS_DENIED:
       'Quyền truy cập kho đã thay đổi. Phạm vi kho đang được làm mới; hãy thử lại.',

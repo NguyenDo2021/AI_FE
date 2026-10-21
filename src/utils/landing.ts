@@ -1,5 +1,7 @@
 import { PERMISSIONS } from '@/constants/permissions'
 export const getLandingPath = (permissions: string[], catalogAdmin: boolean): string => {
+  if (catalogAdmin || permissions.includes(PERMISSIONS.REPORT_DASHBOARD_VIEW))
+    return '/reports/dashboard'
   const reports = [
     ['/reports/dashboard', PERMISSIONS.REPORT_DASHBOARD_VIEW],
     ['/reports/inventory', PERMISSIONS.REPORT_INVENTORY_VIEW],
