@@ -1,6 +1,6 @@
 # Tổng quan kinh doanh — 21/10/2026
 
-Trang: `/reports/dashboard`. Giữ BasicLayout, sidebar, Pinia scope/RBAC, API client Axios, Ant Design Vue và parser `parseStockJson` hiện có. Các báo cáo dạng bảng và luồng Excel vẫn dùng ReportsPage, API và helper xuất Excel cũ.
+Trang: `/dashboard` (menu riêng đầu sidebar). Đường dẫn cũ `/reports/dashboard` chuyển hướng sang `/dashboard`. Giữ BasicLayout, sidebar, Pinia scope/RBAC, API client Axios, Ant Design Vue và parser `parseStockJson` hiện có. Các báo cáo dạng bảng và luồng Excel vẫn dùng ReportsPage, API và helper xuất Excel cũ.
 
 ## Thay đổi
 
@@ -44,7 +44,7 @@ Trang: `/reports/dashboard`. Giữ BasicLayout, sidebar, Pinia scope/RBAC, API c
 - `npm.cmd run lint`: qua, không lỗi/cảnh báo ESLint.
 - `npm.cmd run build`: qua. Vite còn cảnh báo chunk lớn hơn 500 kB: main ứng dụng và trang tổng quan có ECharts; chart chỉ tải cùng route tổng quan.
 - `node --test --test-reporter=spec tests/*.test.mjs`: **206/206 qua**, gồm **14 kiểm thử dashboard mới**, cùng hồi quy báo cáo/Excel/returns/refunds và các module hiện có.
-- Chrome headless, reduced-motion: **24/24 qua**. Bao gồm tooltip raw VND qua di chuột thật, legend click thật, 205 kho/3 trang, KPI số lớn âm, tỷ lệ thu thật, bộ lọc kho/ngày, lỗi trends độc lập/thử lại, donut tổng 0, thu hồi kho 403 không lặp API, dashboard-only và landing không quyền báo cáo.
+- Chrome headless, reduced-motion: **26/26 qua**. Bao gồm tooltip raw VND qua di chuột thật, legend click thật, 205 kho/3 trang, KPI số lớn âm, tỷ lệ thu thật, bộ lọc kho/ngày, lỗi trends độc lập/thử lại, donut tổng 0, thu hồi kho 403 không lặp API, dashboard-only và landing không quyền báo cáo.
 - Không tràn ngang và chart resize ở **768/390/320px**; đã xem ảnh desktop 1440px và mobile 390px. Nhãn trục số lớn được rút gọn để tránh chồng chữ; tooltip vẫn exact.
 - `git diff --check`: qua.
 
@@ -53,7 +53,7 @@ Trang: `/reports/dashboard`. Giữ BasicLayout, sidebar, Pinia scope/RBAC, API c
 - [Desktop](dashboard-artifacts/desktop.png)
 - [Mobile](dashboard-artifacts/mobile.png)
 - [Số âm vượt MAX_SAFE_INTEGER và tooltip](dashboard-artifacts/desktop-large.png)
-- [Chi tiết 24 kiểm tra trình duyệt](dashboard-artifacts/browser-results.json)
+- [Chi tiết 26 kiểm tra trình duyệt](dashboard-artifacts/browser-results.json)
 
 ### Chạy lại kiểm tra giao diện trong môi trường Windows hiện tại
 
@@ -71,3 +71,7 @@ Kịch bản dùng Chrome ở đường dẫn Program Files mặc định và Vi
 Backend cục bộ `GET http://localhost:8080/api/reports/dashboard` trả **401** khi không có tài khoản/token. Chưa đối chiếu dữ liệu thật giữa ba API hoặc chạy với tài khoản Admin/nhân viên thật; chưa xác minh việc thu hồi quyền/kho trực tiếp trên backend. Các trường hợp đó đã kiểm tra bằng response kiểm soát và unit/integration test FE.
 
 Chưa mở file Excel thực tế sau xuất và chưa đối soát dữ liệu Excel với backend. Luồng Excel không thay đổi, các kiểm thử hồi quy về permission/filter/blob/XLSX/snapshot/abort vẫn qua. Chưa kiểm tra trực tiếp Safari/Firefox. Không thay đổi hoặc triển khai backend/hosting.
+
+## Đường dẫn tổng quan
+
+Menu riêng và landing sau đăng nhập dùng `/dashboard`. `src/views/dashboard/index.vue` tải Tổng quan kinh doanh khi có REPORT_DASHBOARD_VIEW hoặc Admin đã xác minh; người chỉ có DASHBOARD_VIEW tiếp tục thấy trang mặc định hiện có tại cùng đường dẫn. Route `/reports/dashboard` chuyển hướng đến `/dashboard`, giữ query/hash. Hai kiểm tra Chrome bổ sung xác nhận menu đứng đầu được chọn đúng và liên kết cũ chuyển hướng đúng.

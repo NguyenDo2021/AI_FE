@@ -44,6 +44,11 @@ const visibleMenus = computed(() => {
       }))
       .filter((item) => {
         if (
+          item.permission === 'DASHBOARD_VIEW' &&
+          (authStore.isCatalogAdmin || can('REPORT_DASHBOARD_VIEW'))
+        )
+          return false
+        if (
           item.permission &&
           !(
             item.catalogAccess &&
@@ -61,7 +66,6 @@ const menuIcon = (key: string): ReturnType<typeof h> => {
   const icons: Record<string, ReturnType<typeof h>> = {
     '/dashboard': h(DashboardOutlined),
     '/reports': h(BarChartOutlined),
-    '/reports/dashboard': h(BarChartOutlined),
     '/reports/inventory': h(DatabaseOutlined),
     '/reports/sales': h(BarChartOutlined),
     '/reports/payments': h(CreditCardOutlined),
@@ -169,7 +173,11 @@ const changeLocale = (locale: string): void => setLocale(locale === 'en-US' ? 'e
       </a-layout-header>
       <a-layout-content
         class="admin-layout__content"
-        :class="{ 'admin-layout__content--overview': route.name === 'reports-dashboard' }"
+        :class="{
+          'admin-layout__content--overview':
+            route.name === 'dashboard' &&
+            (authStore.isCatalogAdmin || can('REPORT_DASHBOARD_VIEW')),
+        }"
       >
         <RouterView />
       </a-layout-content>

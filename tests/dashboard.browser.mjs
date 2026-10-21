@@ -178,12 +178,9 @@ const ready = async () => {
 }
 try {
   await page.goto('http://127.0.0.1:5173/')
-  await page.waitForURL('**/reports/dashboard')
+  await page.waitForURL('**/dashboard')
   await ready()
-  check(
-    'Default landing chooses permitted business dashboard',
-    page.url().endsWith('/reports/dashboard'),
-  )
+  check('Default landing chooses permitted business dashboard', page.url().endsWith('/dashboard'))
   check(
     'All 205 warehouse rows are fetched across 3 pages',
     calls
@@ -217,6 +214,13 @@ try {
     }
   })
   check('Chart instance is mounted', chartState.hasChart)
+  check(
+    'Overview is the first standalone selected menu item',
+    (await page.locator('.ant-menu-root > .ant-menu-item').first().innerText()).includes(
+      'Tổng quan',
+    ) && (await page.locator('.ant-menu-root > .ant-menu-item-selected').count()) === 1,
+  )
+
   await page
     .locator('.trend-chart svg text')
     .filter({ hasText: /^Thu ròng$/ })
@@ -319,6 +323,14 @@ try {
     (await page.locator('.kpi-value').count()) === 0 && calls.length === afterDenied,
   )
   scenario = 'normal'
+  await page.goto('http://127.0.0.1:5173/reports/dashboard?source=legacy')
+  await page.waitForURL('**/dashboard?source=legacy')
+  await ready()
+  check(
+    'Old dashboard link redirects to the canonical path and preserves query',
+    new URL(page.url()).pathname === '/dashboard' &&
+      new URL(page.url()).searchParams.get('source') === 'legacy',
+  )
   permissions = ['REPORT_DASHBOARD_VIEW']
   calls.length = 0
   await page.reload()

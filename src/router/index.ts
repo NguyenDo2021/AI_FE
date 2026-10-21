@@ -27,7 +27,8 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: 'common.dashboard',
           requiresAuth: true,
-          permissions: [PERMISSIONS.DASHBOARD_VIEW],
+          catalogAccess: true,
+          permissions: [PERMISSIONS.REPORT_DASHBOARD_VIEW, PERMISSIONS.DASHBOARD_VIEW],
         },
       },
       {
@@ -69,14 +70,7 @@ const routes: RouteRecordRaw[] = [
 
       {
         path: 'reports/dashboard',
-        name: 'reports-dashboard',
-        component: () => import('@/views/reports/BusinessDashboard.vue'),
-        meta: {
-          title: 'reports.dashboard',
-          requiresAuth: true,
-          catalogAccess: true,
-          permissions: [PERMISSIONS.REPORT_DASHBOARD_VIEW],
-        },
+        redirect: '/dashboard',
       },
       {
         path: 'reports/inventory',

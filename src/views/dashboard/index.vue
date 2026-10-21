@@ -1,5 +1,16 @@
+<script setup lang="ts">
+import { computed, defineAsyncComponent } from 'vue'
+import { useCatalogPermission } from '@/composables/useCatalogPermission'
+const { can } = useCatalogPermission()
+const showBusinessDashboard = computed(() => can('REPORT_DASHBOARD_VIEW'))
+const BusinessDashboard = defineAsyncComponent(
+  () => import('@/views/reports/BusinessDashboard.vue'),
+)
+</script>
+
 <template>
-  <div class="dashboard">
+  <BusinessDashboard v-if="showBusinessDashboard" />
+  <div v-else class="dashboard">
     <h1>{{ $t('dashboard.welcome') }}</h1>
     <p>{{ $t('dashboard.description') }}</p>
     <a-card class="dashboard__card">
