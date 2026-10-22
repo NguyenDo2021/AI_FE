@@ -1,0 +1,373 @@
+{
+  "passed": 41,
+  "checks": [
+    "Unrelated groups start closed to reduce menu length",
+    "Current selected product is revealed automatically",
+    "1366x768: sidebar is 256px and viewport high",
+    "1366x768: brand/footer fixed outside one scroll region",
+    "1366x768: rows are 42px and content stays in bounds",
+    "1366x768: scrollbar is 6px with no arrows",
+    "Wheel reaches the final menu item without moving the document",
+    "Logo stays fixed while scrolling menus",
+    "Thumb becomes clearer on hover/focus",
+    "Keyboard scroll works in the menu region",
+    "Every expanded label has its full text tooltip",
+    "low-500: sidebar is 256px and viewport high",
+    "low-500: brand/footer fixed outside one scroll region",
+    "low-500: rows are 42px and content stays in bounds",
+    "low-500: scrollbar is 6px with no arrows",
+    "low-500: last item is reachable",
+    "zoom-125: sidebar is 256px and viewport high",
+    "zoom-125: brand/footer fixed outside one scroll region",
+    "zoom-125: rows are 42px and content stays in bounds",
+    "zoom-125: scrollbar is 6px with no arrows",
+    "zoom-125: last item is reachable",
+    "desktop-1920: sidebar is 256px and viewport high",
+    "desktop-1920: brand/footer fixed outside one scroll region",
+    "desktop-1920: rows are 42px and content stays in bounds",
+    "desktop-1920: scrollbar is 6px with no arrows",
+    "desktop-1920: last item is reachable",
+    "Collapse keeps 80px rail and layout adjusts through Sider",
+    "Collapsed group still opens its accessible popup",
+    "Navigation selects actual route and opens its parent group",
+    "User can close a menu group",
+    "User can reopen a menu group",
+    "Direct route load opens its parent and reveals selected child",
+    "On long content, sticky sidebar retains the viewport height",
+    "Existing header toggle still controls the sidebar",
+    "Restricted user sees only the existing permitted menu",
+    "Create-only catalog menu access is preserved",
+    "Verified ADMIN retains catalog menus without granting system permissions",
+    "Mobile starts with sidebar closed",
+    "Mobile opens an overlay without moving content",
+    "Mobile sidebar close remains usable",
+    "No application/component errors"
+  ],
+  "measurements": [
+    {
+      "label": "1366x768",
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 768,
+        "bottom": 768
+      },
+      "nav": {
+        "x": 0,
+        "y": 72,
+        "width": 256,
+        "height": 642.90625,
+        "bottom": 714.90625
+      },
+      "brand": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 72,
+        "bottom": 72
+      },
+      "footer": {
+        "x": 0,
+        "y": 714.90625,
+        "width": 256,
+        "height": 53,
+        "bottom": 767.90625
+      },
+      "scrollables": [
+        "sidebar-menu-scroll"
+      ],
+      "rows": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "bodyHeight": 768,
+      "width": 1366,
+      "height": 768,
+      "scrollWidth": 1366,
+      "content": {
+        "x": 256,
+        "y": 0,
+        "width": 1110,
+        "height": 768,
+        "bottom": 768
+      },
+      "header": {
+        "x": 256,
+        "y": 0,
+        "width": 1110,
+        "height": 64,
+        "bottom": 64
+      },
+      "thumbWidth": "6px",
+      "buttonDisplay": "none"
+    },
+    {
+      "label": "low-500",
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 500,
+        "bottom": 500
+      },
+      "nav": {
+        "x": 0,
+        "y": 72,
+        "width": 256,
+        "height": 374.90625,
+        "bottom": 446.90625
+      },
+      "brand": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 72,
+        "bottom": 72
+      },
+      "footer": {
+        "x": 0,
+        "y": 446.90625,
+        "width": 256,
+        "height": 53,
+        "bottom": 499.90625
+      },
+      "scrollables": [
+        "sidebar-menu-scroll"
+      ],
+      "rows": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "bodyHeight": 500,
+      "width": 1366,
+      "height": 500,
+      "scrollWidth": 1366,
+      "content": {
+        "x": 256,
+        "y": 0,
+        "width": 1110,
+        "height": 500,
+        "bottom": 500
+      },
+      "header": {
+        "x": 256,
+        "y": 0,
+        "width": 1110,
+        "height": 64,
+        "bottom": 64
+      },
+      "thumbWidth": "6px",
+      "buttonDisplay": "none"
+    },
+    {
+      "label": "zoom-125",
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 614,
+        "bottom": 614
+      },
+      "nav": {
+        "x": 0,
+        "y": 72,
+        "width": 256,
+        "height": 488.90625,
+        "bottom": 560.90625
+      },
+      "brand": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 72,
+        "bottom": 72
+      },
+      "footer": {
+        "x": 0,
+        "y": 560.90625,
+        "width": 256,
+        "height": 53,
+        "bottom": 613.90625
+      },
+      "scrollables": [
+        "sidebar-menu-scroll"
+      ],
+      "rows": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "bodyHeight": 614,
+      "width": 1093,
+      "height": 614,
+      "scrollWidth": 1093,
+      "content": {
+        "x": 256,
+        "y": 0,
+        "width": 837,
+        "height": 614,
+        "bottom": 614
+      },
+      "header": {
+        "x": 256,
+        "y": 0,
+        "width": 837,
+        "height": 64,
+        "bottom": 64
+      },
+      "thumbWidth": "6px",
+      "buttonDisplay": "none"
+    },
+    {
+      "label": "desktop-1920",
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 1080,
+        "bottom": 1080
+      },
+      "nav": {
+        "x": 0,
+        "y": 72,
+        "width": 256,
+        "height": 954.90625,
+        "bottom": 1026.90625
+      },
+      "brand": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 72,
+        "bottom": 72
+      },
+      "footer": {
+        "x": 0,
+        "y": 1026.90625,
+        "width": 256,
+        "height": 53,
+        "bottom": 1079.90625
+      },
+      "scrollables": [
+        "sidebar-menu-scroll"
+      ],
+      "rows": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "bodyHeight": 1080,
+      "width": 1920,
+      "height": 1080,
+      "scrollWidth": 1920,
+      "content": {
+        "x": 256,
+        "y": 0,
+        "width": 1664,
+        "height": 1080,
+        "bottom": 1080
+      },
+      "header": {
+        "x": 256,
+        "y": 0,
+        "width": 1664,
+        "height": 64,
+        "bottom": 64
+      },
+      "thumbWidth": "6px",
+      "buttonDisplay": "none"
+    }
+  ],
+  "errors": []
+}
