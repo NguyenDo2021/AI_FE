@@ -1,0 +1,293 @@
+{
+  "passed": 59,
+  "checks": [
+    "Group heading, description and purple add action",
+    "Initial group list waits for capacity and makes one server call",
+    "Four columns and total come from API",
+    "1366x768: no page or table scroll, footer visible",
+    "1366x768: every server row visible with stable height",
+    "Long names, codes and 2000 character descriptions never widen cells",
+    "Null description renders em dash and inactive status has a label",
+    "Pagination requests the next server page",
+    "1920x1080: no page or table scroll, footer visible",
+    "1920x1080: every server row visible with stable height",
+    "Resize increases capacity and returns to page 1",
+    "Same capacity resize makes no API request",
+    "low-500: no page or table scroll, footer visible",
+    "low-500: every server row visible with stable height",
+    "zoom-125: no page or table scroll, footer visible",
+    "zoom-125: every server row visible with stable height",
+    "mobile-390: no page or table scroll, footer visible",
+    "mobile-390: every server row visible with stable height",
+    "mobile-320: no page or table scroll, footer visible",
+    "mobile-320: every server row visible with stable height",
+    "Mobile hides secondary description column",
+    "Enter trims keyword and returns to page 1",
+    "Old request cannot overwrite the latest data",
+    "Status 0 goes to API",
+    "Reset makes one request, clears filters and returns to page 1",
+    "Global group catalog never uses warehouse/group filters or product mutations",
+    "Detail retains full code/name/description and timestamps",
+    "Detail errors stay in drawer and preserve list rows",
+    "Edit loads all four fields without truncating long values",
+    "Cancelling discard preserves drawer and unsaved values",
+    "Edit uses a full four-field PUT without response metadata",
+    "Status change GETs latest detail and preserves code/name/description",
+    "Required field validation blocks empty submission",
+    "Non-ASCII codes are rejected",
+    "Description has a 2000 character limit and character count",
+    "Duplicate code API errors map to code field",
+    "API validation errors map to name field",
+    "Create trims and uppercases code with no duplicate submit",
+    "SPA navigation cancellation preserves group editor and route",
+    "Unsaved editor prevents beforeunload",
+    "Confirmed discard closes the editor",
+    "SPA navigation to Products starts a measured server request",
+    "SPA return to Groups refetches even when capacity is unchanged",
+    "Few records keep footer next to the data instead of a tall blank card",
+    "Empty state and API total 0 are explicit",
+    "List API errors show a retryable state",
+    "Errors do not trigger a ResizeObserver request loop",
+    "Invalid current page after change is corrected and refetched",
+    "Total becoming zero also corrects the page to 1",
+    "Failed status changes show error without pushing pagination out",
+    "Inactive group can activate with a full latest payload",
+    "403 uses shared error/access refresh and clears visible list",
+    "403 does not automatically loop list requests",
+    "View-only hides create/edit/status while retaining detail",
+    "Create-only can open form without fetching list/detail",
+    "Verified ADMIN retains group access without warehouse assignment",
+    "All pageSize values are integers in 1–100",
+    "No unsupported DELETE or product mutation is introduced",
+    "No application or component errors"
+  ],
+  "measurements": [
+    {
+      "label": "1366x768",
+      "width": 1366,
+      "height": 768,
+      "scrollHeight": 768,
+      "scrollWidth": 1366,
+      "footer": {
+        "top": 671.5,
+        "bottom": 725,
+        "height": 53.5
+      },
+      "region": {
+        "top": 287,
+        "bottom": 671.5,
+        "height": 384.5
+      },
+      "regionScroll": 385,
+      "rows": [
+        {
+          "top": 335,
+          "bottom": 419,
+          "height": 84
+        },
+        {
+          "top": 419,
+          "bottom": 503,
+          "height": 84
+        },
+        {
+          "top": 503,
+          "bottom": 587,
+          "height": 84
+        },
+        {
+          "top": 587,
+          "bottom": 671,
+          "height": 84
+        }
+      ],
+      "pageSize": "4"
+    },
+    {
+      "label": "1920x1080",
+      "width": 1920,
+      "height": 1080,
+      "scrollHeight": 1080,
+      "scrollWidth": 1920,
+      "footer": {
+        "top": 923.5,
+        "bottom": 977,
+        "height": 53.5
+      },
+      "region": {
+        "top": 287,
+        "bottom": 923.5,
+        "height": 636.5
+      },
+      "regionScroll": 637,
+      "rows": [
+        {
+          "top": 335,
+          "bottom": 419,
+          "height": 84
+        },
+        {
+          "top": 419,
+          "bottom": 503,
+          "height": 84
+        },
+        {
+          "top": 503,
+          "bottom": 587,
+          "height": 84
+        },
+        {
+          "top": 587,
+          "bottom": 671,
+          "height": 84
+        },
+        {
+          "top": 671,
+          "bottom": 755,
+          "height": 84
+        },
+        {
+          "top": 755,
+          "bottom": 839,
+          "height": 84
+        },
+        {
+          "top": 839,
+          "bottom": 923,
+          "height": 84
+        }
+      ],
+      "pageSize": "7"
+    },
+    {
+      "label": "low-500",
+      "width": 1366,
+      "height": 500,
+      "scrollHeight": 500,
+      "scrollWidth": 1366,
+      "footer": {
+        "top": 355.5,
+        "bottom": 397,
+        "height": 41.5
+      },
+      "region": {
+        "top": 223,
+        "bottom": 355.5,
+        "height": 132.5
+      },
+      "regionScroll": 133,
+      "rows": [
+        {
+          "top": 271,
+          "bottom": 355,
+          "height": 84
+        }
+      ],
+      "pageSize": "1"
+    },
+    {
+      "label": "zoom-125",
+      "width": 1093,
+      "height": 614,
+      "scrollHeight": 614,
+      "scrollWidth": 1093,
+      "footer": {
+        "top": 523.5,
+        "bottom": 565,
+        "height": 41.5
+      },
+      "region": {
+        "top": 223,
+        "bottom": 523.5,
+        "height": 300.5
+      },
+      "regionScroll": 301,
+      "rows": [
+        {
+          "top": 271,
+          "bottom": 355,
+          "height": 84
+        },
+        {
+          "top": 355,
+          "bottom": 439,
+          "height": 84
+        },
+        {
+          "top": 439,
+          "bottom": 523,
+          "height": 84
+        }
+      ],
+      "pageSize": "3"
+    },
+    {
+      "label": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "scrollHeight": 844,
+      "scrollWidth": 390,
+      "footer": {
+        "top": 685.828125,
+        "bottom": 738.828125,
+        "height": 53
+      },
+      "region": {
+        "top": 325.328125,
+        "bottom": 685.828125,
+        "height": 360.5
+      },
+      "regionScroll": 361,
+      "rows": [
+        {
+          "top": 373.328125,
+          "bottom": 477.328125,
+          "height": 104
+        },
+        {
+          "top": 477.328125,
+          "bottom": 581.328125,
+          "height": 104
+        },
+        {
+          "top": 581.328125,
+          "bottom": 685.328125,
+          "height": 104
+        }
+      ],
+      "pageSize": "3"
+    },
+    {
+      "label": "mobile-320",
+      "width": 320,
+      "height": 640,
+      "scrollHeight": 640,
+      "scrollWidth": 320,
+      "footer": {
+        "top": 565.828125,
+        "bottom": 606.828125,
+        "height": 41
+      },
+      "region": {
+        "top": 309.328125,
+        "bottom": 565.828125,
+        "height": 256.5
+      },
+      "regionScroll": 257,
+      "rows": [
+        {
+          "top": 357.328125,
+          "bottom": 461.328125,
+          "height": 104
+        },
+        {
+          "top": 461.328125,
+          "bottom": 565.328125,
+          "height": 104
+        }
+      ],
+      "pageSize": "2"
+    }
+  ],
+  "errors": []
+}

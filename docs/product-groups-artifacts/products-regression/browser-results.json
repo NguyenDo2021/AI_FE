@@ -1,0 +1,315 @@
+{
+  "passed": 59,
+  "checks": [
+    "Groups fetch all 205 records across three pages",
+    "Initial list waits for measurement and requests one server page",
+    "API total is shown independently of current page items",
+    "Product primary action uses login purple",
+    "1366 desktop prioritizes five columns with the 256px sidebar",
+    "1366x768: no page vertical/horizontal scrollbar",
+    "1366x768: footer visible and no table scrolling",
+    "1366x768: every API row visible, stable row height",
+    "Server pagination requests page 2",
+    "1920x1080: no page vertical/horizontal scrollbar",
+    "1920x1080: footer visible and no table scrolling",
+    "1920x1080: every API row visible, stable row height",
+    "Resize increases pageSize and resets to page 1",
+    "Resize with unchanged capacity does not call API",
+    "low-500: no page vertical/horizontal scrollbar",
+    "low-500: footer visible and no table scrolling",
+    "low-500: every API row visible, stable row height",
+    "125%-equivalent-1366x768: no page vertical/horizontal scrollbar",
+    "125%-equivalent-1366x768: footer visible and no table scrolling",
+    "125%-equivalent-1366x768: every API row visible, stable row height",
+    "narrow: no page vertical/horizontal scrollbar",
+    "narrow: footer visible and no table scrolling",
+    "narrow: every API row visible, stable row height",
+    "mobile-390: no page vertical/horizontal scrollbar",
+    "mobile-390: footer visible and no table scrolling",
+    "mobile-390: every API row visible, stable row height",
+    "mobile-320: no page vertical/horizontal scrollbar",
+    "mobile-320: footer visible and no table scrolling",
+    "mobile-320: every API row visible, stable row height",
+    "zoom-125%-DPR-1.25: no page vertical/horizontal scrollbar",
+    "zoom-125%-DPR-1.25: footer visible and no table scrolling",
+    "zoom-125%-DPR-1.25: every API row visible, stable row height",
+    "Enter searches trimmed keyword and resets to page 1",
+    "Late response cannot replace the latest result",
+    "Group beyond first API page is selectable and sent",
+    "Inactive status is sent as 0",
+    "Reset clears every API filter and returns to page 1",
+    "Reload requests a server page",
+    "Warehouse never appears in product API params",
+    "Detail shows all current fields and full product name",
+    "Edit drawer retains all 13 fields",
+    "Inactive original group remains visible",
+    "Price input preserves exact safe integer",
+    "Edit PUT preserves full payload including inactive group and exact prices",
+    "Status PUT fetches detail and retains all fields",
+    "Required validation blocks empty create",
+    "Drawer save footer remains in viewport with scrollable body",
+    "Create succeeds without duplicate submission",
+    "Empty response shows explicit empty state and API total 0",
+    "API error is visible and stale rows are cleared",
+    "API errors do not cause a resize/request loop",
+    "Mobile filters are collapsed initially",
+    "Mobile filters expand and remain usable",
+    "Mobile menu exposes detail and update",
+    "View-only hides create, edit and status actions",
+    "Create-only keeps existing access without list requests",
+    "Verified database ADMIN retains catalog access",
+    "Every pageSize is an integer within 1–100",
+    "No application or unresolved component errors"
+  ],
+  "measurements": [
+    {
+      "label": "1366x768",
+      "width": 1366,
+      "height": 768,
+      "scrollHeight": 768,
+      "scrollWidth": 1366,
+      "footerBottom": 747,
+      "footerTop": 694.5,
+      "regionHeight": 408,
+      "regionScroll": 408,
+      "rows": [
+        {
+          "height": 84,
+          "bottom": 419
+        },
+        {
+          "height": 84,
+          "bottom": 503
+        },
+        {
+          "height": 84,
+          "bottom": 587
+        },
+        {
+          "height": 84,
+          "bottom": 671
+        }
+      ],
+      "params": {
+        "page": "1",
+        "pageSize": "4"
+      }
+    },
+    {
+      "label": "1920x1080",
+      "width": 1920,
+      "height": 1080,
+      "scrollHeight": 1080,
+      "scrollWidth": 1920,
+      "footerBottom": 1059,
+      "footerTop": 1006.5,
+      "regionHeight": 720,
+      "regionScroll": 720,
+      "rows": [
+        {
+          "height": 84,
+          "bottom": 423
+        },
+        {
+          "height": 84,
+          "bottom": 507
+        },
+        {
+          "height": 84,
+          "bottom": 591
+        },
+        {
+          "height": 84,
+          "bottom": 675
+        },
+        {
+          "height": 84,
+          "bottom": 759
+        },
+        {
+          "height": 84,
+          "bottom": 843
+        },
+        {
+          "height": 84,
+          "bottom": 927
+        }
+      ],
+      "params": {
+        "page": "1",
+        "pageSize": "7"
+      }
+    },
+    {
+      "label": "low-500",
+      "width": 1366,
+      "height": 500,
+      "scrollHeight": 500,
+      "scrollWidth": 1366,
+      "footerBottom": 487,
+      "footerTop": 446.5,
+      "regionHeight": 224,
+      "regionScroll": 224,
+      "rows": [
+        {
+          "height": 84,
+          "bottom": 359
+        }
+      ],
+      "params": {
+        "page": "1",
+        "pageSize": "1"
+      }
+    },
+    {
+      "label": "125%-equivalent-1366x768",
+      "width": 1093,
+      "height": 614,
+      "scrollHeight": 614,
+      "scrollWidth": 1093,
+      "footerBottom": 601,
+      "footerTop": 560.5,
+      "regionHeight": 338,
+      "regionScroll": 338,
+      "rows": [
+        {
+          "height": 84,
+          "bottom": 355
+        },
+        {
+          "height": 84,
+          "bottom": 439
+        },
+        {
+          "height": 84,
+          "bottom": 523
+        }
+      ],
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      }
+    },
+    {
+      "label": "narrow",
+      "width": 960,
+      "height": 768,
+      "scrollHeight": 768,
+      "scrollWidth": 960,
+      "footerBottom": 747,
+      "footerTop": 694.5,
+      "regionHeight": 438,
+      "regionScroll": 438,
+      "rows": [
+        {
+          "height": 84,
+          "bottom": 393
+        },
+        {
+          "height": 84,
+          "bottom": 477
+        },
+        {
+          "height": 84,
+          "bottom": 561
+        },
+        {
+          "height": 84,
+          "bottom": 645
+        }
+      ],
+      "params": {
+        "page": "1",
+        "pageSize": "4"
+      }
+    },
+    {
+      "label": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "scrollHeight": 844,
+      "scrollWidth": 390,
+      "footerBottom": 831,
+      "footerTop": 779,
+      "regionHeight": 505,
+      "regionScroll": 505,
+      "rows": [
+        {
+          "height": 104,
+          "bottom": 430
+        },
+        {
+          "height": 104,
+          "bottom": 534
+        },
+        {
+          "height": 104,
+          "bottom": 638
+        },
+        {
+          "height": 104,
+          "bottom": 742
+        }
+      ],
+      "params": {
+        "page": "1",
+        "pageSize": "4"
+      }
+    },
+    {
+      "label": "mobile-320",
+      "width": 320,
+      "height": 640,
+      "scrollHeight": 640,
+      "scrollWidth": 320,
+      "footerBottom": 627,
+      "footerTop": 587,
+      "regionHeight": 318,
+      "regionScroll": 318,
+      "rows": [
+        {
+          "height": 104,
+          "bottom": 425.328125
+        },
+        {
+          "height": 104,
+          "bottom": 529.328125
+        }
+      ],
+      "params": {
+        "page": "1",
+        "pageSize": "2"
+      }
+    },
+    {
+      "label": "zoom-125%-DPR-1.25",
+      "width": 1093,
+      "height": 614,
+      "scrollHeight": 614,
+      "scrollWidth": 1093,
+      "footerBottom": 601,
+      "footerTop": 560.5,
+      "regionHeight": 338,
+      "regionScroll": 338,
+      "rows": [
+        {
+          "height": 84,
+          "bottom": 355
+        },
+        {
+          "height": 84,
+          "bottom": 439
+        },
+        {
+          "height": 84,
+          "bottom": 523
+        }
+      ],
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      }
+    }
+  ],
+  "errors": []
+}
