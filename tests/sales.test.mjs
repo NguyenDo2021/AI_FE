@@ -78,6 +78,10 @@ const mockUrl = moduleUrl(`
  export const Modal = { confirm: options => { context.confirmation = options } }
  export const formatDateTime = value => value
  export const BasicModal = defineComponent({ setup(_, { slots }) { return () => h('modal', [slots.default?.(), slots.footer?.()]) } })
+ export const BasicDrawer = defineComponent({ setup(_, { slots, emit }) { return () => h('drawer', [slots.default?.(), slots.footer?.({ close: () => emit('update:open', false) })]) } })
+ export const MoreOutlined = defineComponent({ setup() { return () => null } })
+ export const PlusOutlined = MoreOutlined, ReloadOutlined = MoreOutlined, EyeOutlined = MoreOutlined, EditOutlined = MoreOutlined
+ export const FittedListTable = defineComponent({ props: ['columns','rows'], setup(props, { slots }) { return () => h('table', (props.rows ?? []).flatMap(record => props.columns.map(column => h('cell', { column: column.key }, slots.bodyCell?.({ column, record, compact: false }))))) } })
  export const BasicTable = defineComponent({ props: ['columns','dataSource'], setup(props, { slots }) { return () => h('table', (props.dataSource ?? []).flatMap(record => props.columns.map(column => h('cell', { column: column.key }, slots.bodyCell?.({ column, record }))))) } })
  export default defineComponent({ setup() { return () => null } })
 `)
@@ -123,6 +127,11 @@ async function component(path, expose) {
   source = source.replace('</script>', `defineExpose({ ${expose} })\n</script>`)
   const { descriptor } = parse(source)
   let code = compileScript(descriptor, { id: `test-${index}`, inlineTemplate: true }).content
+  code = code.replace(
+    "import FittedListTable from '@/components/catalog/FittedListTable.vue'",
+    "import { FittedListTable } from '" + mockUrl + "'",
+  )
+  code = code.replace(/from ['"]@ant-design\/icons-vue['"]/g, "from '" + mockUrl + "'")
   code = code.replace(/from ['"]vue['"]/g, `from '${vueUrl}'`)
   code = code.replace(
     /from ['"](?:vue-i18n|ant-design-vue|@\/components|@\/stores\/warehouse|@\/stores\/stock|@\/stores\/auth|@\/composables\/useCatalogPermission|@\/utils\/date|\.\/ProductSelect.vue|@\/components\/stock\/ProductSelect.vue|@\/components\/stock\/ReceiptDialog.vue|@\/components\/sales\/SalesOrderDialog.vue)['"]/g,

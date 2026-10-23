@@ -79,7 +79,7 @@ const detail = ref<CatalogRecord>()
 const groups = ref<ProductGroup[]>([])
 const page = ref(1)
 const pageSize = ref(10)
-const pageSizeReady = ref(!isFittedCatalog.value)
+const scrollRevision = ref(0)
 const filtersOpen = ref(false)
 const total = ref(0)
 const filters = reactive({
@@ -192,7 +192,7 @@ const loadList = async (): Promise<void> => {
   const version = ++listVersion
   const kind = props.kind
   const queryFilters = isFittedCatalog.value ? appliedFilters : filters
-  if (!pageSizeReady.value) return
+  ++scrollRevision.value
   if (!canView.value) {
     rows.value = []
     total.value = 0
@@ -282,18 +282,11 @@ const resetFilters = (): void => {
   search()
 }
 const changePage = (next: number, size: number): void => {
-  page.value = size !== pageSize.value ? 1 : next
+  if (![10, 20, 50, 100].includes(size)) return
+  const target = size !== pageSize.value ? 1 : next
+  if (target === page.value && size === pageSize.value) return
+  page.value = target
   pageSize.value = size
-  void loadList()
-}
-const changeCapacity = (size: number): void => {
-  const next = Math.max(1, Math.min(100, Math.floor(size)))
-  if (pageSizeReady.value && next === pageSize.value) return
-  pageSizeReady.value = true
-  pageSize.value = next
-  page.value = 1
-  // Clear the previous, possibly larger page while the new server page is loading.
-  rows.value = []
   void loadList()
 }
 const openCreate = (): void => {
@@ -515,8 +508,7 @@ onMounted(() => window.addEventListener('beforeunload', beforeGroupUnload))
 watch(
   () => props.kind,
   () => {
-    pageSizeReady.value = !isFittedCatalog.value
-    if (!isFittedCatalog.value) pageSize.value = 10
+    pageSize.value = 10
     ++viewVersion
     ++detailVersion
     ++groupVersion
@@ -710,7 +702,7 @@ onBeforeUnmount(() => {
         :page-size="pageSize"
         :group-label="groupLabel"
         :price="price"
-        @capacity="changeCapacity"
+        :reset-key="scrollRevision"
         @page-change="changePage"
         @reload="loadList"
       >
