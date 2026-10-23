@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { message, Modal } from 'ant-design-vue'
-import { BasicModal } from '@/components'
+import { BasicDrawer } from '@/components'
 import { getCustomer, createCustomer, updateCustomer } from '@/api/sales/sales.api'
 import { useSalesScope } from '@/composables/useSalesScope'
 import { customerInput, validateCustomer, salesError, salesFieldErrors } from '@/utils/sales'
@@ -36,6 +36,34 @@ const options = computed(() =>
     disabled: item.status !== 1,
   })),
 )
+const title = computed(
+  () =>
+    ({
+      create: 'Thêm khách hàng',
+      edit: 'Sửa khách hàng',
+      view: 'Chi tiết khách hàng',
+      toggle: 'Chuyển trạng thái khách hàng',
+    })[props.mode],
+)
+const warehouseName = computed(
+  () =>
+    warehouses.warehouses.find((item) => item.id === warehouseId.value)?.name ?? warehouseId.value,
+)
+const detailItems = computed(() => {
+  const item = detail.value
+  if (!item) return []
+  return [
+    { label: 'Mã khách', value: item.code, wide: true },
+    { label: 'Tên khách', value: item.name },
+    { label: 'Kho', value: warehouseName.value },
+    { label: 'Điện thoại', value: item.phone || '—' },
+    { label: 'Trạng thái', value: item.status === 1 ? 'Hoạt động' : 'Ngừng hoạt động' },
+    { label: 'Địa chỉ', value: item.address || '—', wide: true },
+    { label: 'Ghi chú', value: item.note || '—', wide: true },
+    { label: 'Ngày tạo', value: formatDateTime(item.createdAt) || '—' },
+    { label: 'Cập nhật', value: formatDateTime(item.updatedAt) || '—' },
+  ]
+})
 const load = async (): Promise<void> => {
   if (saving.value || !props.open) return
   const current = ++sequence
@@ -132,87 +160,217 @@ const reload = (): void => {
 }
 </script>
 <template>
-  <BasicModal
+  <BasicDrawer
     :open="open"
-    :title="
-      mode === 'create'
-        ? 'Thêm khách hàng'
-        : mode === 'edit'
-          ? 'Sửa khách hàng'
-          : mode === 'toggle'
-            ? 'Chuyển trạng thái khách hàng'
-            : 'Chi tiết khách hàng'
-    "
+    :title="title"
     :confirm-loading="saving"
+    width="min(760px, 100vw)"
     @update:open="emit('update:open', false)"
     @confirm="submit"
   >
     <a-spin :spinning="loading">
-      <a-alert v-if="error" type="error" :message="error" />
+      <a-alert v-if="error" type="error" show-icon :message="error" class="customer-alert" />
       <a-alert
         v-if="id && !can('CUSTOMER_VIEW')"
         type="warning"
+        show-icon
         message="Cần CUSTOMER_VIEW để tải đầy đủ dữ liệu trước khi sửa."
+        class="customer-alert"
       />
-      <a-form
-        v-if="allowed && (!id || detail)"
-        layout="vertical"
-        :disabled="saving || blocked || mode === 'view' || mode === 'toggle'"
-      >
-        <a-form-item label="Kho" :help="fields.warehouseId" required>
-          <a-select v-if="mode === 'create'" v-model:value="warehouseId" :options="options" />
-          <a-input
-            v-else
-            :value="
-              warehouses.warehouses.find((item) => item.id === warehouseId)?.name ?? warehouseId
-            "
-            disabled
+      <template v-if="allowed && (!id || detail)">
+        <template v-if="detail && (mode === 'view' || mode === 'toggle')">
+          <a-alert
+            v-if="mode === 'toggle'"
+            class="customer-alert"
+            type="warning"
+            show-icon
+            :message="detail.status === 1 ? 'Ngừng hoạt động khách hàng?' : 'Kích hoạt khách hàng?'"
+            :description="'Xác nhận chuyển trạng thái của ' + detail.name + '.'"
           />
-        </a-form-item>
-        <p v-if="detail">Mã khách: {{ detail.code }}</p>
-        <a-form-item
-          label="Tên"
-          required
-          :help="fields.name"
-          :validate-status="fields.name ? 'error' : undefined"
-          ><a-input v-model:value="form.name" :maxlength="160"
-        /></a-form-item>
-        <a-form-item label="Điện thoại" :help="fields.phone"
-          ><a-input v-model:value="form.phone" :maxlength="20"
-        /></a-form-item>
-        <a-form-item label="Địa chỉ" :help="fields.address"
-          ><a-textarea v-model:value="form.address" :maxlength="500"
-        /></a-form-item>
-        <a-form-item label="Ghi chú" :help="fields.note"
-          ><a-textarea v-model:value="form.note" :maxlength="2000"
-        /></a-form-item>
-        <a-form-item label="Trạng thái" :help="fields.status"
-          ><a-select
-            v-model:value="form.status"
-            :options="[
-              { value: 1, label: 'Hoạt động' },
-              { value: 0, label: 'Ngừng hoạt động' },
-            ]"
-        /></a-form-item>
-        <p v-if="detail">
-          Tạo: {{ formatDateTime(detail.createdAt) }} · Cập nhật:
-          {{ formatDateTime(detail.updatedAt) }}
-        </p>
-      </a-form>
+          <dl class="customer-detail">
+            <div
+              v-for="item in detailItems"
+              :key="item.label"
+              :class="{ 'customer-detail-wide': item.wide }"
+            >
+              <dt>{{ item.label }}</dt>
+              <dd>{{ item.value }}</dd>
+            </div>
+          </dl>
+        </template>
+        <a-form v-else layout="vertical" :disabled="saving || loading || blocked" :model="form">
+          <div class="customer-form">
+            <a-form-item
+              label="Kho"
+              html-for="customer-warehouse"
+              :help="fields.warehouseId"
+              :validate-status="fields.warehouseId ? 'error' : undefined"
+              required
+            >
+              <a-select
+                v-if="mode === 'create'"
+                id="customer-warehouse"
+                v-model:value="warehouseId"
+                :options="options"
+                placeholder="Chọn kho"
+              />
+              <a-input v-else id="customer-warehouse" :value="warehouseName" disabled />
+            </a-form-item>
+            <a-form-item
+              label="Trạng thái"
+              html-for="customer-status"
+              :help="fields.status"
+              :validate-status="fields.status ? 'error' : undefined"
+              required
+            >
+              <a-select
+                id="customer-status"
+                v-model:value="form.status"
+                :options="[
+                  { value: 1, label: 'Hoạt động' },
+                  { value: 0, label: 'Ngừng hoạt động' },
+                ]"
+              />
+            </a-form-item>
+            <div v-if="detail" class="customer-form-wide customer-code-detail">
+              <span>Mã khách</span>
+              <p>{{ detail.code }}</p>
+            </div>
+            <a-form-item
+              label="Tên"
+              html-for="customer-name"
+              required
+              :help="fields.name"
+              :validate-status="fields.name ? 'error' : undefined"
+            >
+              <a-input id="customer-name" v-model:value="form.name" :maxlength="160" />
+            </a-form-item>
+            <a-form-item
+              label="Điện thoại"
+              html-for="customer-phone"
+              :help="fields.phone"
+              :validate-status="fields.phone ? 'error' : undefined"
+            >
+              <a-input
+                id="customer-phone"
+                v-model:value="form.phone"
+                :maxlength="20"
+                inputmode="tel"
+              />
+            </a-form-item>
+            <a-form-item
+              class="customer-form-wide"
+              label="Địa chỉ"
+              html-for="customer-address"
+              :help="fields.address"
+              :validate-status="fields.address ? 'error' : undefined"
+            >
+              <a-textarea
+                id="customer-address"
+                v-model:value="form.address"
+                :maxlength="500"
+                :rows="3"
+                show-count
+              />
+            </a-form-item>
+            <a-form-item
+              class="customer-form-wide"
+              label="Ghi chú"
+              html-for="customer-note"
+              :help="fields.note"
+              :validate-status="fields.note ? 'error' : undefined"
+            >
+              <a-textarea
+                id="customer-note"
+                v-model:value="form.note"
+                :maxlength="2000"
+                :rows="4"
+                show-count
+              />
+            </a-form-item>
+          </div>
+          <p v-if="detail" class="customer-timestamps">
+            Ngày tạo: {{ formatDateTime(detail.createdAt) || '—' }} · Cập nhật:
+            {{ formatDateTime(detail.updatedAt) || '—' }}
+          </p>
+        </a-form>
+      </template>
     </a-spin>
-    <template #footer>
-      <a-button :disabled="saving" @click="emit('update:open', false)">Đóng</a-button>
-      <a-button v-if="id" :disabled="saving || loading" @click="reload"
-        >Tải lại dữ liệu gốc</a-button
-      >
-      <a-button
-        v-if="mode !== 'view'"
-        type="primary"
-        :loading="saving"
-        :disabled="loading || blocked || !allowed || (!!id && !detail)"
-        @click="submit"
-        >Lưu</a-button
-      >
+    <template #footer="{ close }">
+      <div class="customer-dialog-footer">
+        <a-button :disabled="saving" @click="close">{{
+          mode === 'view' ? 'Đóng' : 'Hủy'
+        }}</a-button>
+        <a-button v-if="id" :disabled="saving || loading" @click="reload"
+          >Tải lại dữ liệu gốc</a-button
+        >
+        <a-button
+          v-if="mode !== 'view'"
+          type="primary"
+          :loading="saving"
+          :disabled="loading || blocked || !allowed || (!!id && !detail)"
+          @click="submit"
+        >
+          {{ mode === 'toggle' ? (detail?.status === 1 ? 'Ngừng hoạt động' : 'Kích hoạt') : 'Lưu' }}
+        </a-button>
+      </div>
     </template>
-  </BasicModal>
+  </BasicDrawer>
 </template>
+<style scoped>
+.customer-alert {
+  margin-bottom: 16px;
+}
+.customer-form,
+.customer-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 16px;
+}
+.customer-form-wide,
+.customer-detail-wide {
+  grid-column: 1 / -1;
+}
+.customer-code-detail {
+  margin-bottom: 24px;
+}
+.customer-code-detail span,
+.customer-detail dt {
+  color: #757080;
+  font-size: 13px;
+}
+.customer-code-detail p {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+}
+.customer-detail {
+  margin: 0;
+  gap: 20px 24px;
+}
+.customer-detail > div {
+  min-width: 0;
+}
+.customer-detail dd {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.customer-timestamps {
+  color: #757080;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.customer-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+@media (max-width: 650px) {
+  .customer-form,
+  .customer-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>

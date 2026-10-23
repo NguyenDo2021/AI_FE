@@ -15,7 +15,10 @@ const { can } = usePermission()
     class="admin-layout"
     :class="{
       'admin-layout--products':
-        route.name === 'products' || route.name === 'product-groups' || route.name === 'warehouses',
+        route.name === 'products' ||
+        route.name === 'product-groups' ||
+        route.name === 'warehouses' ||
+        route.name === 'sales-customers',
     }"
   >
     <AppSidebar />
@@ -27,7 +30,8 @@ const { can } = usePermission()
           'admin-layout__content--products':
             route.name === 'products' ||
             route.name === 'product-groups' ||
-            route.name === 'warehouses',
+            route.name === 'warehouses' ||
+            route.name === 'sales-customers',
           'admin-layout__content--overview':
             route.name === 'dashboard' &&
             (authStore.isCatalogAdmin || can('REPORT_DASHBOARD_VIEW')),

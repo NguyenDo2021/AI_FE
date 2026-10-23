@@ -1,0 +1,542 @@
+{
+  "checks": [
+    "Description and labeled filters present",
+    "Theme matches warehouse purple",
+    "Initial warehouse follows current working warehouse",
+    "Customer code remains unchanged in data",
+    "Long code is ellipsized visually",
+    "Detail shows complete code address note and phone",
+    "Detail has timestamps and read-only text",
+    "Detail does not offer save or delete",
+    "Create defaults to working warehouse",
+    "Desktop form uses two columns",
+    "Generated customer code is not an input",
+    "Name validation prevents request",
+    "Form limits preserve contract",
+    "Textareas enforce existing 500/2000 character limits",
+    "API validation maps to phone field",
+    "Failed save keeps entered data",
+    "Saving disables close",
+    "Create sends one POST and one list reload",
+    "Create payload uses server code and string phone",
+    "Edit fetches complete current detail",
+    "Edit warehouse is immutable and code is complete",
+    "Reload asks before discarding unsaved data",
+    "Cancel reload preserves edits",
+    "Confirmed reload restores original detail",
+    "409 keeps unsaved form",
+    "Edit PUT keeps full contact fields and omits warehouse and code",
+    "Status change requires explicit confirmation",
+    "Cancel status change sends no PUT",
+    "Deactivate sends one PUT preserving every field",
+    "Reactivate preserves contact fields",
+    "Detail load error blocks saving",
+    "Foreign detail cannot be edited",
+    "Working warehouse updates page filter",
+    "Page filter does not change working warehouse",
+    "List never requests warehouse or customer detail per row",
+    "List 1920x1080 keeps all columns without horizontal page overflow",
+    "Drawer 1920x1080 fits viewport with accessible footer",
+    "List 1024x768 keeps all columns without horizontal page overflow",
+    "Drawer 1024x768 fits viewport with accessible footer",
+    "List 768x900 keeps all columns without horizontal page overflow",
+    "Drawer 768x900 fits viewport with accessible footer",
+    "List 390x844 keeps all columns without horizontal page overflow",
+    "Drawer 390x844 fits viewport with accessible footer",
+    "Mobile 390x844 form uses one column",
+    "List 360x740 keeps all columns without horizontal page overflow",
+    "Drawer 360x740 fits viewport with accessible footer",
+    "Mobile 360x740 form uses one column",
+    "List 390x400 keeps all columns without horizontal page overflow",
+    "Drawer 390x400 fits viewport with accessible footer",
+    "Mobile 390x400 form uses one column",
+    "Keyboard-height form scrolls inside drawer",
+    "Mobile menu keeps all three actions",
+    "Mobile detail keeps full code and note",
+    "Scope revocation closes drawer and discards old detail",
+    "View-only staff cannot create or edit",
+    "Staff cannot see records outside assigned warehouses",
+    "View-only staff can inspect assigned customer",
+    "Verified active ADMIN retains existing permission exception",
+    "No assigned warehouse prevents list API",
+    "403 list clears data and refreshes existing scope endpoint",
+    "403 mutation blocks repeat save",
+    "No runtime or ResizeObserver errors"
+  ],
+  "calls": [
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "POST",
+      "params": {},
+      "body": {
+        "name": "Khách tạo mới",
+        "phone": "0900123456",
+        "address": "Địa chỉ tạo mới",
+        "note": "Ghi chú tạo mới",
+        "status": 1,
+        "warehouseId": "w1"
+      }
+    },
+    {
+      "path": "/customers",
+      "method": "POST",
+      "params": {},
+      "body": {
+        "name": "Khách tạo mới",
+        "phone": "0900123456",
+        "address": "Địa chỉ tạo mới",
+        "note": "Ghi chú tạo mới",
+        "status": 1,
+        "warehouseId": "w1"
+      }
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "name": "Khách đã sửa",
+        "phone": "0900000068",
+        "address": "Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa c",
+        "note": "Ghi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.",
+        "status": 1
+      }
+    },
+    {
+      "path": "/customers/c0",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "name": "Khách đã sửa",
+        "phone": "0900000068",
+        "address": "Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa c",
+        "note": "Ghi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.",
+        "status": 1
+      }
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "name": "Khách đã sửa",
+        "phone": "0900000068",
+        "address": "Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa c",
+        "note": "Ghi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.",
+        "status": 0
+      }
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "name": "Khách đã sửa",
+        "phone": "0900000068",
+        "address": "Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa c",
+        "note": "Ghi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.",
+        "status": 1
+      }
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w2"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/customer-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "warehouseId": "w1"
+      },
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/customers/c0",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "name": "Khách đã sửa",
+        "phone": "0900000068",
+        "address": "Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa chỉ đầy đủ, đường Nguyễn Chánh, Nghệ An. Địa c",
+        "note": "Ghi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.\nGhi chú khách hàng giữ nguyên khi đổi trạng thái.",
+        "status": 1
+      }
+    },
+    {
+      "path": "/users/customer-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/customer-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    }
+  ],
+  "errors": []
+}
