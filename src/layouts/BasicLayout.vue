@@ -14,7 +14,8 @@ const { can } = usePermission()
   <a-layout
     class="admin-layout"
     :class="{
-      'admin-layout--products': route.name === 'products' || route.name === 'product-groups',
+      'admin-layout--products':
+        route.name === 'products' || route.name === 'product-groups' || route.name === 'warehouses',
     }"
   >
     <AppSidebar />
@@ -24,7 +25,9 @@ const { can } = usePermission()
         class="admin-layout__content"
         :class="{
           'admin-layout__content--products':
-            route.name === 'products' || route.name === 'product-groups',
+            route.name === 'products' ||
+            route.name === 'product-groups' ||
+            route.name === 'warehouses',
           'admin-layout__content--overview':
             route.name === 'dashboard' &&
             (authStore.isCatalogAdmin || can('REPORT_DASHBOARD_VIEW')),
@@ -70,7 +73,7 @@ const { can } = usePermission()
 </style>
 
 <style scoped>
-/* Products and product groups share a bounded catalog workspace. */
+/* Catalog lists share a bounded workspace; very short viewports may scroll naturally. */
 .admin-layout--products {
   height: 100dvh;
   min-height: 0;

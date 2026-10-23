@@ -273,6 +273,12 @@ export default {
     cancelDraftWarning: 'Cancelling a draft does not change inventory.',
   },
   catalog: {
+    warehousesDescription: 'Manage warehouse information and status.',
+    addWarehouse: 'Add warehouse',
+    warehouseList: 'Warehouse list',
+    warehouseTotal: '{total} warehouses',
+    warehouseKeyword: 'Enter warehouse code or name…',
+    warehouseRange: 'Showing {from}–{to} / {total} warehouses',
     groupList: 'Product group list',
     groupTotal: '{total} product groups',
     groupsDescription: 'Organize products for easier search and management.',

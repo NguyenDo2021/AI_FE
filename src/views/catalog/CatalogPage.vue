@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Modal, message, type TableColumnsType } from 'ant-design-vue'
-import { BasicTable, BasicModal, BasicDrawer } from '@/components'
+import { Modal, message } from 'ant-design-vue'
+import { BasicDrawer } from '@/components'
 import CatalogListTable from '@/components/catalog/CatalogListTable.vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 import {
@@ -40,7 +40,10 @@ import { useAuthStore } from '@/stores/auth'
 import { useWarehouseStore } from '@/stores/warehouse'
 const props = defineProps<{ kind: CatalogKind }>()
 const { t } = useI18n()
-const isFittedCatalog = computed(() => props.kind === 'products' || props.kind === 'product-groups')
+const isWarehouse = computed(() => props.kind === 'warehouses')
+const isFittedCatalog = computed(
+  () => props.kind === 'products' || props.kind === 'product-groups' || isWarehouse.value,
+)
 const auth = useAuthStore()
 const scope = useWarehouseStore()
 const { can } = useCatalogPermission()
@@ -126,35 +129,6 @@ const fields = computed(() => {
     'status',
   ]
 })
-const tableFields = computed(() =>
-  props.kind === 'warehouses'
-    ? ['code', 'name', 'address', 'phone', 'status']
-    : props.kind === 'product-groups'
-      ? ['code', 'name', 'description', 'status']
-      : [
-          'code',
-          'name',
-          'groupId',
-          'material',
-          'color',
-          'lengthMeters',
-          'referencePurchasePrice',
-          'defaultSalePrice',
-          'lowStockThreshold',
-          'status',
-        ],
-)
-const columns = computed<TableColumnsType<CatalogRecord>>(() => [
-  ...tableFields.value.map((key) => ({ title: t(`catalog.${key}`), dataIndex: key, key })),
-  { title: t('common.actions'), key: 'actions', width: 280 },
-])
-const pagination = computed(() => ({
-  current: page.value,
-  pageSize: pageSize.value,
-  total: total.value,
-  showSizeChanger: true,
-  pageSizeOptions: ['10', '20', '50', '100'],
-}))
 const statusOptions = computed(() => [
   { value: 1, label: t('common.active') },
   { value: 0, label: t('common.inactive') },
@@ -196,6 +170,20 @@ const display = (record: CatalogRecord, key: string): string => {
 }
 const recover = async (cause: unknown): Promise<void> => {
   const code = (cause as NormalizedApiError | undefined)?.code
+  if (
+    isWarehouse.value &&
+    (code === 'WAREHOUSE_ACCESS_DENIED' || (cause as NormalizedApiError)?.status === 403)
+  ) {
+    ++listVersion
+    rows.value = []
+    total.value = 0
+    detail.value = undefined
+    form.value = toCatalogForm()
+    detailReady.value = false
+    detailLoading.value = false
+    ++detailVersion
+    loading.value = false
+  }
   if (code === 'WAREHOUSE_ACCESS_DENIED' && auth.user)
     await scope.load(auth.user.id).catch(() => undefined)
   if (code === 'PRODUCT_GROUP_INACTIVE') await loadGroups()
@@ -226,7 +214,7 @@ const loadList = async (): Promise<void> => {
     total.value = result.total
     if (
       result.items.length === 0 &&
-      (result.total > 0 || kind === 'product-groups') &&
+      (result.total > 0 || kind === 'product-groups' || kind === 'warehouses') &&
       page.value > Math.max(1, Math.ceil(result.total / pageSize.value))
     ) {
       page.value = Math.max(1, Math.ceil(result.total / pageSize.value))
@@ -372,7 +360,7 @@ const reloadForm = (): void => {
   })
 }
 const openDetail = async (item: CatalogRecord): Promise<void> => {
-  if (props.kind === 'product-groups' && !canView.value) return
+  if (!canView.value) return
   const version = ++detailVersion
   detail.value = undefined
   drawerOpen.value = true
@@ -450,7 +438,7 @@ const toggleStatus = (item: CatalogRecord): void => {
       error.value = ''
       try {
         const current = await getCatalogDetail(kind, item.id)
-        if (kind === 'product-groups' && (version !== viewVersion || !canUpdate.value)) return
+        if (version !== viewVersion || !canUpdate.value) return
         if (unsafePrices(current)) throw new Error(t('catalog.unsafeResponse'))
         const values = toCatalogForm(current)
         values.status = current.status === 1 ? 0 : 1
@@ -460,7 +448,7 @@ const toggleStatus = (item: CatalogRecord): void => {
         await Promise.all([loadList(), refreshScope()])
       } catch (cause) {
         if (version === viewVersion) {
-          if (kind === 'products' || kind === 'product-groups') rows.value = []
+          rows.value = []
           error.value = catalogError(cause, t)
           await recover(cause)
         }
@@ -561,6 +549,12 @@ watch(canView, (allowed) => {
     total.value = 0
     loading.value = false
     error.value = t('catalog.permissionChanged')
+    if (isWarehouse.value) {
+      ++detailVersion
+      detail.value = undefined
+      drawerOpen.value = false
+      modalOpen.value = false
+    }
   } else void loadList()
 })
 watch(canReadGroups, () => {
@@ -583,6 +577,7 @@ onBeforeUnmount(() => {
       :class="{
         'products-page': isFittedCatalog,
         'product-groups-page': kind === 'product-groups',
+        'warehouses-page': isWarehouse,
       }"
     >
       <a-alert
@@ -608,9 +603,11 @@ onBeforeUnmount(() => {
           <p v-if="isFittedCatalog" class="products-description">
             {{
               $t(
-                kind === 'product-groups'
-                  ? 'catalog.groupsDescription'
-                  : 'catalog.productsDescription',
+                isWarehouse
+                  ? 'catalog.warehousesDescription'
+                  : kind === 'product-groups'
+                    ? 'catalog.groupsDescription'
+                    : 'catalog.productsDescription',
               )
             }}
           </p>
@@ -627,13 +624,13 @@ onBeforeUnmount(() => {
                 ? 'catalog.addGroup'
                 : kind === 'products'
                   ? 'catalog.addProduct'
-                  : 'common.add',
+                  : 'catalog.addWarehouse',
             )
           }}</a-button
         >
       </div>
       <a-button
-        v-if="isFittedCatalog"
+        v-if="isFittedCatalog && !isWarehouse"
         class="products-filter-toggle"
         :aria-expanded="filtersOpen"
         aria-controls="product-filters"
@@ -648,8 +645,24 @@ onBeforeUnmount(() => {
       >
         <a-input
           v-model:value="filters.keyword"
-          :placeholder="$t(kind === 'product-groups' ? 'catalog.groupKeyword' : 'catalog.keyword')"
-          :aria-label="$t(kind === 'product-groups' ? 'catalog.groupKeyword' : 'catalog.keyword')"
+          :placeholder="
+            $t(
+              isWarehouse
+                ? 'catalog.warehouseKeyword'
+                : kind === 'product-groups'
+                  ? 'catalog.groupKeyword'
+                  : 'catalog.keyword',
+            )
+          "
+          :aria-label="
+            $t(
+              isWarehouse
+                ? 'catalog.warehouseKeyword'
+                : kind === 'product-groups'
+                  ? 'catalog.groupKeyword'
+                  : 'catalog.keyword',
+            )
+          "
           allow-clear
           @press-enter="search"
         />
@@ -688,7 +701,7 @@ onBeforeUnmount(() => {
       <CatalogListTable
         v-if="isFittedCatalog"
         :key="kind"
-        :kind="kind === 'product-groups' ? 'product-groups' : 'products'"
+        :kind="kind"
         :rows="rows"
         :error="error"
         :loading="loading"
@@ -749,50 +762,7 @@ onBeforeUnmount(() => {
           </div>
         </template>
       </CatalogListTable>
-      <div v-else class="catalog-table">
-        <BasicTable
-          :columns="columns"
-          :data-source="rows"
-          :loading="loading"
-          :pagination="pagination"
-          :scroll="{ x: 1000 }"
-          @page-change="changePage"
-          @reload="loadList"
-        >
-          <template #bodyCell="{ column, record }">
-            <div v-if="column.key === 'actions'" class="catalog-actions">
-              <a-button type="link" size="small" @click="openDetail(record)">{{
-                $t('common.detail')
-              }}</a-button>
-              <a-button
-                v-if="canUpdate"
-                type="link"
-                size="small"
-                :disabled="saving || !!statusBusy"
-                @click="openEdit(record)"
-                >{{ $t('common.edit') }}</a-button
-              >
-              <a-button
-                v-if="canUpdate"
-                type="link"
-                size="small"
-                :loading="statusBusy === record.id"
-                :disabled="saving || (!!statusBusy && statusBusy !== record.id)"
-                @click="toggleStatus(record)"
-                >{{ $t(record.status === 1 ? 'catalog.deactivate' : 'catalog.activate') }}</a-button
-              >
-            </div>
-            <a-tag
-              v-else-if="column.key === 'status'"
-              :color="record.status === 1 ? 'green' : 'default'"
-              >{{ display(record, 'status') }}</a-tag
-            >
-            <span v-else>{{ display(record, String(column.key)) }}</span>
-          </template>
-        </BasicTable>
-      </div>
-      <component
-        :is="isFittedCatalog ? BasicDrawer : BasicModal"
+      <BasicDrawer
         :open="modalOpen"
         :title="`${$t(editingId ? 'common.edit' : 'common.add')} — ${$t(`catalog.${kind}`)}`"
         :confirm-loading="saving"
@@ -834,17 +804,32 @@ onBeforeUnmount(() => {
                   v-for="field in section.fields"
                   :key="field"
                   :class="{
-                    'catalog-form-item--wide': isFittedCatalog && field === 'description',
+                    'catalog-form-item--wide':
+                      isFittedCatalog &&
+                      (field === 'description' ||
+                        (isWarehouse && ['address', 'note'].includes(field))),
                   }"
                   :label="$t(`catalog.${field}`)"
-                  :html-for="kind === 'product-groups' ? `group-${field}` : undefined"
+                  :html-for="
+                    kind === 'product-groups'
+                      ? `group-${field}`
+                      : isWarehouse
+                        ? `warehouse-${field}`
+                        : undefined
+                  "
                   :required="['code', 'name', 'groupId', 'status'].includes(field)"
                   :validate-status="fieldErrors[field] ? 'error' : undefined"
                   :help="fieldErrors[field]"
                 >
                   <a-select
                     v-if="field === 'status'"
-                    :id="kind === 'product-groups' ? `group-${field}` : undefined"
+                    :id="
+                      kind === 'product-groups'
+                        ? `group-${field}`
+                        : isWarehouse
+                          ? `warehouse-${field}`
+                          : undefined
+                    "
                     v-model:value="form[field]"
                     :options="statusOptions"
                   />
@@ -860,23 +845,45 @@ onBeforeUnmount(() => {
                   <a-input v-else-if="field === 'unit'" :value="$t('catalog.tree')" disabled />
                   <a-textarea
                     v-else-if="['note', 'description', 'address'].includes(field)"
-                    :id="kind === 'product-groups' ? `group-${field}` : undefined"
+                    :id="
+                      kind === 'product-groups'
+                        ? `group-${field}`
+                        : isWarehouse
+                          ? `warehouse-${field}`
+                          : undefined
+                    "
                     v-model:value="form[field]"
                     :rows="kind === 'product-groups' ? 5 : 3"
-                    :show-count="kind === 'product-groups'"
-                    :maxlength="kind === 'product-groups' ? 2000 : undefined"
+                    :show-count="kind === 'product-groups' || isWarehouse"
+                    :maxlength="
+                      isWarehouse
+                        ? field === 'address'
+                          ? 500
+                          : 2000
+                        : kind === 'product-groups'
+                          ? 2000
+                          : undefined
+                    "
                   />
                   <a-input
                     v-else
-                    :id="kind === 'product-groups' ? `group-${field}` : undefined"
+                    :id="
+                      kind === 'product-groups'
+                        ? `group-${field}`
+                        : isWarehouse
+                          ? `warehouse-${field}`
+                          : undefined
+                    "
                     v-model:value="form[field]"
                     :maxlength="
-                      kind === 'product-groups'
+                      kind === 'product-groups' || isWarehouse
                         ? field === 'code'
                           ? 80
                           : field === 'name'
                             ? 160
-                            : undefined
+                            : field === 'phone'
+                              ? 20
+                              : undefined
                         : undefined
                     "
                     :inputmode="
@@ -913,11 +920,11 @@ onBeforeUnmount(() => {
             >{{ $t('common.save') }}</a-button
           ></template
         >
-      </component>
+      </BasicDrawer>
       <BasicDrawer
         v-model:open="drawerOpen"
         :title="$t('catalog.detail')"
-        :class="{ 'group-detail': kind === 'product-groups' }"
+        :class="{ 'group-detail': kind === 'product-groups' || isWarehouse }"
         width="min(650px, 100vw)"
         @cancel="closeEdit"
       >
@@ -932,7 +939,7 @@ onBeforeUnmount(() => {
                 ...fields,
                 ...['createdAt', 'updatedAt'].filter(
                   (key) =>
-                    kind !== 'product-groups' ||
+                    (kind !== 'product-groups' && !isWarehouse) ||
                     (detail as unknown as Record<string, unknown>)[key],
                 ),
               ]"
@@ -974,17 +981,10 @@ onBeforeUnmount(() => {
 .catalog-filters :deep(.ant-select) {
   min-width: 180px;
 }
-.catalog-actions {
-  display: flex;
-  flex-wrap: wrap;
-}
 .catalog-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0 16px;
-}
-.catalog-table {
-  overflow-x: auto;
 }
 @media (max-width: 650px) {
   .catalog-form {
@@ -1143,6 +1143,47 @@ onBeforeUnmount(() => {
   }
   .product-groups-page .catalog-heading > div {
     flex-basis: 100%;
+  }
+}
+</style>
+
+<style scoped>
+/* Keep warehouse filters visible as they wrap; ResizeObserver measures the remaining table space. */
+.products-page.warehouses-page .catalog-filters {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(180px, 0.5fr) auto auto;
+}
+.warehouses-page .product-actions {
+  gap: 4px;
+}
+.warehouses-page .product-actions :deep(.ant-btn) {
+  width: 32px;
+  min-width: 32px;
+}
+.warehouses-page .products-description {
+  display: block;
+}
+@container workspace (max-width: 850px) {
+  .products-page.warehouses-page .catalog-filters {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+  .warehouses-page .catalog-filters > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+@container workspace (max-width: 500px) {
+  .warehouses-page .catalog-heading {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .warehouses-page .catalog-heading > div {
+    flex-basis: 100%;
+  }
+  .products-page.warehouses-page .catalog-filters {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .warehouses-page .catalog-filters > .ant-select {
+    grid-column: 1 / -1;
   }
 }
 </style>

@@ -273,6 +273,12 @@ export default {
     cancelDraftWarning: 'Hủy phiếu nháp không thay đổi tồn kho.',
   },
   catalog: {
+    warehousesDescription: 'Quản lý thông tin và trạng thái các kho hàng.',
+    addWarehouse: 'Thêm kho',
+    warehouseList: 'Danh sách kho',
+    warehouseTotal: '{total} kho',
+    warehouseKeyword: 'Nhập mã hoặc tên kho…',
+    warehouseRange: 'Hiển thị {from}–{to} / {total} kho',
     groupList: 'Danh sách nhóm sản phẩm',
     groupTotal: '{total} nhóm sản phẩm',
     groupsDescription: 'Phân loại sản phẩm để tìm kiếm và quản lý thuận tiện.',

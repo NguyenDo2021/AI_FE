@@ -21,7 +21,7 @@ await context.addInitScript(() =>
   localStorage.setItem('frontend-base:access-token', 'groups-browser-test'),
 )
 const base = process.env.GROUPS_TEST_URL || 'http://127.0.0.1:5173'
-const artifacts = 'docs/product-groups-artifacts'
+const artifacts = process.env.GROUPS_TEST_ARTIFACTS || 'docs/product-groups-artifacts'
 await mkdir(artifacts, { recursive: true })
 let permissions = [
     'PRODUCT_GROUP_VIEW',
