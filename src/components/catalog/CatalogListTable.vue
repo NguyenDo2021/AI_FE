@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { ReloadOutlined } from '@ant-design/icons-vue'
-import { theme } from 'ant-design-vue'
+import { theme, type TableColumnsType } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
-import type { CatalogRecord, Product, ProductGroup } from '@/types/catalog'
+import type { CatalogKind, CatalogRecord, Product, ProductGroup, Warehouse } from '@/types/catalog'
 import { formatNumber } from '@/utils/format'
 
 const props = defineProps<{
-  kind: 'products' | 'product-groups'
+  kind: CatalogKind
   rows: CatalogRecord[]
   error: string
   loading: boolean
@@ -29,16 +29,54 @@ const toolbar = ref<HTMLElement>()
 const footer = ref<HTMLElement>()
 const head = ref<HTMLElement>()
 const width = ref(1200)
+const warehouseMinHeight = ref(280)
 const compact = computed(() => width.value < 480)
-const rowHeight = computed(() => (compact.value ? 104 : 84))
+const isWarehouse = computed(() => props.kind === 'warehouses')
+const rowHeight = computed(() => (isWarehouse.value ? 76 : compact.value ? 104 : 84))
 const isGroup = computed(() => props.kind === 'product-groups')
 const records = computed(() => props.rows as (Product | ProductGroup)[])
-const listTitle = computed(() => t(isGroup.value ? 'catalog.groupList' : 'catalog.productList'))
-const totalLabel = computed(() =>
-  t(isGroup.value ? 'catalog.groupTotal' : 'catalog.productTotal', {
-    total: formatNumber(props.total),
-  }),
+const listTitle = computed(() =>
+  t(
+    isWarehouse.value
+      ? 'catalog.warehouseList'
+      : isGroup.value
+        ? 'catalog.groupList'
+        : 'catalog.productList',
+  ),
 )
+const totalLabel = computed(() =>
+  t(
+    isWarehouse.value
+      ? 'catalog.warehouseTotal'
+      : isGroup.value
+        ? 'catalog.groupTotal'
+        : 'catalog.productTotal',
+    {
+      total: formatNumber(props.total),
+    },
+  ),
+)
+const warehouseCompact = computed(() => width.value < 600)
+const warehouseRows = computed(() => props.rows as Warehouse[])
+const warehouseColumns = computed<TableColumnsType<Warehouse>>(() => [
+  { title: t('catalog.code'), dataIndex: 'code', key: 'code', width: 148 },
+  { title: t('catalog.name'), dataIndex: 'name', key: 'name', width: 220 },
+  { title: t('catalog.address'), dataIndex: 'address', key: 'address', width: 300 },
+  { title: t('catalog.phone'), dataIndex: 'phone', key: 'phone', width: 156 },
+  { title: t('catalog.status'), dataIndex: 'status', key: 'status', width: 164 },
+  {
+    title: t('common.actions'),
+    key: 'actions',
+    width: warehouseCompact.value ? 84 : 144,
+    fixed: 'right',
+    align: 'center',
+  },
+])
+const warehouseScrollWidth = computed(() =>
+  warehouseColumns.value.reduce((sum, column) => sum + Number(column.width), 0),
+)
+const optionalText = (value: unknown): string => String(value ?? '').trim() || '—'
+
 type Column = { key: string; title: string; weight: number; align: string; width?: string }
 const columnWidth = (column: Column): string | undefined =>
   isGroup.value ? column.width : `${(column.weight / weight.value) * 100}%`
@@ -123,9 +161,14 @@ const spec = (item: Product | ProductGroup): string => {
 let observer: ResizeObserver | undefined
 let timer: ReturnType<typeof setTimeout> | undefined
 let lastSize = 0
-const measure = (): void => {
-  if (!panel.value || !toolbar.value || !footer.value || !head.value) return
+const measure = async (): Promise<void> => {
+  if (!panel.value) return
   width.value = panel.value.clientWidth
+  await nextTick()
+  const tableHead = isWarehouse.value
+    ? panel.value?.querySelector<HTMLElement>('.ant-table-thead')
+    : head.value
+  if (!panel.value || !toolbar.value || !footer.value || !tableHead) return
   // Panel padding/borders + measured toolbar, header and footer + rounding reserve.
   const style = getComputedStyle(panel.value)
   const chrome =
@@ -133,25 +176,46 @@ const measure = (): void => {
     parseFloat(style.paddingBottom) +
     parseFloat(style.borderTopWidth) +
     parseFloat(style.borderBottomWidth)
+  const content = panel.value.querySelector<HTMLElement>('.ant-table-content')
+  // Native scrollbar height is zero with overlay scrollbars. No second scroll container.
+  const scrollbar = content ? content.offsetHeight - content.clientHeight : 0
   const available =
     panel.value.clientHeight -
     chrome -
     toolbar.value.offsetHeight -
     footer.value.offsetHeight -
-    head.value.offsetHeight -
+    tableHead.offsetHeight -
+    scrollbar -
     8
+  if (isWarehouse.value) {
+    warehouseMinHeight.value = Math.ceil(
+      chrome +
+        toolbar.value.offsetHeight +
+        footer.value.offsetHeight +
+        tableHead.offsetHeight +
+        scrollbar +
+        rowHeight.value +
+        8,
+    )
+  }
   const size = Math.max(1, Math.min(100, Math.floor(available / rowHeight.value)))
   if (size !== lastSize) {
     lastSize = size
     emit('capacity', size)
   }
 }
-onMounted(() => {
+onMounted(async () => {
+  await nextTick()
   observer = new ResizeObserver(() => {
     clearTimeout(timer)
     timer = setTimeout(measure, 140)
   })
-  for (const element of [panel.value, toolbar.value, footer.value, head.value]) {
+  for (const element of [
+    panel.value,
+    toolbar.value,
+    footer.value,
+    isWarehouse.value ? panel.value?.querySelector('.ant-table-thead') : head.value,
+  ]) {
     if (element) observer.observe(element)
   }
 })
@@ -165,10 +229,13 @@ onBeforeUnmount(() => {
   <section
     ref="panel"
     class="products-panel"
-    :class="{ 'groups-panel': isGroup }"
+    :class="{ 'groups-panel': isGroup || isWarehouse, 'warehouses-panel': isWarehouse }"
     :style="{
       '--product-row-height': `${rowHeight}px`,
       '--product-accent': token.colorPrimary,
+      '--warehouse-hover': token.colorPrimaryBg,
+      '--warehouse-min-height': `${warehouseMinHeight}px`,
+      '--warehouse-selected': token.controlItemBgActive,
     }"
   >
     <div ref="toolbar" class="products-toolbar">
@@ -183,7 +250,43 @@ onBeforeUnmount(() => {
       </a-tooltip>
     </div>
     <div class="products-table-region" :aria-busy="loading">
-      <a-spin :spinning="loading">
+      <a-table
+        v-if="isWarehouse"
+        class="warehouses-table"
+        :columns="warehouseColumns"
+        :data-source="warehouseRows"
+        :pagination="false"
+        :loading="loading"
+        :scroll="{ x: warehouseScrollWidth }"
+        row-key="id"
+        table-layout="fixed"
+        :aria-label="listTitle"
+      >
+        <template #bodyCell="{ column, record }">
+          <slot
+            v-if="column.key === 'actions'"
+            name="actions"
+            :item="record"
+            :compact="warehouseCompact"
+          />
+          <a-tag
+            v-else-if="column.key === 'status'"
+            :color="record.status === 1 ? 'success' : 'default'"
+          >
+            {{ $t(record.status === 1 ? 'common.active' : 'common.inactive') }}
+          </a-tag>
+          <span v-else-if="column.key === 'phone'" class="warehouse-phone">{{
+            optionalText(record.phone)
+          }}</span>
+          <a-tooltip v-else :title="optionalText(record[column.key])">
+            <span :class="['warehouse-text', `warehouse-${column.key}`]">{{
+              optionalText(record[column.key])
+            }}</span>
+          </a-tooltip>
+        </template>
+        <template #emptyText>{{ error || $t('common.noData') }}</template>
+      </a-table>
+      <a-spin v-else :spinning="loading">
         <table class="products-table" :aria-label="listTitle">
           <colgroup>
             <col
@@ -262,7 +365,13 @@ onBeforeUnmount(() => {
     </div>
     <div ref="footer" class="products-footer">
       <span class="product-secondary">{{
-        $t('catalog.productsPerPage', { count: pageSize })
+        isWarehouse
+          ? $t('catalog.warehouseRange', {
+              from: total ? (page - 1) * pageSize + 1 : 0,
+              to: Math.min(page * pageSize, total),
+              total: formatNumber(total),
+            })
+          : $t('catalog.productsPerPage', { count: pageSize })
       }}</span>
       <a-pagination
         :current="page"
@@ -463,6 +572,97 @@ td {
   .groups-panel .products-table-region,
   .groups-panel .products-footer {
     padding-inline: 10px;
+  }
+}
+/* Warehouse uses Ant Design's native horizontal scrolling and right fixed column. */
+.warehouses-panel {
+  min-height: var(--warehouse-min-height);
+  padding: 0;
+}
+.warehouses-panel .products-toolbar,
+.warehouses-panel .products-footer {
+  padding-inline: 16px;
+}
+.warehouses-panel .products-table-region {
+  align-self: start;
+  padding-inline: 0;
+}
+.warehouses-panel .products-footer {
+  flex-wrap: wrap;
+}
+.warehouses-panel :deep(.ant-table) {
+  border-radius: 0;
+  font-size: 14px;
+}
+.warehouses-panel :deep(.ant-table-thead > tr > th) {
+  height: 48px;
+  padding: 8px 16px;
+  background: #f8f6fc;
+  color: #625b70;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+.warehouses-panel :deep(.ant-table-tbody > tr > td) {
+  height: var(--product-row-height);
+  padding: 8px 16px;
+  border-bottom: 1px solid #f0edf5;
+  line-height: 20px;
+  background: #fff;
+}
+.warehouses-panel :deep(.ant-table-tbody > tr:hover > td),
+.warehouses-panel :deep(.ant-table-tbody > tr > td.ant-table-cell-row-hover) {
+  background: var(--warehouse-hover);
+}
+.warehouses-panel :deep(.ant-table-tbody > tr.ant-table-row-selected > td) {
+  background: var(--warehouse-selected);
+}
+.warehouses-panel :deep(.ant-table-cell-fix-right) {
+  z-index: 2;
+}
+.warehouses-panel :deep(.ant-table-thead .ant-table-cell-fix-right) {
+  z-index: 3;
+}
+.warehouses-panel :deep(.ant-table-ping-right .ant-table-cell-fix-right-first::after) {
+  box-shadow: inset -8px 0 8px -8px rgb(48 38 64 / 22%);
+}
+.warehouses-panel :deep(.ant-table-placeholder > td) {
+  height: var(--product-row-height);
+}
+.warehouses-panel :deep(.ant-table-content::-webkit-scrollbar) {
+  height: 10px;
+}
+.warehouses-panel :deep(.ant-table-content::-webkit-scrollbar-track) {
+  background: #f5f3fa;
+}
+.warehouses-panel :deep(.ant-table-content::-webkit-scrollbar-thumb) {
+  background: #bfb2d8;
+  border: 2px solid #f5f3fa;
+  border-radius: 8px;
+}
+.warehouse-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  max-height: 40px;
+}
+.warehouse-code,
+.warehouse-phone {
+  font-variant-numeric: tabular-nums;
+}
+.warehouse-code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 13px;
+}
+.warehouse-name {
+  font-weight: 600;
+}
+@media (max-width: 767px) {
+  .warehouses-panel .products-toolbar,
+  .warehouses-panel .products-footer {
+    padding-inline: 12px;
   }
 }
 </style>

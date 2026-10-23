@@ -1,0 +1,1563 @@
+{
+  "checks": [
+    "Title, description and theme add action",
+    "Initial list makes one measured API request",
+    "API total and leading zero phone string",
+    "Optional empty fields show em dash",
+    "Address limited to two lines",
+    "Rows preserve backend order",
+    "desktop-1366: all six columns in order",
+    "desktop-1366: no page horizontal scroll or table vertical scroll",
+    "desktop-1366: page fits and pagination accessible",
+    "desktop-1366: API page rendered completely with stable row height",
+    "desktop-1366: only necessary horizontal scrollbar above pagination",
+    "desktop-1366: scrollbar height reserved only when needed",
+    "desktop-1366: action header and cells stay fixed from start through end",
+    "desktop-1366: fixed column background is opaque",
+    "Address tooltip contains complete address",
+    "Hovered fixed cell background stays opaque",
+    "Next page uses server pagination",
+    "desktop-1920: all six columns in order",
+    "desktop-1920: no page horizontal scroll or table vertical scroll",
+    "desktop-1920: page fits and pagination accessible",
+    "desktop-1920: API page rendered completely with stable row height",
+    "desktop-1920: only necessary horizontal scrollbar above pagination",
+    "desktop-1920: scrollbar height reserved only when needed",
+    "desktop-1920: action header and cells stay fixed from start through end",
+    "desktop-1920: fixed column background is opaque",
+    "Resize returns to page 1",
+    "Same capacity resize does not refetch",
+    "mobile-360: all six columns in order",
+    "mobile-360: no page horizontal scroll or table vertical scroll",
+    "mobile-360: page fits and pagination accessible",
+    "mobile-360: API page rendered completely with stable row height",
+    "mobile-360: only necessary horizontal scrollbar above pagination",
+    "mobile-360: scrollbar height reserved only when needed",
+    "mobile-360: action header and cells stay fixed from start through end",
+    "mobile-360: fixed column background is opaque",
+    "mobile-390: all six columns in order",
+    "mobile-390: no page horizontal scroll or table vertical scroll",
+    "mobile-390: page fits and pagination accessible",
+    "mobile-390: API page rendered completely with stable row height",
+    "mobile-390: only necessary horizontal scrollbar above pagination",
+    "mobile-390: scrollbar height reserved only when needed",
+    "mobile-390: action header and cells stay fixed from start through end",
+    "mobile-390: fixed column background is opaque",
+    "tablet-768: all six columns in order",
+    "tablet-768: no page horizontal scroll or table vertical scroll",
+    "tablet-768: page fits and pagination accessible",
+    "tablet-768: API page rendered completely with stable row height",
+    "tablet-768: only necessary horizontal scrollbar above pagination",
+    "tablet-768: scrollbar height reserved only when needed",
+    "tablet-768: action header and cells stay fixed from start through end",
+    "tablet-768: fixed column background is opaque",
+    "tablet-1024: all six columns in order",
+    "tablet-1024: no page horizontal scroll or table vertical scroll",
+    "tablet-1024: page fits and pagination accessible",
+    "tablet-1024: API page rendered completely with stable row height",
+    "tablet-1024: only necessary horizontal scrollbar above pagination",
+    "tablet-1024: scrollbar height reserved only when needed",
+    "tablet-1024: action header and cells stay fixed from start through end",
+    "tablet-1024: fixed column background is opaque",
+    "zoom-125-simulated: all six columns in order",
+    "zoom-125-simulated: no page horizontal scroll or table vertical scroll",
+    "zoom-125-simulated: page fits and pagination accessible",
+    "zoom-125-simulated: API page rendered completely with stable row height",
+    "zoom-125-simulated: only necessary horizontal scrollbar above pagination",
+    "zoom-125-simulated: scrollbar height reserved only when needed",
+    "zoom-125-simulated: action header and cells stay fixed from start through end",
+    "zoom-125-simulated: fixed column background is opaque",
+    "short-500: all six columns in order",
+    "short-500: no page horizontal scroll or table vertical scroll",
+    "short-500: API page rendered completely with stable row height",
+    "short-500: only necessary horizontal scrollbar above pagination",
+    "short-500: scrollbar height reserved only when needed",
+    "short-500: action header and cells stay fixed from start through end",
+    "short-500: fixed column background is opaque",
+    "keyboard-400: all six columns in order",
+    "keyboard-400: no page horizontal scroll or table vertical scroll",
+    "keyboard-400: API page rendered completely with stable row height",
+    "keyboard-400: only necessary horizontal scrollbar above pagination",
+    "keyboard-400: scrollbar height reserved only when needed",
+    "keyboard-400: action header and cells stay fixed from start through end",
+    "keyboard-400: fixed column background is opaque",
+    "Mobile uses one dropdown button for every action",
+    "Mobile dropdown exposes detail edit and status",
+    "Mobile detail shows full address note and timestamps",
+    "Mobile form has all six fields and fits viewport",
+    "Mobile form is one column with accessible footer",
+    "Keyboard height leaves scrollable form and visible footer",
+    "sidebar-collapsed: all six columns in order",
+    "sidebar-collapsed: no page horizontal scroll or table vertical scroll",
+    "sidebar-collapsed: page fits and pagination accessible",
+    "sidebar-collapsed: API page rendered completely with stable row height",
+    "sidebar-collapsed: only necessary horizontal scrollbar above pagination",
+    "sidebar-collapsed: scrollbar height reserved only when needed",
+    "sidebar-collapsed: action header and cells stay fixed from start through end",
+    "sidebar-collapsed: fixed column background is opaque",
+    "sidebar-expanded: all six columns in order",
+    "sidebar-expanded: no page horizontal scroll or table vertical scroll",
+    "sidebar-expanded: page fits and pagination accessible",
+    "sidebar-expanded: API page rendered completely with stable row height",
+    "sidebar-expanded: only necessary horizontal scrollbar above pagination",
+    "sidebar-expanded: scrollbar height reserved only when needed",
+    "sidebar-expanded: action header and cells stay fixed from start through end",
+    "sidebar-expanded: fixed column background is opaque",
+    "Enter trims keyword and resets page",
+    "Pending list request displays loading",
+    "Old response cannot overwrite fresh data",
+    "Status zero is sent to API",
+    "Reset sends one request and omits all status",
+    "Detail error leaves list intact",
+    "Edit GET retains full values and form is two columns",
+    "Edit is full PUT without metadata",
+    "Deactivate GETs current detail then sends full payload",
+    "Activate sends numeric one",
+    "Required fields block submission",
+    "Non ASCII code rejected",
+    "Warehouse limits remain 80 160 500 20 2000",
+    "Duplicate API error mapped to code",
+    "API field validation retained",
+    "Create normalizes code and prevents repeated submit without phone regex",
+    "Empty state uses API total zero",
+    "Few items are not fabricated",
+    "Mutation reducing total to zero returns to page 1",
+    "Scope denied clears previously displayed rows and detail",
+    "view-only: add permission",
+    "view-only: update permission",
+    "create-only: add permission",
+    "Create only cannot request or display list",
+    "update: add permission",
+    "update: update permission",
+    "admin: add permission",
+    "admin: update permission",
+    "403 clears data without request loop",
+    "List error visible and stale rows cleared",
+    "401 uses existing session expiration flow",
+    "Queries remain within warehouse contract",
+    "No DELETE or assignment mutation",
+    "No browser runtime errors"
+  ],
+  "errors": [],
+  "measurements": [
+    {
+      "label": "desktop-1366",
+      "width": 1366,
+      "height": 768,
+      "scrollHeight": 768,
+      "scrollWidth": 1366,
+      "footer": {
+        "top": 625,
+        "bottom": 678.5,
+        "left": 280,
+        "right": 1342,
+        "width": 1062,
+        "height": 53.5
+      },
+      "content": {
+        "top": 339,
+        "bottom": 625,
+        "left": 281,
+        "right": 1341,
+        "width": 1060,
+        "height": 286
+      },
+      "contentHeight": 276,
+      "contentScrollHeight": 276,
+      "contentWidth": 1060,
+      "contentScrollWidth": 1132,
+      "scrollbarHeight": 10,
+      "rows": [
+        {
+          "top": 387,
+          "bottom": 463,
+          "left": 281,
+          "right": 1413,
+          "width": 1132,
+          "height": 76
+        },
+        {
+          "top": 463,
+          "bottom": 539,
+          "left": 281,
+          "right": 1413,
+          "width": 1132,
+          "height": 76
+        },
+        {
+          "top": 539,
+          "bottom": 615,
+          "left": 281,
+          "right": 1413,
+          "width": 1132,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 1,
+      "pageSize": "3"
+    },
+    {
+      "label": "desktop-1920",
+      "width": 1920,
+      "height": 1080,
+      "scrollHeight": 1080,
+      "scrollWidth": 1920,
+      "footer": {
+        "top": 995,
+        "bottom": 1048.5,
+        "left": 280,
+        "right": 1896,
+        "width": 1616,
+        "height": 53.5
+      },
+      "content": {
+        "top": 339,
+        "bottom": 995,
+        "left": 281,
+        "right": 1895,
+        "width": 1614,
+        "height": 656
+      },
+      "contentHeight": 656,
+      "contentScrollHeight": 656,
+      "contentWidth": 1614,
+      "contentScrollWidth": 1614,
+      "scrollbarHeight": 0,
+      "rows": [
+        {
+          "top": 387,
+          "bottom": 463,
+          "left": 281,
+          "right": 1895,
+          "width": 1614,
+          "height": 76
+        },
+        {
+          "top": 463,
+          "bottom": 539,
+          "left": 281,
+          "right": 1895,
+          "width": 1614,
+          "height": 76
+        },
+        {
+          "top": 539,
+          "bottom": 615,
+          "left": 281,
+          "right": 1895,
+          "width": 1614,
+          "height": 76
+        },
+        {
+          "top": 615,
+          "bottom": 691,
+          "left": 281,
+          "right": 1895,
+          "width": 1614,
+          "height": 76
+        },
+        {
+          "top": 691,
+          "bottom": 767,
+          "left": 281,
+          "right": 1895,
+          "width": 1614,
+          "height": 76
+        },
+        {
+          "top": 767,
+          "bottom": 843,
+          "left": 281,
+          "right": 1895,
+          "width": 1614,
+          "height": 76
+        },
+        {
+          "top": 843,
+          "bottom": 919,
+          "left": 281,
+          "right": 1895,
+          "width": 1614,
+          "height": 76
+        },
+        {
+          "top": 919,
+          "bottom": 995,
+          "left": 281,
+          "right": 1895,
+          "width": 1614,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 0,
+      "pageSize": "8"
+    },
+    {
+      "label": "mobile-360",
+      "width": 360,
+      "height": 800,
+      "scrollHeight": 800,
+      "scrollWidth": 360,
+      "footer": {
+        "top": 650,
+        "bottom": 725.9375,
+        "left": 12,
+        "right": 348,
+        "width": 336,
+        "height": 75.9375
+      },
+      "content": {
+        "top": 516,
+        "bottom": 650,
+        "left": 13,
+        "right": 347,
+        "width": 334,
+        "height": 134
+      },
+      "contentHeight": 124,
+      "contentScrollHeight": 124,
+      "contentWidth": 334,
+      "contentScrollWidth": 1072,
+      "scrollbarHeight": 10,
+      "rows": [
+        {
+          "top": 564,
+          "bottom": 640,
+          "left": 13,
+          "right": 1085,
+          "width": 1072,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 1,
+      "pageSize": "1"
+    },
+    {
+      "label": "mobile-390",
+      "width": 390,
+      "height": 844,
+      "scrollHeight": 844,
+      "scrollWidth": 390,
+      "footer": {
+        "top": 704,
+        "bottom": 757,
+        "left": 12,
+        "right": 378,
+        "width": 366,
+        "height": 53
+      },
+      "content": {
+        "top": 494,
+        "bottom": 704,
+        "left": 13,
+        "right": 377,
+        "width": 364,
+        "height": 210
+      },
+      "contentHeight": 200,
+      "contentScrollHeight": 200,
+      "contentWidth": 364,
+      "contentScrollWidth": 1072,
+      "scrollbarHeight": 10,
+      "rows": [
+        {
+          "top": 542,
+          "bottom": 618,
+          "left": 13,
+          "right": 1085,
+          "width": 1072,
+          "height": 76
+        },
+        {
+          "top": 618,
+          "bottom": 694,
+          "left": 13,
+          "right": 1085,
+          "width": 1072,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 1,
+      "pageSize": "2"
+    },
+    {
+      "label": "tablet-768",
+      "width": 768,
+      "height": 1024,
+      "scrollHeight": 1024,
+      "scrollWidth": 768,
+      "footer": {
+        "top": 938,
+        "bottom": 991,
+        "left": 280,
+        "right": 744,
+        "width": 464,
+        "height": 53
+      },
+      "content": {
+        "top": 424,
+        "bottom": 938,
+        "left": 281,
+        "right": 743,
+        "width": 462,
+        "height": 514
+      },
+      "contentHeight": 504,
+      "contentScrollHeight": 504,
+      "contentWidth": 462,
+      "contentScrollWidth": 1072,
+      "scrollbarHeight": 10,
+      "rows": [
+        {
+          "top": 472,
+          "bottom": 548,
+          "left": 281,
+          "right": 1353,
+          "width": 1072,
+          "height": 76
+        },
+        {
+          "top": 548,
+          "bottom": 624,
+          "left": 281,
+          "right": 1353,
+          "width": 1072,
+          "height": 76
+        },
+        {
+          "top": 624,
+          "bottom": 700,
+          "left": 281,
+          "right": 1353,
+          "width": 1072,
+          "height": 76
+        },
+        {
+          "top": 700,
+          "bottom": 776,
+          "left": 281,
+          "right": 1353,
+          "width": 1072,
+          "height": 76
+        },
+        {
+          "top": 776,
+          "bottom": 852,
+          "left": 281,
+          "right": 1353,
+          "width": 1072,
+          "height": 76
+        },
+        {
+          "top": 852,
+          "bottom": 928,
+          "left": 281,
+          "right": 1353,
+          "width": 1072,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 1,
+      "pageSize": "6"
+    },
+    {
+      "label": "tablet-1024",
+      "width": 1024,
+      "height": 768,
+      "scrollHeight": 768,
+      "scrollWidth": 1024,
+      "footer": {
+        "top": 657,
+        "bottom": 710.5,
+        "left": 280,
+        "right": 1000,
+        "width": 720,
+        "height": 53.5
+      },
+      "content": {
+        "top": 371,
+        "bottom": 657,
+        "left": 281,
+        "right": 999,
+        "width": 718,
+        "height": 286
+      },
+      "contentHeight": 276,
+      "contentScrollHeight": 276,
+      "contentWidth": 718,
+      "contentScrollWidth": 1132,
+      "scrollbarHeight": 10,
+      "rows": [
+        {
+          "top": 419,
+          "bottom": 495,
+          "left": 281,
+          "right": 1413,
+          "width": 1132,
+          "height": 76
+        },
+        {
+          "top": 495,
+          "bottom": 571,
+          "left": 281,
+          "right": 1413,
+          "width": 1132,
+          "height": 76
+        },
+        {
+          "top": 571,
+          "bottom": 647,
+          "left": 281,
+          "right": 1413,
+          "width": 1132,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 1,
+      "pageSize": "3"
+    },
+    {
+      "label": "zoom-125-simulated",
+      "width": 1093,
+      "height": 614,
+      "scrollHeight": 614,
+      "scrollWidth": 1093,
+      "footer": {
+        "top": 545,
+        "bottom": 586.5,
+        "left": 268,
+        "right": 1081,
+        "width": 813,
+        "height": 41.5
+      },
+      "content": {
+        "top": 335,
+        "bottom": 545,
+        "left": 269,
+        "right": 1080,
+        "width": 811,
+        "height": 210
+      },
+      "contentHeight": 200,
+      "contentScrollHeight": 200,
+      "contentWidth": 811,
+      "contentScrollWidth": 1132,
+      "scrollbarHeight": 10,
+      "rows": [
+        {
+          "top": 383,
+          "bottom": 459,
+          "left": 269,
+          "right": 1401,
+          "width": 1132,
+          "height": 76
+        },
+        {
+          "top": 459,
+          "bottom": 535,
+          "left": 269,
+          "right": 1401,
+          "width": 1132,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 1,
+      "pageSize": "2"
+    },
+    {
+      "label": "short-500",
+      "width": 1366,
+      "height": 500,
+      "scrollHeight": 500,
+      "scrollWidth": 1366,
+      "footer": {
+        "top": 429,
+        "bottom": 470.5,
+        "left": 268,
+        "right": 1354,
+        "width": 1086,
+        "height": 41.5
+      },
+      "content": {
+        "top": 295,
+        "bottom": 429,
+        "left": 269,
+        "right": 1353,
+        "width": 1084,
+        "height": 134
+      },
+      "contentHeight": 124,
+      "contentScrollHeight": 124,
+      "contentWidth": 1084,
+      "contentScrollWidth": 1132,
+      "scrollbarHeight": 10,
+      "rows": [
+        {
+          "top": 343,
+          "bottom": 419,
+          "left": 269,
+          "right": 1401,
+          "width": 1132,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 1,
+      "pageSize": "1"
+    },
+    {
+      "label": "keyboard-400",
+      "width": 390,
+      "height": 400,
+      "scrollHeight": 655,
+      "scrollWidth": 375,
+      "footer": {
+        "top": 606,
+        "bottom": 647,
+        "left": 12,
+        "right": 363,
+        "width": 351,
+        "height": 41
+      },
+      "content": {
+        "top": 472,
+        "bottom": 606,
+        "left": 13,
+        "right": 362,
+        "width": 349,
+        "height": 134
+      },
+      "contentHeight": 124,
+      "contentScrollHeight": 124,
+      "contentWidth": 349,
+      "contentScrollWidth": 1072,
+      "scrollbarHeight": 10,
+      "rows": [
+        {
+          "top": 520,
+          "bottom": 596,
+          "left": 13,
+          "right": 1085,
+          "width": 1072,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 1,
+      "pageSize": "1"
+    },
+    {
+      "label": "sidebar-collapsed",
+      "width": 1366,
+      "height": 768,
+      "scrollHeight": 768,
+      "scrollWidth": 1366,
+      "footer": {
+        "top": 615,
+        "bottom": 668.5,
+        "left": 104,
+        "right": 1342,
+        "width": 1238,
+        "height": 53.5
+      },
+      "content": {
+        "top": 339,
+        "bottom": 615,
+        "left": 105,
+        "right": 1341,
+        "width": 1236,
+        "height": 276
+      },
+      "contentHeight": 276,
+      "contentScrollHeight": 276,
+      "contentWidth": 1236,
+      "contentScrollWidth": 1236,
+      "scrollbarHeight": 0,
+      "rows": [
+        {
+          "top": 387,
+          "bottom": 463,
+          "left": 105,
+          "right": 1341,
+          "width": 1236,
+          "height": 76
+        },
+        {
+          "top": 463,
+          "bottom": 539,
+          "left": 105,
+          "right": 1341,
+          "width": 1236,
+          "height": 76
+        },
+        {
+          "top": 539,
+          "bottom": 615,
+          "left": 105,
+          "right": 1341,
+          "width": 1236,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 0,
+      "pageSize": "3"
+    },
+    {
+      "label": "sidebar-expanded",
+      "width": 1366,
+      "height": 768,
+      "scrollHeight": 768,
+      "scrollWidth": 1366,
+      "footer": {
+        "top": 625,
+        "bottom": 678.5,
+        "left": 280,
+        "right": 1342,
+        "width": 1062,
+        "height": 53.5
+      },
+      "content": {
+        "top": 339,
+        "bottom": 625,
+        "left": 281,
+        "right": 1341,
+        "width": 1060,
+        "height": 286
+      },
+      "contentHeight": 276,
+      "contentScrollHeight": 276,
+      "contentWidth": 1060,
+      "contentScrollWidth": 1132,
+      "scrollbarHeight": 10,
+      "rows": [
+        {
+          "top": 387,
+          "bottom": 463,
+          "left": 281,
+          "right": 1413,
+          "width": 1132,
+          "height": 76
+        },
+        {
+          "top": 463,
+          "bottom": 539,
+          "left": 281,
+          "right": 1413,
+          "width": 1132,
+          "height": 76
+        },
+        {
+          "top": 539,
+          "bottom": 615,
+          "left": 281,
+          "right": 1413,
+          "width": 1132,
+          "height": 76
+        }
+      ],
+      "headers": [
+        "Mã",
+        "Tên",
+        "Địa chỉ",
+        "Số điện thoại",
+        "Trạng thái",
+        "Thao tác"
+      ],
+      "horizontalScrollers": 1,
+      "pageSize": "3"
+    }
+  ],
+  "calls": [
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "8"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "1"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "2"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "6"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "2"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "1"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "1"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3",
+        "keyword": "fresh"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3",
+        "keyword": "slow"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3",
+        "keyword": "fresh"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3",
+        "keyword": "fresh",
+        "status": "0"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "code": "KHO-0-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "name": "Kho đã sửa",
+        "status": 1,
+        "address": "Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đư",
+        "phone": "0123 456 789 ext 1",
+        "note": "Ghi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguy"
+      }
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "code": "KHO-0-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "name": "Kho 0 có tên dài để kiểm tra bố cục và cuộn ngang. Kho 0 có tên dài để kiểm tra bố cục và cuộn ngang. Kho 0 có tên dài để kiểm tra bố cục và cuộn ngang. Kho 0 c",
+        "status": 0,
+        "address": "Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đư",
+        "phone": "0123 456 789 ext 1",
+        "note": "Ghi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguy"
+      }
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "code": "KHO-0-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "name": "Kho 0 có tên dài để kiểm tra bố cục và cuộn ngang. Kho 0 có tên dài để kiểm tra bố cục và cuộn ngang. Kho 0 có tên dài để kiểm tra bố cục và cuộn ngang. Kho 0 c",
+        "status": 1,
+        "address": "Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đư",
+        "phone": "0123 456 789 ext 1",
+        "note": "Ghi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguy"
+      }
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "POST",
+      "params": {},
+      "body": {
+        "code": "NEW_KHO-1.2",
+        "name": "Kho mới",
+        "status": 1,
+        "address": "Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đư",
+        "phone": "01234 ext ABC",
+        "note": "Ghi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguy"
+      }
+    },
+    {
+      "path": "/warehouses",
+      "method": "POST",
+      "params": {},
+      "body": {
+        "code": "NEW_KHO-1.2",
+        "name": "Kho mới",
+        "status": 1,
+        "address": "Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đư",
+        "phone": "01234 ext ABC",
+        "note": "Ghi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguy"
+      }
+    },
+    {
+      "path": "/warehouses",
+      "method": "POST",
+      "params": {},
+      "body": {
+        "code": "NEW_KHO-1.2",
+        "name": "Kho mới",
+        "status": 1,
+        "address": "Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đư",
+        "phone": "01234 ext ABC",
+        "note": "Ghi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguy"
+      }
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3",
+        "keyword": "empty"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3",
+        "keyword": "few"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses/w3",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses/w3",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "code": "KHO-3-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "name": "Kho 3 có tên dài để kiểm tra bố cục và cuộn ngang. Kho 3 có tên dài để kiểm tra bố cục và cuộn ngang. Kho 3 có tên dài để kiểm tra bố cục và cuộn ngang. Kho 3 c",
+        "status": 0,
+        "address": "Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đường Nguyễn Chánh, phường Đại Đồng, Nghệ An. Địa chỉ đầy đủ, số 01 đư",
+        "phone": "0123 456 789 ext 1",
+        "note": "Ghi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguyên khi cập nhật trạng thái.\nGhi chú đầy đủ, giữ nguy"
+      }
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses/w0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/warehouse-user/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/warehouses",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "3"
+      },
+      "body": null
+    }
+  ]
+}
