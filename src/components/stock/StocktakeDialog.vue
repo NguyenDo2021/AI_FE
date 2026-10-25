@@ -3,7 +3,10 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Modal, message } from 'ant-design-vue'
-import { BasicModal, BasicTable } from '@/components'
+import { BasicModal } from '@/components'
+import type { TableColumnsType } from 'ant-design-vue'
+import { SaveOutlined, ReloadOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import StocktakeTable from './StocktakeTable.vue'
 import StocktakeProducts from './StocktakeProducts.vue'
 import {
   getStocktake,
@@ -26,7 +29,7 @@ import {
 import { stringifyStockJson, formatStockInteger, stockError } from '@/utils/stock'
 import { formatDateTime } from '@/utils/date'
 import type { NormalizedApiError } from '@/utils/request'
-import type { Stocktake, CountForm, StaleLine } from '@/types/stocktake'
+import type { Stocktake, CountForm, CountLine, StaleLine } from '@/types/stocktake'
 import type { Inventory } from '@/types/stock'
 const props = defineProps<{
   open: boolean
@@ -75,7 +78,7 @@ const warehouseOptions = computed(() =>
 )
 const warehouseName = (id: string): string =>
   warehouses.warehouses.find((item) => item.id === id)?.name ?? id
-const columns = computed(() =>
+const columns = computed<TableColumnsType<CountLine>>(() =>
   [
     'productCode',
     'productName',
@@ -85,8 +88,40 @@ const columns = computed(() =>
     'difference',
     'reason',
     'actions',
-  ].map((key) => ({ key, dataIndex: key, title: t(`stocktake.${key}`) })),
+  ].map((key) => ({
+    key,
+    dataIndex: key,
+    title: t(`stocktake.${key}`),
+    width: (
+      {
+        productCode: 160,
+        productName: 240,
+        unit: 90,
+        systemQuantity: 190,
+        countedQuantity: 200,
+        difference: 190,
+        reason: 260,
+        actions: 120,
+      } as Record<string, number>
+    )[key],
+    ...(['systemQuantity', 'countedQuantity', 'difference'].includes(key)
+      ? { align: 'right' as const }
+      : {}),
+    ...(key === 'actions' ? { fixed: 'right' as const } : {}),
+  })),
 )
+const differenceText = (line: CountLine): string => {
+  const value = countDifference(line.countedQuantity, line.systemQuantity)
+  return value === undefined ? '—' : `${value > 0n ? '+' : ''}${formatStockInteger(value)}`
+}
+const differenceClass = (line: CountLine): string => {
+  const value = countDifference(line.countedQuantity, line.systemQuantity)
+  return value === undefined || value === 0n
+    ? ''
+    : value > 0n
+      ? 'difference-positive'
+      : 'difference-negative'
+}
 const accept = (value: Stocktake): void => {
   detail.value = value
   form.value = stocktakeForm(value)
@@ -401,211 +436,449 @@ const close = async (): Promise<void> => {
 <template>
   <BasicModal
     :open="open"
-    :title="t(isCreate ? 'stocktake.create' : 'stocktake.title')"
-    :width="1200"
+    :title="
+      t(
+        isCreate
+          ? 'stocktake.create'
+          : localMode === 'edit'
+            ? 'stocktake.edit'
+            : localMode === 'confirm'
+              ? 'stocktake.confirm'
+              : localMode === 'cancel'
+                ? 'stocktake.cancel'
+                : 'stocktake.view',
+      )
+    "
+    :width="1280"
+    :confirm-loading="saving"
+    wrap-class-name="stocktake-dialog"
     @update:open="close"
   >
     <a-spin :spinning="loading">
-      <a-alert v-if="error" type="error" :message="error" show-icon />
-      <a-alert v-if="!allowed" type="warning" :message="t('stock.forbidden')" />
-      <template v-if="allowed && (isCreate || detail)">
-        <a-alert
-          v-if="isCreate || draft"
-          type="warning"
-          :message="t('stocktake.instructions')"
-          show-icon
-        />
-        <a-descriptions v-if="detail" bordered :column="2">
-          <a-descriptions-item :label="t('stock.code')">{{ detail.code }}</a-descriptions-item>
-          <a-descriptions-item :label="t('stock.status')">{{
-            t(`stock.${detail.status}`)
-          }}</a-descriptions-item>
-          <a-descriptions-item :label="t('stock.warehouse')">{{
-            warehouseName(detail.warehouseId)
-          }}</a-descriptions-item>
-          <a-descriptions-item :label="t('stocktake.version')">{{
-            String(detail.version)
-          }}</a-descriptions-item>
-          <a-descriptions-item :label="t('stock.createdAt')"
-            >{{ formatDateTime(detail.createdAt) }} / {{ detail.createdBy }}</a-descriptions-item
-          >
-          <a-descriptions-item :label="t('stocktake.updatedAt')"
-            >{{ formatDateTime(detail.updatedAt) }} / {{ detail.updatedBy }}</a-descriptions-item
-          >
-          <a-descriptions-item v-if="detail.confirmedAt" :label="t('stock.confirmedAt')"
-            >{{ formatDateTime(detail.confirmedAt) }} /
-            {{ detail.confirmedBy }}</a-descriptions-item
-          >
-          <a-descriptions-item v-if="detail.cancelledAt" :label="t('stock.cancelledAt')"
-            >{{ formatDateTime(detail.cancelledAt) }} /
-            {{ detail.cancelledBy }}</a-descriptions-item
-          >
-          <a-descriptions-item v-if="detail.cancellationReason" :label="t('stock.reason')">{{
-            detail.cancellationReason
-          }}</a-descriptions-item>
-        </a-descriptions>
-        <a-alert v-if="detail && !draft" type="info" :message="t('stocktake.finalStatus')" />
-        <a-form
-          layout="vertical"
-          :disabled="saving || blocked || !editable || (!isCreate && !activeWarehouse)"
-        >
-          <a-form-item
-            v-if="isCreate"
-            :label="t('stock.warehouse')"
-            required
-            :help="fields.warehouseId"
-          >
-            <a-select
-              v-model:value="form.warehouseId"
-              :options="warehouseOptions"
-              :disabled="saving || blocked"
-            />
-          </a-form-item>
-          <a-form-item :label="t('stock.note')" :help="fields.note">
-            <a-textarea v-model:value="form.note" :maxlength="2000" show-count />
-          </a-form-item>
-          <a-alert v-if="fields.lines" type="error" :message="fields.lines" />
-          <BasicTable
-            :columns="columns"
-            :data-source="form.lines"
-            row-key="productId"
-            :scroll="{ x: 1100 }"
-            @reload="load()"
-          >
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'systemQuantity'"
-                >{{
-                  record.systemQuantity === undefined
-                    ? t('stocktake.pendingSnapshot')
-                    : formatStockInteger(record.systemQuantity)
-                }}
-                <div v-if="stale[record.productId]" class="stale">
-                  {{ t('stocktake.currentQuantity') }}: {{ stale[record.productId]?.currentQuantity
-                  }}<br />{{ t('stocktake.revisionChanged') }}:
-                  {{ stale[record.productId]?.snapshotRevision }} &rarr;
-                  {{ stale[record.productId]?.currentRevision }}
-                </div>
-              </template>
-              <template v-else-if="column.key === 'countedQuantity'">
-                <a-input
-                  v-if="editable && !isCreate"
-                  v-model:value="record.countedQuantity"
-                  inputmode="numeric"
-                  :disabled="
-                    saving || blocked || !activeWarehouse || record.systemQuantity === undefined
+      <div class="stocktake-dialog__body">
+        <a-alert v-if="error" type="error" :message="error" show-icon />
+        <a-alert v-if="!allowed" type="warning" :message="t('stock.forbidden')" />
+        <template v-if="allowed && (isCreate || detail)">
+          <a-alert
+            v-if="isCreate || draft"
+            type="warning"
+            :message="t('stocktake.instructions')"
+            show-icon
+          />
+          <section class="stocktake-section">
+            <h2>{{ t('stocktake.information') }}</h2>
+            <a-descriptions v-if="detail" bordered size="small" :column="{ xs: 1, sm: 2 }">
+              <a-descriptions-item :label="t('stock.code')">
+                <a-tooltip :title="detail.code"
+                  ><span class="audit-value">{{ detail.code || '—' }}</span></a-tooltip
+                >
+              </a-descriptions-item>
+              <a-descriptions-item :label="t('stock.status')">
+                <a-tag
+                  :color="
+                    detail.status === 'CONFIRMED'
+                      ? 'green'
+                      : detail.status === 'CANCELLED'
+                        ? 'red'
+                        : 'default'
                   "
-                  :aria-label="t('stocktake.countedQuantity')"
-                />
-                <span v-else>{{
-                  record.countedQuantity === ''
-                    ? '-'
-                    : formatStockInteger(BigInt(record.countedQuantity))
-                }}</span>
-                <div v-if="fields[`lines.${record.productId}`]" class="stale">
-                  {{ fields[`lines.${record.productId}`] }}
-                </div>
+                  >{{ t(`stock.${detail.status}`) }}</a-tag
+                >
+              </a-descriptions-item>
+              <a-descriptions-item :label="t('stock.warehouse')">
+                <a-tooltip :title="warehouseName(detail.warehouseId)"
+                  ><span class="audit-value">{{
+                    warehouseName(detail.warehouseId) || '—'
+                  }}</span></a-tooltip
+                >
+              </a-descriptions-item>
+              <a-descriptions-item :label="t('stocktake.version')">{{
+                String(detail.version)
+              }}</a-descriptions-item>
+              <a-descriptions-item :label="t('stock.createdBy')">
+                <a-tooltip :title="detail.createdBy"
+                  ><span class="audit-value">{{ detail.createdBy || '—' }}</span></a-tooltip
+                >
+              </a-descriptions-item>
+              <a-descriptions-item :label="t('stock.createdAt')">{{
+                formatDateTime(detail.createdAt) || '—'
+              }}</a-descriptions-item>
+              <a-descriptions-item :label="t('stocktake.updatedBy')">
+                <a-tooltip :title="detail.updatedBy"
+                  ><span class="audit-value">{{ detail.updatedBy || '—' }}</span></a-tooltip
+                >
+              </a-descriptions-item>
+              <a-descriptions-item :label="t('stocktake.updatedAt')">{{
+                formatDateTime(detail.updatedAt) || '—'
+              }}</a-descriptions-item>
+              <template v-if="detail.confirmedAt || detail.confirmedBy">
+                <a-descriptions-item :label="t('stocktake.confirmedBy')"
+                  ><a-tooltip :title="detail.confirmedBy"
+                    ><span class="audit-value">{{ detail.confirmedBy || '—' }}</span></a-tooltip
+                  ></a-descriptions-item
+                >
+                <a-descriptions-item :label="t('stocktake.confirmedAt')">{{
+                  formatDateTime(detail.confirmedAt) || '—'
+                }}</a-descriptions-item>
               </template>
-              <template v-else-if="column.key === 'difference'">{{
-                countDifference(record.countedQuantity, record.systemQuantity) === undefined
-                  ? '-'
-                  : formatStockInteger(
-                      countDifference(record.countedQuantity, record.systemQuantity)!,
-                    )
-              }}</template>
-              <template v-else-if="column.key === 'reason'">
-                <a-textarea
-                  v-if="editable && !isCreate"
-                  v-model:value="record.reason"
-                  :maxlength="2000"
-                  :disabled="
-                    saving || blocked || !activeWarehouse || record.systemQuantity === undefined
-                  "
-                  :aria-label="t('stock.reason')"
-                />
-                <span v-else>{{ record.reason || '-' }}</span>
+              <template v-if="detail.cancelledAt || detail.cancelledBy">
+                <a-descriptions-item :label="t('stocktake.cancelledBy')"
+                  ><a-tooltip :title="detail.cancelledBy"
+                    ><span class="audit-value">{{ detail.cancelledBy || '—' }}</span></a-tooltip
+                  ></a-descriptions-item
+                >
+                <a-descriptions-item :label="t('stocktake.cancelledAt')">{{
+                  formatDateTime(detail.cancelledAt) || '—'
+                }}</a-descriptions-item>
               </template>
-              <a-button
-                v-else-if="column.key === 'actions' && editable"
-                danger
-                size="small"
-                :disabled="saving || blocked || !activeWarehouse"
-                @click="removeProduct(record.productId)"
-                >{{ t('stock.removeLine') }}</a-button
+              <a-descriptions-item
+                v-if="detail.cancellationReason"
+                :label="t('stock.reason')"
+                :span="2"
+                ><span class="stocktake-note">{{
+                  detail.cancellationReason
+                }}</span></a-descriptions-item
               >
-            </template>
-          </BasicTable>
-        </a-form>
-        <template v-if="editable && activeWarehouse">
-          <p>{{ t('stocktake.saveNewLine') }}</p>
-          <StocktakeProducts
-            :warehouse-id="form.warehouseId"
-            :selected="form.lines.map((line) => line.productId)"
-            :disabled="saving || blocked"
-            @select="addProduct"
-          />
+            </a-descriptions>
+            <a-form
+              v-if="isCreate"
+              layout="vertical"
+              :disabled="saving || blocked || !editable || (!isCreate && !activeWarehouse)"
+            >
+              <a-form-item
+                :label="t('stock.warehouse')"
+                required
+                :help="fields.warehouseId"
+                :validate-status="fields.warehouseId ? 'error' : undefined"
+              >
+                <a-select
+                  v-model:value="form.warehouseId"
+                  :options="warehouseOptions"
+                  :disabled="saving || blocked"
+                  :aria-label="t('stock.warehouse')"
+                />
+              </a-form-item>
+            </a-form>
+          </section>
+          <a-alert v-if="detail && !draft" type="info" :message="t('stocktake.finalStatus')" />
+          <a-form
+            layout="vertical"
+            :disabled="saving || blocked || !editable || (!isCreate && !activeWarehouse)"
+            class="stocktake-lines-form"
+          >
+            <a-alert v-if="fields.lines" type="error" :message="fields.lines" />
+            <StocktakeTable
+              :columns="columns"
+              :rows="form.lines"
+              row-key="productId"
+              :title="t('stocktake.products')"
+              :scroll-width="1460"
+              @reload="load()"
+            >
+              <template #bodyCell="{ column, record }">
+                <a-tooltip
+                  v-if="column.key === 'productCode' || column.key === 'productName'"
+                  :title="record[column.key] || '—'"
+                >
+                  <span class="line-text" :class="{ 'line-code': column.key === 'productCode' }">{{
+                    record[column.key] || '—'
+                  }}</span>
+                </a-tooltip>
+                <template v-else-if="column.key === 'unit'">{{ record.unit || '—' }}</template>
+                <template v-else-if="column.key === 'systemQuantity'">
+                  <span class="stocktake-number">{{
+                    record.systemQuantity === undefined
+                      ? t('stocktake.pendingSnapshot')
+                      : formatStockInteger(record.systemQuantity)
+                  }}</span>
+                  <div v-if="stale[record.productId]" class="stale">
+                    {{ t('stocktake.currentQuantity') }}:
+                    {{ stale[record.productId]?.currentQuantity ?? '—' }}<br />
+                    {{ t('stocktake.revisionChanged') }}:
+                    {{ stale[record.productId]?.snapshotRevision ?? '—' }} &rarr;
+                    {{ stale[record.productId]?.currentRevision ?? '—' }}
+                  </div>
+                </template>
+                <template v-else-if="column.key === 'countedQuantity'">
+                  <a-input
+                    v-if="editable && !isCreate"
+                    v-model:value="record.countedQuantity"
+                    class="stocktake-count-input"
+                    inputmode="numeric"
+                    :disabled="
+                      saving || blocked || !activeWarehouse || record.systemQuantity === undefined
+                    "
+                    :aria-label="t('stocktake.countedQuantity')"
+                    :status="fields[`lines.${record.productId}`] ? 'error' : undefined"
+                  />
+                  <span v-else class="stocktake-number">{{
+                    record.countedQuantity === ''
+                      ? '—'
+                      : formatStockInteger(BigInt(record.countedQuantity))
+                  }}</span>
+                  <div v-if="fields[`lines.${record.productId}`]" class="stale">
+                    {{ fields[`lines.${record.productId}`] }}
+                  </div>
+                </template>
+                <span
+                  v-else-if="column.key === 'difference'"
+                  class="stocktake-number stocktake-difference"
+                  :class="differenceClass(record)"
+                  >{{ differenceText(record) }}</span
+                >
+                <template v-else-if="column.key === 'reason'">
+                  <a-textarea
+                    v-if="editable && !isCreate"
+                    v-model:value="record.reason"
+                    :auto-size="{ minRows: 1, maxRows: 4 }"
+                    :maxlength="2000"
+                    :disabled="
+                      saving || blocked || !activeWarehouse || record.systemQuantity === undefined
+                    "
+                    :aria-label="t('stocktake.reason')"
+                  />
+                  <span v-else class="stocktake-note">{{ record.reason || '—' }}</span>
+                </template>
+                <template v-else-if="column.key === 'actions'">
+                  <a-button
+                    v-if="editable"
+                    danger
+                    size="small"
+                    :disabled="saving || blocked || !activeWarehouse"
+                    @click="removeProduct(record.productId)"
+                    >{{ t('stock.removeLine') }}</a-button
+                  >
+                  <span v-else>—</span>
+                </template>
+              </template>
+            </StocktakeTable>
+          </a-form>
+          <section v-if="editable && activeWarehouse" class="stocktake-section">
+            <h2><PlusOutlined aria-hidden="true" /> {{ t('stocktake.addProduct') }}</h2>
+            <p class="stocktake-help">{{ t('stocktake.saveNewLine') }}</p>
+            <StocktakeProducts
+              :warehouse-id="form.warehouseId"
+              :selected="form.lines.map((line) => line.productId)"
+              :disabled="saving || blocked"
+              @select="addProduct"
+            />
+          </section>
+          <section class="stocktake-section">
+            <h2>{{ t('stock.note') }}</h2>
+            <a-form
+              layout="vertical"
+              :disabled="saving || blocked || !editable || (!isCreate && !activeWarehouse)"
+            >
+              <a-form-item
+                v-if="editable"
+                :help="fields.note"
+                :validate-status="fields.note ? 'error' : undefined"
+              >
+                <a-textarea
+                  v-model:value="form.note"
+                  :aria-label="t('stock.note')"
+                  :auto-size="{ minRows: 3, maxRows: 6 }"
+                  :maxlength="2000"
+                  show-count
+                />
+              </a-form-item>
+              <p v-else class="stocktake-note">{{ form.note || '—' }}</p>
+            </a-form>
+            <a-form-item
+              v-if="draft && can('STOCKTAKE_CANCEL')"
+              :label="t('stocktake.cancelReason')"
+              :help="fields.reason"
+              :validate-status="fields.reason ? 'error' : undefined"
+            >
+              <a-textarea
+                v-model:value="reason"
+                :aria-label="t('stocktake.cancelReason')"
+                :auto-size="{ minRows: 2, maxRows: 5 }"
+                :maxlength="2000"
+                :disabled="saving || blocked"
+                show-count
+              />
+            </a-form-item>
+          </section>
         </template>
-        <a-form-item
-          v-if="draft && can('STOCKTAKE_CANCEL')"
-          :label="t('stocktake.cancelReason')"
-          :help="fields.reason"
-        >
-          <a-textarea
-            v-model:value="reason"
-            :maxlength="2000"
-            :disabled="saving || blocked"
-            show-count
-          />
-        </a-form-item>
-      </template>
+      </div>
     </a-spin>
     <template #footer>
-      <a-button :disabled="saving" @click="close">{{ t('common.cancel') }}</a-button>
-      <a-button
-        v-if="(id || detail) && can('STOCKTAKE_VIEW')"
-        :disabled="saving || loading"
-        @click="load()"
-        >{{ t('stock.reloadDetail') }}</a-button
-      >
-      <a-button
-        v-if="editable"
-        type="primary"
-        :loading="saving"
-        :disabled="blocked || loading || !activeWarehouse"
-        @click="execute('save')"
-        >{{ t('common.save') }}</a-button
-      >
-      <template v-if="draft">
+      <div class="stocktake-dialog__footer">
+        <a-button :disabled="saving" @click="close">{{ t('common.cancel') }}</a-button>
         <a-button
-          v-if="can('STOCKTAKE_UPDATE')"
-          :disabled="saving || loading || blocked || !activeWarehouse"
-          @click="requestAction('refresh')"
-          >{{ t('stocktake.refresh') }}</a-button
+          v-if="(id || detail) && can('STOCKTAKE_VIEW')"
+          :disabled="saving || loading"
+          @click="load()"
+          ><template #icon><ReloadOutlined aria-hidden="true" /></template
+          >{{ t('stock.reloadDetail') }}</a-button
         >
         <a-button
-          v-if="can('STOCKTAKE_CONFIRM')"
+          v-if="editable"
           type="primary"
-          :disabled="saving || loading || blocked || !activeWarehouse"
-          @click="requestAction('confirm')"
-          >{{ t('stocktake.confirm') }}</a-button
+          :loading="saving"
+          :disabled="blocked || loading || !activeWarehouse"
+          @click="execute('save')"
+          ><template #icon><SaveOutlined aria-hidden="true" /></template
+          >{{ t('common.save') }}</a-button
         >
-        <a-button
-          v-if="can('STOCKTAKE_CANCEL')"
-          danger
-          :disabled="saving || loading || blocked"
-          @click="requestAction('cancel')"
-          >{{ t('stocktake.cancel') }}</a-button
-        >
-      </template>
+        <template v-if="draft">
+          <a-button
+            v-if="can('STOCKTAKE_UPDATE')"
+            :disabled="saving || loading || blocked || !activeWarehouse"
+            @click="requestAction('refresh')"
+            >{{ t('stocktake.refresh') }}</a-button
+          >
+          <a-button
+            v-if="can('STOCKTAKE_CONFIRM')"
+            type="primary"
+            :disabled="saving || loading || blocked || !activeWarehouse"
+            @click="requestAction('confirm')"
+            >{{ t('stocktake.confirm') }}</a-button
+          >
+          <a-button
+            v-if="can('STOCKTAKE_CANCEL')"
+            danger
+            :disabled="saving || loading || blocked"
+            @click="requestAction('cancel')"
+            >{{ t('stocktake.cancel') }}</a-button
+          >
+        </template>
+      </div>
     </template>
   </BasicModal>
 </template>
+
 <style scoped>
-:deep(.ant-alert),
-:deep(.ant-descriptions) {
-  margin-bottom: 16px;
+.stocktake-dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
+.stocktake-section {
+  min-width: 0;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e9e4f1;
+  border-radius: 12px;
+}
+h2 {
+  margin: 0 0 12px;
+  color: #302640;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+.stocktake-help {
+  margin: 0 0 12px;
+  color: #757080;
+  font-size: 13px;
+}
+.stocktake-lines-form :deep(.ant-alert) {
+  margin-bottom: 12px;
+}
+.stocktake-section :deep(.ant-form-item:last-child) {
+  margin-bottom: 0;
+}
+.stocktake-section :deep(.ant-descriptions-view table) {
+  table-layout: fixed;
+}
+.audit-value,
+.line-text {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.line-code {
+  font-weight: 600;
+  color: #5a4578;
+}
+.stocktake-number {
+  font-variant-numeric: tabular-nums;
+}
+.stocktake-count-input {
+  min-height: 36px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.stocktake-difference {
+  font-weight: 600;
+}
+.difference-positive {
+  color: #237804;
+}
+.difference-negative,
 .stale {
   color: #cf1322;
+}
+.stale {
   margin-top: 4px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.stocktake-note {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.stocktake-dialog__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.stocktake-dialog__footer :deep(.ant-btn + .ant-btn) {
+  margin-inline-start: 0;
+}
+:global(.stocktake-dialog .ant-modal) {
+  top: 16px;
+  max-width: calc(100vw - 24px);
+  padding-bottom: 16px;
+}
+:global(.stocktake-dialog .ant-modal-content) {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 32px);
+}
+:global(.stocktake-dialog .ant-modal-header),
+:global(.stocktake-dialog .ant-modal-footer) {
+  flex-shrink: 0;
+}
+:global(.stocktake-dialog .ant-modal-body) {
+  min-height: 0;
+  overflow: auto;
+  padding-block: 4px;
+}
+:global(.stocktake-dialog .ant-modal-footer) {
+  margin-top: 12px;
+}
+@media (max-width: 575px) {
+  .stocktake-section {
+    padding: 12px;
+  }
+  :global(.stocktake-dialog .ant-modal-content) {
+    padding: 16px 12px;
+  }
+  .stocktake-dialog__footer {
+    justify-content: flex-start;
+  }
+  .stocktake-dialog__footer :deep(.ant-btn) {
+    height: auto;
+    min-height: 32px;
+    white-space: normal;
+  }
+}
+@media (max-height: 450px) {
+  :global(.stocktake-dialog .ant-modal-content) {
+    max-height: none;
+  }
+  :global(.stocktake-dialog .ant-modal-body) {
+    overflow: visible;
+  }
 }
 </style>
