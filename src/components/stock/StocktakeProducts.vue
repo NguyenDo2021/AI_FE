@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { BasicTable } from '@/components'
+import type { TableColumnsType } from 'ant-design-vue'
+import StocktakeTable from './StocktakeTable.vue'
 import { getInventory } from '@/api/stock/stock.api'
 import { useSalesScope } from '@/composables/useSalesScope'
 import { formatStockInteger, stockError } from '@/utils/stock'
@@ -17,11 +18,19 @@ const total = ref(0)
 const loading = ref(false)
 const error = ref('')
 let sequence = 0
-const columns = computed(() =>
+const columns = computed<TableColumnsType<Inventory>>(() =>
   ['productCode', 'productName', 'unit', 'quantity', 'actions'].map((key) => ({
     key,
     dataIndex: key,
     title: t(`stock.${key}`),
+    width: (
+      { productCode: 160, productName: 260, unit: 90, quantity: 190, actions: 150 } as Record<
+        string,
+        number
+      >
+    )[key],
+    ...(key === 'quantity' ? { align: 'right' as const } : {}),
+    ...(key === 'actions' ? { fixed: 'right' as const } : {}),
   })),
 )
 const pagination = computed(() => ({
@@ -89,9 +98,13 @@ const select = (row: Inventory): void => {
   />
   <template v-else-if="warehouseId">
     <a-alert v-if="error" type="error" :message="error" />
-    <BasicTable
+    <StocktakeTable
       :columns="columns"
-      :data-source="rows"
+      :title="t('stocktake.availableProducts')"
+      :total-label="t('stocktake.totalProducts', { total })"
+      :scroll-width="850"
+      :reset-key="JSON.stringify([warehouseId, page, pageSize])"
+      :rows="rows"
       row-key="productId"
       :pagination="pagination"
       :loading="loading"
@@ -99,7 +112,14 @@ const select = (row: Inventory): void => {
       @page-change="changePage"
     >
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'quantity'">{{
+        <a-tooltip
+          v-if="column.key === 'productCode' || column.key === 'productName'"
+          :title="record[column.key] || '—'"
+        >
+          <span class="stocktake-product-text">{{ record[column.key] || '—' }}</span>
+        </a-tooltip>
+        <template v-else-if="column.key === 'unit'">{{ record.unit || '—' }}</template>
+        <template v-else-if="column.key === 'quantity'">{{
           formatStockInteger(record.quantity)
         }}</template>
         <a-button
@@ -110,6 +130,14 @@ const select = (row: Inventory): void => {
           >{{ t('stocktake.addProduct') }}</a-button
         >
       </template>
-    </BasicTable>
+    </StocktakeTable>
   </template>
 </template>
+<style scoped>
+.stocktake-product-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

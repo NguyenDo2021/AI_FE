@@ -74,6 +74,11 @@ const mockUrl = moduleUrl(`
  export const useAuthStore = () => context.auth
  export const useCatalogPermission = () => ({ can: (permission) => context.auth.isCatalogAdmin || context.auth.user.permissions.includes(permission) })
  export const useI18n = () => ({ t: key => key })
+ export const PlusOutlined = defineComponent({ render: () => null })
+ export const ReloadOutlined = PlusOutlined
+ export const SaveOutlined = PlusOutlined
+ export const EyeOutlined = PlusOutlined
+ export const MoreOutlined = PlusOutlined
  export const message = { success() {} }
  export const Modal = { confirm(options) { context.modals.push(options) } }
  export const useRoute = () => context.route
@@ -108,6 +113,9 @@ async function component(path, expose) {
   code = code.replace(/from ['"]vue['"]/g, `from '${vueUrl}'`)
   for (const name of [
     'vue-i18n',
+    '@ant-design/icons-vue',
+    './StocktakeTable.vue',
+    '@/components/stock/StocktakeTable.vue',
     'ant-design-vue',
     'vue-router',
     '@/components',
@@ -140,7 +148,7 @@ const StocktakeProducts = await component(
 )
 const StocktakesPage = await component(
   'src/views/stock/StocktakesPage.vue',
-  'load, rows, total, page, pageSize, filters, show',
+  'load, rows, total, page, pageSize, filters, show, changePage, columns',
 )
 const renderer = createRenderer({
   createElement: (type) => ({ type, children: [] }),
@@ -731,4 +739,54 @@ test('both locales provide matching stocktake labels and preserve Vietnamese UTF
   assert.equal(vi.stocktake.title, 'Ki\u1ec3m k\u00ea kho')
   assert.deepEqual(Object.keys(vi.stocktake).sort(), Object.keys(en.stocktake).sort())
   assert.deepEqual(Object.keys(vi.stocktake.errors).sort(), Object.keys(en.stocktake.errors).sort())
+})
+test('page sizes preserve filters, use server totals and return to page one', async () => {
+  reset()
+  context.response = { items: [receipt()], total: 237, page: 1, pageSize: 10 }
+  const { vm, unmount } = mount(StocktakesPage, {})
+  await flush()
+  vm.filters.status = 'DRAFT'
+  vm.filters.from = '2026-10-12'
+  vm.filters.to = '2026-10-15'
+  await flush()
+  for (const size of [20, 50, 100, 10]) {
+    vm.changePage(4, size)
+    await flush()
+    assert.equal(vm.page, 1)
+    assert.equal(vm.total, 237)
+    assert.deepEqual(context.calls.at(-1).config.params, {
+      page: 1,
+      pageSize: size,
+      warehouseId: 'w1',
+      status: 'DRAFT',
+      from: '2026-10-12',
+      to: '2026-10-15',
+    })
+    vm.changePage(2, size)
+    await flush()
+    assert.equal(context.calls.at(-1).config.params.page, 2)
+  }
+  assert.deepEqual(
+    vm.columns.map((column) => column.key),
+    ['code', 'warehouse', 'createdBy', 'updatedBy', 'updatedAt', 'status', 'createdAt', 'actions'],
+  )
+  assert.equal(vm.columns.at(-1).fixed, 'right')
+  unmount()
+})
+
+test('list ignores late responses after filters change', async () => {
+  reset()
+  const requests = []
+  context.handler = () => new Promise((resolve) => requests.push(resolve))
+  const { vm, unmount } = mount(StocktakesPage, {})
+  await flush()
+  vm.filters.status = 'CONFIRMED'
+  await flush()
+  requests.at(-1)({ items: [receipt({ code: 'NEW' })], total: 1 })
+  await flush()
+  requests[0]({ items: [receipt({ code: 'OLD' })], total: 99 })
+  await flush()
+  assert.equal(vm.rows[0].code, 'NEW')
+  assert.equal(vm.total, 1)
+  unmount()
 })
