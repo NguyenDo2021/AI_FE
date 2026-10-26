@@ -18,7 +18,9 @@ const { can } = usePermission()
         route.name === 'products' ||
         route.name === 'product-groups' ||
         route.name === 'warehouses' ||
-        route.name === 'sales-customers',
+        route.name === 'sales-customers' ||
+        route.name === 'stock-inventory' ||
+        route.name === 'stock-movements',
     }"
   >
     <AppSidebar />
@@ -31,7 +33,9 @@ const { can } = usePermission()
             route.name === 'products' ||
             route.name === 'product-groups' ||
             route.name === 'warehouses' ||
-            route.name === 'sales-customers',
+            route.name === 'sales-customers' ||
+            route.name === 'stock-inventory' ||
+            route.name === 'stock-movements',
           'admin-layout__content--overview':
             route.name === 'dashboard' &&
             (authStore.isCatalogAdmin || can('REPORT_DASHBOARD_VIEW')),

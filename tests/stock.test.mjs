@@ -64,10 +64,14 @@ const mockUrl = moduleUrl(`
  export const useStockStore = () => context.stock
  export const useAuthStore = () => context.auth
  export const useCatalogPermission = () => ({ can: (permission) => context.auth.isCatalogAdmin || context.auth.user.permissions.includes(permission) })
- export const useI18n = () => ({ t: key => key })
+ export const useI18n = () => ({ t: key => key, te: key => !key.endsWith('FUTURE_TYPE') })
+ export const theme = { useToken: () => ({ token: { value: {} } }) }
  export const message = { success() {} }
  export const formatDateTime = value => value
  export const BasicModal = defineComponent({ setup(_, { slots }) { return () => h('modal', [slots.default?.(), slots.footer?.()]) } })
+ export const ReloadOutlined = defineComponent({ setup() { return () => null } })
+ export const ShopOutlined = ReloadOutlined
+ export const FittedListTable = defineComponent({ setup() { return () => null } })
  export const BasicTable = defineComponent({ setup() { return () => null } })
  export default defineComponent({ setup() { return () => null } })
 `)
@@ -84,6 +88,11 @@ async function component(path, expose) {
   source = source.replace('</script>', `defineExpose({ ${expose} })\n</script>`)
   const { descriptor } = parse(source)
   let code = compileScript(descriptor, { id: `test-${index}`, inlineTemplate: true }).content
+  code = code.replace(
+    "import FittedListTable from '@/components/catalog/FittedListTable.vue'",
+    "import { FittedListTable } from '" + mockUrl + "'",
+  )
+  code = code.replace(/from ['"]@ant-design\/icons-vue['"]/g, "from '" + mockUrl + "'")
   code = code.replace(/from ['"]vue['"]/g, `from '${vueUrl}'`)
   code = code.replace(
     /from ['"](?:vue-i18n|ant-design-vue|@\/components|@\/stores\/warehouse|@\/stores\/stock|@\/stores\/auth|@\/composables\/useCatalogPermission|@\/utils\/date|\.\/ProductSelect.vue|@\/components\/stock\/ProductSelect.vue|@\/components\/stock\/ReceiptDialog.vue|@\/components\/sales\/SalesOrderDialog.vue)['"]/g,
@@ -100,7 +109,7 @@ const ReceiptDialog = await component(
 )
 const InventoryPage = await component(
   'src/views/stock/InventoryPage.vue',
-  'load, rows, loading, error',
+  'load, rows, loading, error, page, pageSize, total, changePage, productId, from, to, reset, columns, movementLabel, sourceLabel',
 )
 const renderer = createRenderer({
   createElement: (type) => ({ type, children: [] }),
@@ -142,6 +151,8 @@ function mount(Component, props) {
   const app = renderer.createApp(Root)
   app.config.warnHandler = () => undefined
   for (const name of [
+    'a-config-provider',
+    'a-tooltip',
     'a-spin',
     'a-alert',
     'a-descriptions',
@@ -520,4 +531,149 @@ test('stock translations preserve existing catalog messages and both locales hav
   assert.equal(vi.stock.receipts, 'Phiếu nhập kho')
   assert.deepEqual(Object.keys(vi.stock).sort(), Object.keys(en.stock).sort())
   for (const text of Object.values(vi.stock)) assert.equal(text.includes('?'), false)
+})
+
+test('inventory preserves zero, inactive products and int64 quantities in server order', async () => {
+  reset()
+  const items = [
+    {
+      warehouseId: 'w1',
+      productId: 'inactive',
+      productCode: 'OLD',
+      productName: 'Snapshot',
+      unit: 'cay',
+      productStatus: 0,
+      quantity: 0,
+    },
+    {
+      warehouseId: 'w1',
+      productId: 'large',
+      productCode: 'BIG',
+      productName: 'Large',
+      unit: 'hop',
+      productStatus: 1,
+      quantity: 9223372036854775807n,
+    },
+  ]
+  context.response = domain.stringifyStockJson({ items, total: 137, page: 1, pageSize: 10 })
+  const subject = mount(InventoryPage, {})
+  await flush()
+  assert.deepEqual(subject.vm.rows, items)
+  assert.equal(subject.vm.total, 137)
+  assert.deepEqual(
+    subject.vm.columns.map((column) => column.key),
+    ['productCode', 'productName', 'unit', 'productStatus', 'quantity'],
+  )
+  assert.equal(subject.vm.columns.at(-1).align, 'right')
+  subject.unmount()
+})
+
+test('inventory size changes and filters reset server pagination without adding filters', async () => {
+  reset()
+  context.handler = () => ({
+    items: [{ warehouseId: 'w1', productId: 'p1', quantity: 0 }],
+    total: 137,
+  })
+  const subject = mount(InventoryPage, {})
+  await flush()
+  for (const size of [20, 50, 100, 10]) {
+    subject.vm.changePage(2, subject.vm.pageSize)
+    await flush()
+    subject.vm.changePage(4, size)
+    await flush()
+    assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: size })
+  }
+  subject.vm.changePage(3, 10)
+  await flush()
+  subject.vm.productId = 'inactive-page-2'
+  await flush()
+  assert.deepEqual(context.calls.at(-1).config.params, {
+    page: 1,
+    pageSize: 10,
+    productId: 'inactive-page-2',
+  })
+  subject.vm.reset()
+  await flush()
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10 })
+  const before = context.calls.length
+  subject.vm.changePage(1, 999)
+  await flush()
+  assert.equal(context.calls.length, before)
+  subject.unmount()
+})
+
+test('movement page sends exact instants, rejects inverted range and resets without end-of-day conversion', async () => {
+  reset()
+  context.handler = () => ({ items: [], total: 0 })
+  const subject = mount(InventoryPage, { movements: true })
+  await flush()
+  subject.vm.from = '2026-10-08T00:00:00+07:00'
+  subject.vm.to = '2026-10-09T00:00:00+07:00'
+  await flush()
+  assert.deepEqual(context.calls.at(-1).config.params, {
+    page: 1,
+    pageSize: 10,
+    from: '2026-10-07T17:00:00.000Z',
+    to: '2026-10-08T17:00:00.000Z',
+  })
+  const before = context.calls.length
+  subject.vm.from = '2026-10-10T00:00:00+07:00'
+  await flush()
+  assert.equal(context.calls.length, before)
+  assert.equal(subject.vm.error, 'stock.invalidRange')
+  subject.vm.reset()
+  await flush()
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10 })
+  assert.equal(subject.vm.movementLabel('FUTURE_TYPE'), 'FUTURE_TYPE')
+  assert.equal(subject.vm.movementLabel('RECEIPT_CONFIRM'), 'stock.RECEIPT_CONFIRM')
+  assert.equal(subject.vm.sourceLabel({ type: 'RECEIPT_CONFIRM', receiptId: 'id-only' }), 'id-only')
+  assert.deepEqual(
+    subject.vm.columns.map((column) => column.key),
+    [
+      'performedAt',
+      'productCode',
+      'productName',
+      'unit',
+      'quantityChange',
+      'type',
+      'sourceDocument',
+      'performedBy',
+    ],
+  )
+  subject.unmount()
+})
+
+test('inventory permission loss clears data and ignores the pending response; ADMIN still reads', async () => {
+  reset()
+  let finish
+  context.handler = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const subject = mount(InventoryPage, {})
+  await flush()
+  context.auth.user.permissions = []
+  await flush()
+  assert.deepEqual(subject.vm.rows, [])
+  finish({ items: [{ warehouseId: 'w1', productId: 'stale', quantity: 3 }], total: 1 })
+  await flush()
+  assert.deepEqual(subject.vm.rows, [])
+  assert.equal(context.calls.length, 1)
+  context.handler = () => ({ items: [], total: 0 })
+  context.auth.isCatalogAdmin = true
+  await flush()
+  assert.equal(context.calls.length, 2)
+  subject.unmount()
+})
+
+test('empty last page returns to a valid server page even when the total becomes zero', async () => {
+  reset()
+  context.handler = () => ({ items: [], total: 0 })
+  const subject = mount(InventoryPage, {})
+  await flush()
+  subject.vm.changePage(3, 10)
+  await flush()
+  assert.equal(subject.vm.page, 1)
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10 })
+  subject.unmount()
 })

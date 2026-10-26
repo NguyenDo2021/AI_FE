@@ -73,14 +73,15 @@ const mockUrl = moduleUrl(`
  export const useStockStore = () => context.stock
  export const useAuthStore = () => context.auth
  export const useCatalogPermission = () => ({ can: (permission) => context.auth.isCatalogAdmin || context.auth.user.permissions.includes(permission) })
- export const useI18n = () => ({ t: key => key })
+ export const useI18n = () => ({ t: key => key, te: key => !key.endsWith('FUTURE_TYPE') })
+ export const theme = { useToken: () => ({ token: { value: {} } }) }
  export const message = { success() {}, info() {} }
  export const Modal = { confirm: options => { context.confirmation = options } }
  export const formatDateTime = value => value
  export const BasicModal = defineComponent({ setup(_, { slots }) { return () => h('modal', [slots.default?.(), slots.footer?.()]) } })
  export const BasicDrawer = defineComponent({ setup(_, { slots, emit }) { return () => h('drawer', [slots.default?.(), slots.footer?.({ close: () => emit('update:open', false) })]) } })
  export const MoreOutlined = defineComponent({ setup() { return () => null } })
- export const PlusOutlined = MoreOutlined, ReloadOutlined = MoreOutlined, EyeOutlined = MoreOutlined, EditOutlined = MoreOutlined
+ export const ShopOutlined = MoreOutlined, PlusOutlined = MoreOutlined, ReloadOutlined = MoreOutlined, EyeOutlined = MoreOutlined, EditOutlined = MoreOutlined
  export const FittedListTable = defineComponent({ props: ['columns','rows'], setup(props, { slots }) { return () => h('table', (props.rows ?? []).flatMap(record => props.columns.map(column => h('cell', { column: column.key }, slots.bodyCell?.({ column, record, compact: false }))))) } })
  export const BasicTable = defineComponent({ props: ['columns','dataSource'], setup(props, { slots }) { return () => h('table', (props.dataSource ?? []).flatMap(record => props.columns.map(column => h('cell', { column: column.key }, slots.bodyCell?.({ column, record }))))) } })
  export default defineComponent({ setup() { return () => null } })
@@ -231,6 +232,8 @@ function mount(Component, props) {
   app.config.warnHandler = () => undefined
   app.config.globalProperties.$t = (key) => key
   for (const name of [
+    'a-config-provider',
+    'a-tooltip',
     'a-spin',
     'a-alert',
     'a-descriptions',
@@ -904,7 +907,8 @@ test('shared auth interceptor refreshes session but never replays a sales creati
       request: async () => { audit.replayed++; return {} }
     }
     export default { create: () => client }
-    export const message = { error() {} }
+    export const theme = { useToken: () => ({ token: { value: {} } }) }
+ export const message = { error() {} }
     export const i18n = { global: { t: key => key } }
     export const clearTokens = () => { audit.cleared++ }
     export const getAccessToken = () => 'access'
