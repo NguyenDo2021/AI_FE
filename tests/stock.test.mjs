@@ -66,6 +66,7 @@ const mockUrl = moduleUrl(`
  export const useCatalogPermission = () => ({ can: (permission) => context.auth.isCatalogAdmin || context.auth.user.permissions.includes(permission) })
  export const useI18n = () => ({ t: key => key })
  export const message = { success() {} }
+ export const formatDate = value => value
  export const formatDateTime = value => value
  export const BasicModal = defineComponent({ setup(_, { slots }) { return () => h('modal', [slots.default?.(), slots.footer?.()]) } })
  export const BasicTable = defineComponent({ setup() { return () => null } })

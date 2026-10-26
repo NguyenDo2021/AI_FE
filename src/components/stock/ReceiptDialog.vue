@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { BasicModal, BasicTable } from '@/components'
+import { BasicModal } from '@/components'
 import ProductSelect from './ProductSelect.vue'
 import {
   getReceipt,
@@ -22,7 +22,7 @@ import {
   stockError,
   stockFieldErrors,
 } from '@/utils/stock'
-import { formatDateTime } from '@/utils/date'
+import { formatDate, formatDateTime } from '@/utils/date'
 import type { Receipt, ReceiptForm } from '@/types/stock'
 import type { NormalizedApiError } from '@/utils/request'
 const props = defineProps<{
@@ -59,7 +59,11 @@ const emptyForm = (): ReceiptForm => ({
 const form = ref<ReceiptForm>(emptyForm())
 let generation = 0
 const readOnly = computed(
-  () => props.mode === 'view' || props.mode === 'confirm' || props.mode === 'cancel',
+  () =>
+    props.mode === 'view' ||
+    props.mode === 'confirm' ||
+    props.mode === 'cancel' ||
+    (!!detail.value && detail.value.status !== 'DRAFT'),
 )
 const allowed = computed(() =>
   can(
@@ -102,11 +106,17 @@ const estimate = computed(() =>
   ),
 )
 const lineColumns = computed(() =>
-  ['productCode', 'productName', 'unit', 'quantity', 'unitPrice', 'lineTotal'].map((key) => ({
-    title: t(`stock.${key}`),
-    dataIndex: key,
-    key,
-  })),
+  ['productCode', 'productName', 'unit', 'quantity', 'unitPrice', 'lineTotal'].map(
+    (key, index) => ({
+      title: t(`stock.${key}`),
+      dataIndex: key,
+      key,
+      width: [160, 240, 90, 170, 190, 210][index],
+      align: ['quantity', 'unitPrice', 'lineTotal'].includes(key)
+        ? ('right' as const)
+        : ('left' as const),
+    }),
+  ),
 )
 const load = async (): Promise<void> => {
   if (saving.value || !props.open) return
@@ -240,216 +250,536 @@ const close = (): void => {
   <BasicModal
     :open="open"
     :title="t(`stock.${mode}`)"
-    :width="1000"
+    :width="1080"
+    :style="{ top: 'max(12px, 5dvh)', maxWidth: 'calc(100vw - 24px)' }"
     :confirm-loading="saving"
     @update:open="close"
     @confirm="submit"
   >
-    <a-spin :spinning="loading">
-      <a-alert v-if="error" type="error" :message="error" show-icon />
-      <a-alert v-if="!allowed" type="warning" :message="t('stock.forbidden')" />
-      <a-alert
-        v-else-if="!eligible && !loading && detail"
-        type="warning"
-        :message="t('stock.statusChanged')"
-      />
-      <template v-if="allowed && (!id || detail)">
-        <a-descriptions v-if="detail" bordered :column="2">
-          <a-descriptions-item :label="t('stock.code')">{{ detail.code }}</a-descriptions-item>
-          <a-descriptions-item :label="t('stock.status')">{{
-            t(`stock.${detail.status}`)
-          }}</a-descriptions-item>
-          <a-descriptions-item :label="t('stock.warehouse')">{{
-            warehouseName(detail.warehouseId)
-          }}</a-descriptions-item>
-          <a-descriptions-item :label="t('stock.totalAmount')">{{
-            formatStockInteger(detail.totalAmount)
-          }}</a-descriptions-item>
-        </a-descriptions>
-        <a-form
-          v-if="!readOnly"
-          :model="form"
-          layout="vertical"
-          :disabled="saving || loading || blocked || !eligible"
-          @finish="submit"
-        >
-          <div class="receipt-grid">
-            <a-form-item
-              :label="t('stock.warehouse')"
-              required
-              :help="fields.warehouseId"
-              :validate-status="fields.warehouseId ? 'error' : undefined"
-              ><a-select
-                v-if="mode === 'create'"
-                v-model:value="form.warehouseId"
-                :options="warehouseOptions" /><a-input
-                v-else
-                :value="warehouseName(form.warehouseId)"
-                disabled
-            /></a-form-item>
-            <a-form-item
-              :label="t('stock.receiptDate')"
-              required
-              :help="fields.receiptDate"
-              :validate-status="fields.receiptDate ? 'error' : undefined"
-              ><a-date-picker
-                v-model:value="form.receiptDate"
-                value-format="YYYY-MM-DD"
-                style="width: 100%"
-            /></a-form-item>
-            <a-form-item :label="t('stock.supplierName')" :help="fields.supplierName"
-              ><a-input v-model:value="form.supplierName"
-            /></a-form-item>
-            <a-form-item :label="t('stock.note')" :help="fields.note"
-              ><a-textarea v-model:value="form.note"
-            /></a-form-item>
-          </div>
-          <a-alert v-if="fields.lines" type="error" :message="fields.lines" />
-          <div v-for="(line, index) in form.lines" :key="line.key ?? index" class="receipt-lines">
-            <a-form-item
-              :label="t('stock.product')"
-              required
-              :help="fieldError(index, 'productId')"
-              :validate-status="fieldError(index, 'productId') ? 'error' : undefined"
-              ><ProductSelect
-                :value="line.productId"
-                :seeds="seeds"
-                active-only
-                :disabled="saving || blocked || !eligible"
-                @update:value="(value) => (line.productId = value ?? '')"
-            /></a-form-item>
-            <a-form-item
-              :label="t('stock.quantity')"
-              required
-              :help="fieldError(index, 'quantity')"
-              :validate-status="fieldError(index, 'quantity') ? 'error' : undefined"
-              ><a-input v-model:value="line.quantity" inputmode="numeric"
-            /></a-form-item>
-            <a-form-item
-              :label="t('stock.unitPrice')"
-              required
-              :help="fieldError(index, 'unitPrice')"
-              :validate-status="fieldError(index, 'unitPrice') ? 'error' : undefined"
-              ><a-input v-model:value="line.unitPrice" inputmode="numeric"
-            /></a-form-item>
-            <a-button danger @click="form.lines.splice(index, 1)">{{
-              t('stock.removeLine')
-            }}</a-button>
-          </div>
-          <a-button @click="form.lines.push(newLine())">{{ t('stock.addLine') }}</a-button>
-          <p>{{ t('stock.estimatedTotal') }}: {{ formatStockInteger(estimate) }}</p>
-        </a-form>
-        <template v-else-if="detail">
-          <a-descriptions bordered :column="1">
-            <a-descriptions-item :label="t('stock.receiptDate')">{{
-              detail.receiptDate
-            }}</a-descriptions-item>
-            <a-descriptions-item :label="t('stock.supplierName')">{{
-              detail.supplierName || '—'
-            }}</a-descriptions-item>
-            <a-descriptions-item :label="t('stock.note')">{{
-              detail.note || '—'
-            }}</a-descriptions-item>
-            <a-descriptions-item :label="t('stock.createdBy')">{{
-              detail.createdBy
-            }}</a-descriptions-item>
-            <a-descriptions-item :label="t('stock.createdAt')">{{
-              formatDateTime(detail.createdAt)
-            }}</a-descriptions-item>
-            <a-descriptions-item v-if="detail.confirmedAt" :label="t('stock.confirmedAt')"
-              >{{ formatDateTime(detail.confirmedAt) }} /
-              {{ detail.confirmedBy || '—' }}</a-descriptions-item
+    <div class="receipt-dialog-body">
+      <a-spin :spinning="loading">
+        <a-alert v-if="error" type="error" :message="error" show-icon />
+        <a-alert v-if="!allowed" type="warning" :message="t('stock.forbidden')" />
+        <a-alert
+          v-else-if="!eligible && !loading && detail"
+          type="warning"
+          :message="t('stock.statusChanged')"
+        />
+        <template v-if="allowed && (!id || detail)">
+          <div v-if="detail" class="receipt-summary">
+            <div class="receipt-summary-code">
+              <span>{{ t('stock.code') }}</span>
+              <strong>{{ detail.code }}</strong>
+            </div>
+            <a-tag
+              :color="
+                detail.status === 'CONFIRMED'
+                  ? 'success'
+                  : detail.status === 'CANCELLED'
+                    ? 'error'
+                    : 'default'
+              "
+              >{{ t(`stock.${detail.status}`) }}</a-tag
             >
-            <a-descriptions-item v-if="detail.cancelledAt" :label="t('stock.cancelledAt')"
-              >{{ formatDateTime(detail.cancelledAt) }} /
-              {{ detail.cancelledBy || '—' }}</a-descriptions-item
-            >
-            <a-descriptions-item v-if="detail.cancellationReason" :label="t('stock.reason')">{{
-              detail.cancellationReason
-            }}</a-descriptions-item>
-          </a-descriptions>
-          <BasicTable
-            :columns="lineColumns"
-            :data-source="detail.lines"
-            row-key="productId"
-            :scroll="{ x: 750 }"
-            @reload="load"
-            ><template #bodyCell="{ column, record }"
-              ><template
-                v-if="['quantity', 'unitPrice', 'lineTotal'].includes(String(column.key))"
-                >{{ formatStockInteger(record[column.key]) }}</template
-              ></template
-            ></BasicTable
+            <div class="receipt-summary-total">
+              <span>{{ t('stock.totalAmount') }}</span>
+              <strong>{{ formatStockInteger(detail.totalAmount) }} ₫</strong>
+            </div>
+          </div>
+          <a-form
+            v-if="!readOnly"
+            :model="form"
+            layout="vertical"
+            :disabled="saving || loading || blocked || !eligible"
+            @finish="submit"
           >
-          <a-alert v-if="mode === 'confirm'" type="warning" :message="t('stock.confirmWarning')" />
-          <template v-if="mode === 'cancel'"
-            ><a-alert
+            <section class="receipt-section">
+              <h3>Thông tin phiếu</h3>
+              <div class="receipt-grid">
+                <a-form-item
+                  :label="t('stock.warehouse')"
+                  html-for="receipt-warehouse"
+                  required
+                  :help="fields.warehouseId"
+                  :validate-status="fields.warehouseId ? 'error' : undefined"
+                >
+                  <a-select
+                    v-if="mode === 'create'"
+                    id="receipt-warehouse"
+                    v-model:value="form.warehouseId"
+                    :options="warehouseOptions"
+                    :placeholder="t('stock.warehouse')"
+                  />
+                  <a-input
+                    v-else
+                    id="receipt-warehouse"
+                    :value="warehouseName(form.warehouseId)"
+                    disabled
+                  />
+                </a-form-item>
+                <a-form-item
+                  :label="t('stock.receiptDate')"
+                  html-for="receipt-date"
+                  required
+                  :help="fields.receiptDate"
+                  :validate-status="fields.receiptDate ? 'error' : undefined"
+                >
+                  <a-date-picker
+                    id="receipt-date"
+                    v-model:value="form.receiptDate"
+                    value-format="YYYY-MM-DD"
+                    format="DD/MM/YYYY"
+                    style="width: 100%"
+                  />
+                </a-form-item>
+                <a-form-item
+                  :label="t('stock.supplierName')"
+                  html-for="receipt-supplier"
+                  :help="fields.supplierName"
+                >
+                  <a-input id="receipt-supplier" v-model:value="form.supplierName" />
+                </a-form-item>
+                <a-form-item :label="t('stock.note')" html-for="receipt-note" :help="fields.note">
+                  <a-textarea id="receipt-note" v-model:value="form.note" :rows="2" />
+                </a-form-item>
+              </div>
+            </section>
+            <section class="receipt-section">
+              <div class="receipt-section-heading">
+                <h3>
+                  Danh sách sản phẩm <span>({{ form.lines.length }})</span>
+                </h3>
+                <a-button @click="form.lines.push(newLine())">+ {{ t('stock.addLine') }}</a-button>
+              </div>
+              <a-alert v-if="fields.lines" type="error" :message="fields.lines" />
+              <div
+                class="receipt-lines-scroll"
+                tabindex="0"
+                aria-label="Danh sách sản phẩm, cuộn ngang để xem các trường"
+              >
+                <table class="receipt-lines-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>{{ t('stock.product') }}</th>
+                      <th class="receipt-number">{{ t('stock.quantity') }}</th>
+                      <th class="receipt-number">{{ t('stock.unitPrice') }} (VND)</th>
+                      <th>{{ t('stock.actions') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(line, index) in form.lines" :key="line.key ?? index">
+                      <td class="receipt-line-index">{{ index + 1 }}</td>
+                      <td>
+                        <a-form-item
+                          required
+                          :help="fieldError(index, 'productId')"
+                          :validate-status="fieldError(index, 'productId') ? 'error' : undefined"
+                        >
+                          <ProductSelect
+                            :value="line.productId"
+                            :seeds="seeds"
+                            active-only
+                            :disabled="saving || blocked || !eligible"
+                            @update:value="(value) => (line.productId = value ?? '')"
+                          />
+                        </a-form-item>
+                      </td>
+                      <td>
+                        <a-form-item
+                          required
+                          :help="fieldError(index, 'quantity')"
+                          :validate-status="fieldError(index, 'quantity') ? 'error' : undefined"
+                        >
+                          <a-input
+                            v-model:value="line.quantity"
+                            inputmode="numeric"
+                            class="receipt-number-input"
+                            :aria-label="`${t('stock.quantity')} ${index + 1}`"
+                          />
+                        </a-form-item>
+                      </td>
+                      <td>
+                        <a-form-item
+                          required
+                          :help="fieldError(index, 'unitPrice')"
+                          :validate-status="fieldError(index, 'unitPrice') ? 'error' : undefined"
+                        >
+                          <a-input
+                            v-model:value="line.unitPrice"
+                            inputmode="numeric"
+                            class="receipt-number-input"
+                            :aria-label="`${t('stock.unitPrice')} ${index + 1}`"
+                          />
+                        </a-form-item>
+                      </td>
+                      <td>
+                        <a-button
+                          danger
+                          :aria-label="`${t('stock.removeLine')} ${index + 1}`"
+                          @click="form.lines.splice(index, 1)"
+                          >{{ t('stock.removeLine') }}</a-button
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="receipt-estimate">
+                <span>{{ t('stock.estimatedTotal') }}</span
+                ><strong>{{ formatStockInteger(estimate) }} ₫</strong>
+              </div>
+            </section>
+          </a-form>
+          <template v-else-if="detail">
+            <section class="receipt-section">
+              <h3>Thông tin phiếu</h3>
+              <dl class="receipt-detail-grid">
+                <div>
+                  <dt>{{ t('stock.warehouse') }}</dt>
+                  <dd>{{ warehouseName(detail.warehouseId) }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('stock.receiptDate') }}</dt>
+                  <dd>{{ formatDate(detail.receiptDate) }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('stock.supplierName') }}</dt>
+                  <dd>{{ detail.supplierName || '—' }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('stock.note') }}</dt>
+                  <dd>{{ detail.note || '—' }}</dd>
+                </div>
+              </dl>
+            </section>
+            <section class="receipt-section">
+              <h3>
+                Danh sách sản phẩm <span>({{ detail.lines.length }})</span>
+              </h3>
+              <a-table
+                class="receipt-detail-lines"
+                :columns="lineColumns"
+                :data-source="detail.lines"
+                row-key="productId"
+                :pagination="false"
+                :scroll="{ x: 1060 }"
+                size="middle"
+              >
+                <template #bodyCell="{ column, record }">
+                  <span
+                    v-if="['quantity', 'unitPrice', 'lineTotal'].includes(String(column.key))"
+                    class="receipt-number"
+                    >{{ formatStockInteger(record[column.key])
+                    }}{{ column.key === 'quantity' ? '' : ' ₫' }}</span
+                  >
+                  <span v-else class="receipt-snapshot-text">{{ record[column.key] }}</span>
+                </template>
+              </a-table>
+              <div class="receipt-estimate">
+                <span>{{ t('stock.totalAmount') }}</span
+                ><strong>{{ formatStockInteger(detail.totalAmount) }} ₫</strong>
+              </div>
+            </section>
+            <section class="receipt-section">
+              <h3>Lịch sử phiếu</h3>
+              <dl class="receipt-detail-grid">
+                <div>
+                  <dt>{{ t('stock.createdBy') }}</dt>
+                  <dd>{{ detail.createdBy }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('stock.createdAt') }}</dt>
+                  <dd>{{ formatDateTime(detail.createdAt) }}</dd>
+                </div>
+                <div v-if="detail.confirmedAt">
+                  <dt>{{ t('stock.confirmedAt') }}</dt>
+                  <dd>
+                    {{ formatDateTime(detail.confirmedAt) }} / {{ detail.confirmedBy || '—' }}
+                  </dd>
+                </div>
+                <div v-if="detail.cancelledAt">
+                  <dt>{{ t('stock.cancelledAt') }}</dt>
+                  <dd>
+                    {{ formatDateTime(detail.cancelledAt) }} / {{ detail.cancelledBy || '—' }}
+                  </dd>
+                </div>
+                <div v-if="detail.cancellationReason" class="receipt-detail-wide">
+                  <dt>{{ t('stock.reason') }}</dt>
+                  <dd>{{ detail.cancellationReason }}</dd>
+                </div>
+              </dl>
+            </section>
+            <a-alert
+              v-if="mode === 'confirm'"
               type="warning"
-              :message="
-                t(
+              :message="t('stock.confirmWarning')"
+              show-icon
+            />
+            <template v-if="mode === 'cancel'">
+              <a-alert
+                type="warning"
+                show-icon
+                :message="
+                  t(
+                    detail.status === 'CONFIRMED'
+                      ? 'stock.cancelConfirmedWarning'
+                      : 'stock.cancelDraftWarning',
+                  )
+                "
+                :description="
                   detail.status === 'CONFIRMED'
-                    ? 'stock.cancelConfirmedWarning'
-                    : 'stock.cancelDraftWarning',
-                )
-              " /><a-form-item
-              :label="t('stock.reason')"
-              :required="detail.status === 'CONFIRMED'"
-              :help="fields.reason"
-              :validate-status="fields.reason ? 'error' : undefined"
-              ><a-textarea
-                v-model:value="reason"
-                :maxlength="2000"
-                :disabled="saving || blocked"
-                show-count /></a-form-item
-          ></template>
+                    ? 'Hệ thống có thể từ chối hủy nếu không đủ tồn kho.'
+                    : undefined
+                "
+              />
+              <a-form-item
+                :label="t('stock.reason')"
+                html-for="receipt-cancel-reason"
+                :required="detail.status === 'CONFIRMED'"
+                :help="fields.reason"
+                :validate-status="fields.reason ? 'error' : undefined"
+              >
+                <a-textarea
+                  id="receipt-cancel-reason"
+                  v-model:value="reason"
+                  :maxlength="2000"
+                  :rows="3"
+                  :disabled="saving || blocked"
+                  show-count
+                />
+              </a-form-item>
+            </template>
+          </template>
         </template>
-      </template>
-    </a-spin>
+      </a-spin>
+    </div>
     <template #footer>
-      <a-button :disabled="saving" @click="close">{{ t('common.cancel') }}</a-button>
-      <a-button v-if="id" :disabled="saving || loading" @click="load">{{
-        t('stock.reloadDetail')
-      }}</a-button>
-      <a-button
-        v-if="mode !== 'view'"
-        type="primary"
-        :danger="mode === 'cancel'"
-        :loading="saving"
-        :disabled="loading || blocked || !allowed || !eligible"
-        @click="submit"
-        >{{
-          t(
-            mode === 'confirm'
-              ? 'stock.confirm'
-              : mode === 'cancel'
-                ? 'stock.cancel'
-                : 'common.save',
-          )
-        }}</a-button
-      >
+      <div class="receipt-dialog-footer">
+        <a-button :disabled="saving" @click="close">{{
+          mode === 'view' ? 'Đóng' : t('common.cancel')
+        }}</a-button>
+        <a-button v-if="id" :disabled="saving || loading" @click="load">{{
+          t('stock.reloadDetail')
+        }}</a-button>
+        <a-button
+          v-if="mode !== 'view'"
+          type="primary"
+          :danger="mode === 'cancel'"
+          :loading="saving"
+          :disabled="loading || blocked || !allowed || !eligible"
+          @click="submit"
+          >{{
+            t(
+              mode === 'confirm'
+                ? 'stock.confirm'
+                : mode === 'cancel'
+                  ? 'stock.cancel'
+                  : 'common.save',
+            )
+          }}</a-button
+        >
+      </div>
     </template>
   </BasicModal>
 </template>
 <style scoped>
-.receipt-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 16px;
-  margin-top: 16px;
+.receipt-dialog-body {
+  max-height: max(80px, calc(100dvh - 230px));
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-inline-end: 8px;
 }
-.receipt-lines {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto;
-  gap: 12px;
+.receipt-summary {
+  display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid #e9e4f1;
+  border-radius: 10px;
+  background: #f8f6fc;
+}
+.receipt-summary-code {
+  flex: 1;
+  min-width: 0;
+}
+.receipt-summary span,
+.receipt-summary strong {
+  display: block;
+}
+.receipt-summary-code strong {
+  overflow-wrap: anywhere;
+  margin-top: 4px;
+}
+.receipt-summary-total {
+  text-align: right;
+  max-width: 100%;
+}
+.receipt-summary-total strong {
+  margin-top: 4px;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.receipt-summary-code > span,
+.receipt-summary-total > span,
+dt {
+  color: #757080;
+  font-size: 13px;
+}
+.receipt-section {
+  margin-bottom: 20px;
+}
+h3 {
+  margin: 0 0 16px;
+  color: #302640;
+  font-size: 16px;
+  font-weight: 600;
+}
+h3 span {
+  color: #757080;
+  font-size: 13px;
+  font-weight: 400;
+}
+.receipt-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.receipt-section-heading h3 {
+  margin: 0;
+}
+.receipt-grid,
+.receipt-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 16px;
+}
+.receipt-grid :deep(.ant-select) {
+  width: 100%;
+}
+.receipt-detail-grid {
+  margin: 0;
+  gap: 16px 24px;
+}
+.receipt-detail-grid > div {
+  min-width: 0;
+}
+.receipt-detail-wide {
+  grid-column: 1 / -1;
+}
+dd {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.receipt-lines-scroll {
+  overflow-x: auto;
+  border: 1px solid #e9e4f1;
+  border-radius: 8px;
+}
+.receipt-lines-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.receipt-lines-table th {
+  background: #f8f6fc;
+  color: #625b70;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+.receipt-lines-table th,
+.receipt-lines-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #f0edf5;
+  vertical-align: top;
+}
+.receipt-lines-table th:first-child {
+  width: 40px;
+}
+.receipt-lines-table th:nth-child(2) {
+  width: 34%;
+}
+.receipt-lines-table th:nth-child(3) {
+  width: 20%;
+}
+.receipt-lines-table th:nth-child(4) {
+  width: 24%;
+}
+.receipt-lines-table th:last-child {
+  width: 100px;
+}
+.receipt-lines-table :deep(.ant-form-item) {
+  margin-bottom: 0;
+}
+.receipt-line-index {
+  color: #757080;
+  line-height: 32px;
+}
+.receipt-number-input,
+.receipt-lines-table th.receipt-number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.receipt-number {
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.receipt-snapshot-text {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.receipt-detail-lines :deep(.ant-table-thead > tr > th) {
+  background: #f8f6fc;
+  color: #625b70;
+  font-size: 13px;
+}
+.receipt-estimate {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 16px;
+  margin-top: 12px;
+  border-radius: 8px;
+  background: #f8f6fc;
+}
+.receipt-estimate strong {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.receipt-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 :deep(.ant-alert) {
   margin-bottom: 16px;
 }
-@media (max-width: 700px) {
+@media (max-width: 650px) {
   .receipt-grid,
-  .receipt-lines {
-    grid-template-columns: 1fr;
+  .receipt-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .receipt-summary-total {
+    flex-basis: 100%;
+    text-align: left;
+  }
+  .receipt-dialog-body {
+    max-height: max(80px, calc(100dvh - 270px));
   }
 }
 </style>
