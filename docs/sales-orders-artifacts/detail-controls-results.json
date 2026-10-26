@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "controlResults": [
+    {
+      "width": 1366,
+      "status": {
+        "top": 358.59375,
+        "bottom": 390.59375,
+        "left": 57,
+        "right": 237,
+        "height": 32
+      },
+      "reset": {
+        "top": 358.59375,
+        "bottom": 390.59375,
+        "left": 249,
+        "right": 320.4375,
+        "height": 32
+      },
+      "reload": {
+        "top": 358.59375,
+        "bottom": 390.59375,
+        "left": 1248,
+        "right": 1294,
+        "height": 32
+      },
+      "table": {
+        "top": 402.59375,
+        "bottom": 512.59375,
+        "left": 57,
+        "right": 1294,
+        "height": 110
+      },
+      "historyWidth": 1237
+    },
+    {
+      "width": 390,
+      "status": {
+        "top": 551.4375,
+        "bottom": 583.4375,
+        "left": 39,
+        "right": 219,
+        "height": 32
+      },
+      "reset": {
+        "top": 595.4375,
+        "bottom": 627.4375,
+        "left": 39,
+        "right": 110.4375,
+        "height": 32
+      },
+      "reload": {
+        "top": 551.4375,
+        "bottom": 583.4375,
+        "left": 290,
+        "right": 336,
+        "height": 32
+      },
+      "table": {
+        "top": 639.4375,
+        "bottom": 764.4375,
+        "left": 39,
+        "right": 336,
+        "height": 125
+      },
+      "historyWidth": 297
+    }
+  ],
+  "errors": [],
+  "unexpected": []
+}

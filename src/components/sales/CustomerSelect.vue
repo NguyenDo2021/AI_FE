@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { getCustomers } from '@/api/sales/sales.api'
 import { useSalesScope } from '@/composables/useSalesScope'
@@ -10,6 +10,8 @@ const props = defineProps<{
   activeOnly?: boolean
   seed?: Customer
   disabled?: boolean
+  inputId?: string
+  placeholder?: string
 }>()
 const emit = defineEmits<{
   'update:value': [value: string | undefined]
@@ -121,11 +123,12 @@ onBeforeUnmount(() => {
   <div>
     <a-select
       v-if="can('CUSTOMER_VIEW')"
+      :id="inputId"
       :value="value"
       :options="options"
       :disabled="disabled || (activeOnly && !warehouseId)"
       :loading="loading"
-      placeholder="Khách hàng (bỏ trống: Khách lẻ)"
+      :placeholder="placeholder ?? 'Khách hàng (bỏ trống: Khách lẻ)'"
       show-search
       allow-clear
       :filter-option="false"
