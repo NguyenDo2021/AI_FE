@@ -1,0 +1,1081 @@
+{
+  "checks": [
+    "Header wallet icon and close control",
+    "No automatic amount fill on open",
+    "Exact remaining amount uses DTO after returns",
+    "Existing manual payment note retained",
+    "Footer keeps Close and collection action, no Reset",
+    "Limits retained",
+    "Full code in tooltip",
+    "1366x900: width and internal overflow",
+    "1366x900: accessible header/footer",
+    "1366x900: responsive date/method row",
+    "1366x900: totals same row and consistent inputs",
+    "1366x900: purple action and code ellipsis",
+    "1366x768: width and internal overflow",
+    "1366x768: accessible header/footer",
+    "1366x768: responsive date/method row",
+    "1366x768: totals same row and consistent inputs",
+    "1366x768: purple action and code ellipsis",
+    "390x844: width and internal overflow",
+    "390x844: accessible header/footer",
+    "390x844: responsive date/method row",
+    "390x844: totals same row and consistent inputs",
+    "390x844: purple action and code ellipsis",
+    "360x740: width and internal overflow",
+    "360x740: accessible header/footer",
+    "360x740: responsive date/method row",
+    "360x740: totals same row and consistent inputs",
+    "360x740: purple action and code ellipsis",
+    "390x400: width and internal overflow",
+    "390x400: accessible header/footer",
+    "390x400: responsive date/method row",
+    "390x400: totals same row and consistent inputs",
+    "390x400: purple action and code ellipsis",
+    "Short-screen body scroll preserves header/footer",
+    "1366x420: width and internal overflow",
+    "1366x420: accessible header/footer",
+    "1366x420: responsive date/method row",
+    "1366x420: totals same row and consistent inputs",
+    "1366x420: purple action and code ellipsis",
+    "1093x614: width and internal overflow",
+    "1093x614: accessible header/footer",
+    "1093x614: responsive date/method row",
+    "1093x614: totals same row and consistent inputs",
+    "1093x614: purple action and code ellipsis",
+    "Zero validation remains visible at amount field",
+    "Exceeds remaining validation and no write",
+    "Fill remaining uses existing exact handler",
+    "Backend field errors and common error retained",
+    "Sending locks form, fill and close",
+    "Sending still prevents double submit",
+    "Success closes and updates authoritative summary",
+    "Payload has original fields, numeric amount and idempotency key",
+    "Exact int64 summary without Number conversion",
+    "Exact int64 fill",
+    "Int64 1366: fits content",
+    "Int64 390: fits content",
+    "Ambiguous failure keeps retry warning and freezes data",
+    "Int64 is a numeric JSON token",
+    "Reopen restores exact pending amount",
+    "Retry keeps original request and idempotency key",
+    "Conflict action stays disabled and close remains available",
+    "No runtime errors or unmocked API"
+  ],
+  "measurements": [
+    {
+      "scenario": "normal",
+      "viewport": [
+        1366,
+        900
+      ],
+      "dpr": 1,
+      "modal": {
+        "top": 20,
+        "left": 393,
+        "right": 973,
+        "bottom": 831.5625,
+        "width": 580,
+        "height": 811.5625
+      },
+      "header": {
+        "top": 20,
+        "left": 393,
+        "right": 973,
+        "bottom": 101,
+        "width": 580,
+        "height": 81
+      },
+      "body": {
+        "top": 101,
+        "left": 393,
+        "right": 973,
+        "bottom": 740.5625,
+        "width": 580,
+        "height": 639.5625
+      },
+      "footer": {
+        "top": 740.5625,
+        "left": 393,
+        "right": 973,
+        "bottom": 811.5625,
+        "width": 580,
+        "height": 71
+      },
+      "date": {
+        "top": 462.421875,
+        "left": 417,
+        "right": 675,
+        "bottom": 502.5625,
+        "width": 258,
+        "height": 40.140625
+      },
+      "method": {
+        "top": 462.421875,
+        "left": 691,
+        "right": 949,
+        "bottom": 502.421875,
+        "width": 258,
+        "height": 40
+      },
+      "amount": {
+        "top": 362.421875,
+        "left": 417,
+        "right": 949,
+        "bottom": 418.421875,
+        "width": 532,
+        "height": 56
+      },
+      "reference": {
+        "top": 546.5625,
+        "left": 417,
+        "right": 949,
+        "bottom": 586.5625,
+        "width": 532,
+        "height": 40
+      },
+      "fill": {
+        "top": 332.421875,
+        "left": 846.015625,
+        "right": 949,
+        "bottom": 356.421875,
+        "width": 102.984375,
+        "height": 24
+      },
+      "label": {
+        "top": 334.203125,
+        "left": 417,
+        "right": 488.46875,
+        "bottom": 354.625,
+        "width": 71.46875,
+        "height": 20.421875
+      },
+      "summary": {
+        "top": 121,
+        "left": 417,
+        "right": 949,
+        "bottom": 314.421875,
+        "width": 532,
+        "height": 193.421875
+      },
+      "totals": [
+        {
+          "top": 184.421875
+        },
+        {
+          "top": 184.421875
+        }
+      ],
+      "scrollHeight": 640,
+      "clientHeight": 640,
+      "scrollWidth": 580,
+      "clientWidth": 580,
+      "fillColor": "rgb(115, 87, 207)",
+      "primaryColor": "rgb(115, 87, 207)",
+      "codeEllipsis": "ellipsis"
+    },
+    {
+      "scenario": "normal",
+      "viewport": [
+        1366,
+        768
+      ],
+      "dpr": 1,
+      "modal": {
+        "top": 20,
+        "left": 393,
+        "right": 973,
+        "bottom": 768,
+        "width": 580,
+        "height": 748
+      },
+      "header": {
+        "top": 20,
+        "left": 393,
+        "right": 973,
+        "bottom": 101,
+        "width": 580,
+        "height": 81
+      },
+      "body": {
+        "top": 101,
+        "left": 393,
+        "right": 973,
+        "bottom": 677,
+        "width": 580,
+        "height": 576
+      },
+      "footer": {
+        "top": 677,
+        "left": 393,
+        "right": 973,
+        "bottom": 748,
+        "width": 580,
+        "height": 71
+      },
+      "date": {
+        "top": 462.421875,
+        "left": 417,
+        "right": 667.5,
+        "bottom": 502.5625,
+        "width": 250.5,
+        "height": 40.140625
+      },
+      "method": {
+        "top": 462.421875,
+        "left": 683.5,
+        "right": 934,
+        "bottom": 502.421875,
+        "width": 250.5,
+        "height": 40
+      },
+      "amount": {
+        "top": 362.421875,
+        "left": 417,
+        "right": 934,
+        "bottom": 418.421875,
+        "width": 517,
+        "height": 56
+      },
+      "reference": {
+        "top": 546.5625,
+        "left": 417,
+        "right": 934,
+        "bottom": 586.5625,
+        "width": 517,
+        "height": 40
+      },
+      "fill": {
+        "top": 332.421875,
+        "left": 831.015625,
+        "right": 934,
+        "bottom": 356.421875,
+        "width": 102.984375,
+        "height": 24
+      },
+      "label": {
+        "top": 334.203125,
+        "left": 417,
+        "right": 488.46875,
+        "bottom": 354.625,
+        "width": 71.46875,
+        "height": 20.421875
+      },
+      "summary": {
+        "top": 121,
+        "left": 417,
+        "right": 934,
+        "bottom": 314.421875,
+        "width": 517,
+        "height": 193.421875
+      },
+      "totals": [
+        {
+          "top": 184.421875
+        },
+        {
+          "top": 184.421875
+        }
+      ],
+      "scrollHeight": 640,
+      "clientHeight": 576,
+      "scrollWidth": 565,
+      "clientWidth": 565,
+      "fillColor": "rgb(115, 87, 207)",
+      "primaryColor": "rgb(115, 87, 207)",
+      "codeEllipsis": "ellipsis"
+    },
+    {
+      "scenario": "normal",
+      "viewport": [
+        390,
+        844
+      ],
+      "dpr": 1,
+      "modal": {
+        "top": 20,
+        "left": 12,
+        "right": 378,
+        "bottom": 844,
+        "width": 366,
+        "height": 824
+      },
+      "header": {
+        "top": 20,
+        "left": 12,
+        "right": 378,
+        "bottom": 89,
+        "width": 366,
+        "height": 69
+      },
+      "body": {
+        "top": 89,
+        "left": 12,
+        "right": 378,
+        "bottom": 757,
+        "width": 366,
+        "height": 668
+      },
+      "footer": {
+        "top": 757,
+        "left": 12,
+        "right": 378,
+        "bottom": 824,
+        "width": 366,
+        "height": 67
+      },
+      "date": {
+        "top": 470.421875,
+        "left": 28,
+        "right": 347,
+        "bottom": 510.5625,
+        "width": 319,
+        "height": 40.140625
+      },
+      "method": {
+        "top": 554.5625,
+        "left": 28,
+        "right": 347,
+        "bottom": 594.5625,
+        "width": 319,
+        "height": 40
+      },
+      "amount": {
+        "top": 370.421875,
+        "left": 28,
+        "right": 347,
+        "bottom": 426.421875,
+        "width": 319,
+        "height": 56
+      },
+      "reference": {
+        "top": 638.5625,
+        "left": 28,
+        "right": 347,
+        "bottom": 678.5625,
+        "width": 319,
+        "height": 40
+      },
+      "fill": {
+        "top": 340.421875,
+        "left": 244.015625,
+        "right": 347,
+        "bottom": 364.421875,
+        "width": 102.984375,
+        "height": 24
+      },
+      "label": {
+        "top": 342.203125,
+        "left": 28,
+        "right": 99.46875,
+        "bottom": 362.625,
+        "width": 71.46875,
+        "height": 20.421875
+      },
+      "summary": {
+        "top": 107,
+        "left": 28,
+        "right": 347,
+        "bottom": 322.421875,
+        "width": 319,
+        "height": 215.421875
+      },
+      "totals": [
+        {
+          "top": 168.421875
+        },
+        {
+          "top": 168.421875
+        }
+      ],
+      "scrollHeight": 760,
+      "clientHeight": 668,
+      "scrollWidth": 351,
+      "clientWidth": 351,
+      "fillColor": "rgb(115, 87, 207)",
+      "primaryColor": "rgb(115, 87, 207)",
+      "codeEllipsis": "ellipsis"
+    },
+    {
+      "scenario": "normal",
+      "viewport": [
+        360,
+        740
+      ],
+      "dpr": 1,
+      "modal": {
+        "top": 20,
+        "left": 12,
+        "right": 348,
+        "bottom": 740,
+        "width": 336,
+        "height": 720
+      },
+      "header": {
+        "top": 20,
+        "left": 12,
+        "right": 348,
+        "bottom": 89,
+        "width": 336,
+        "height": 69
+      },
+      "body": {
+        "top": 89,
+        "left": 12,
+        "right": 348,
+        "bottom": 653,
+        "width": 336,
+        "height": 564
+      },
+      "footer": {
+        "top": 653,
+        "left": 12,
+        "right": 348,
+        "bottom": 720,
+        "width": 336,
+        "height": 67
+      },
+      "date": {
+        "top": 470.421875,
+        "left": 28,
+        "right": 317,
+        "bottom": 510.5625,
+        "width": 289,
+        "height": 40.140625
+      },
+      "method": {
+        "top": 554.5625,
+        "left": 28,
+        "right": 317,
+        "bottom": 594.5625,
+        "width": 289,
+        "height": 40
+      },
+      "amount": {
+        "top": 370.421875,
+        "left": 28,
+        "right": 317,
+        "bottom": 426.421875,
+        "width": 289,
+        "height": 56
+      },
+      "reference": {
+        "top": 638.5625,
+        "left": 28,
+        "right": 317,
+        "bottom": 678.5625,
+        "width": 289,
+        "height": 40
+      },
+      "fill": {
+        "top": 340.421875,
+        "left": 214.015625,
+        "right": 317,
+        "bottom": 364.421875,
+        "width": 102.984375,
+        "height": 24
+      },
+      "label": {
+        "top": 342.203125,
+        "left": 28,
+        "right": 99.46875,
+        "bottom": 362.625,
+        "width": 71.46875,
+        "height": 20.421875
+      },
+      "summary": {
+        "top": 107,
+        "left": 28,
+        "right": 317,
+        "bottom": 322.421875,
+        "width": 289,
+        "height": 215.421875
+      },
+      "totals": [
+        {
+          "top": 168.421875
+        },
+        {
+          "top": 168.421875
+        }
+      ],
+      "scrollHeight": 760,
+      "clientHeight": 564,
+      "scrollWidth": 321,
+      "clientWidth": 321,
+      "fillColor": "rgb(115, 87, 207)",
+      "primaryColor": "rgb(115, 87, 207)",
+      "codeEllipsis": "ellipsis"
+    },
+    {
+      "scenario": "normal",
+      "viewport": [
+        390,
+        400
+      ],
+      "dpr": 1,
+      "modal": {
+        "top": 8,
+        "left": 12,
+        "right": 378,
+        "bottom": 400,
+        "width": 366,
+        "height": 392
+      },
+      "header": {
+        "top": 8,
+        "left": 12,
+        "right": 378,
+        "bottom": 69,
+        "width": 366,
+        "height": 61
+      },
+      "body": {
+        "top": 69,
+        "left": 12,
+        "right": 378,
+        "bottom": 329,
+        "width": 366,
+        "height": 260
+      },
+      "footer": {
+        "top": 329,
+        "left": 12,
+        "right": 378,
+        "bottom": 392,
+        "width": 366,
+        "height": 63
+      },
+      "date": {
+        "top": 450.421875,
+        "left": 28,
+        "right": 347,
+        "bottom": 490.5625,
+        "width": 319,
+        "height": 40.140625
+      },
+      "method": {
+        "top": 534.5625,
+        "left": 28,
+        "right": 347,
+        "bottom": 574.5625,
+        "width": 319,
+        "height": 40
+      },
+      "amount": {
+        "top": 350.421875,
+        "left": 28,
+        "right": 347,
+        "bottom": 406.421875,
+        "width": 319,
+        "height": 56
+      },
+      "reference": {
+        "top": 618.5625,
+        "left": 28,
+        "right": 347,
+        "bottom": 658.5625,
+        "width": 319,
+        "height": 40
+      },
+      "fill": {
+        "top": 320.421875,
+        "left": 244.015625,
+        "right": 347,
+        "bottom": 344.421875,
+        "width": 102.984375,
+        "height": 24
+      },
+      "label": {
+        "top": 322.203125,
+        "left": 28,
+        "right": 99.46875,
+        "bottom": 342.625,
+        "width": 71.46875,
+        "height": 20.421875
+      },
+      "summary": {
+        "top": 87,
+        "left": 28,
+        "right": 347,
+        "bottom": 302.421875,
+        "width": 319,
+        "height": 215.421875
+      },
+      "totals": [
+        {
+          "top": 148.421875
+        },
+        {
+          "top": 148.421875
+        }
+      ],
+      "scrollHeight": 760,
+      "clientHeight": 260,
+      "scrollWidth": 351,
+      "clientWidth": 351,
+      "fillColor": "rgb(115, 87, 207)",
+      "primaryColor": "rgb(115, 87, 207)",
+      "codeEllipsis": "ellipsis"
+    },
+    {
+      "scenario": "normal",
+      "viewport": [
+        1366,
+        420
+      ],
+      "dpr": 1,
+      "modal": {
+        "top": 8,
+        "left": 393,
+        "right": 973,
+        "bottom": 420,
+        "width": 580,
+        "height": 412
+      },
+      "header": {
+        "top": 8,
+        "left": 393,
+        "right": 973,
+        "bottom": 73,
+        "width": 580,
+        "height": 65
+      },
+      "body": {
+        "top": 73,
+        "left": 393,
+        "right": 973,
+        "bottom": 349,
+        "width": 580,
+        "height": 276
+      },
+      "footer": {
+        "top": 349,
+        "left": 393,
+        "right": 973,
+        "bottom": 412,
+        "width": 580,
+        "height": 63
+      },
+      "date": {
+        "top": 70.421875,
+        "left": 417,
+        "right": 667.5,
+        "bottom": 110.5625,
+        "width": 250.5,
+        "height": 40.140625
+      },
+      "method": {
+        "top": 70.421875,
+        "left": 683.5,
+        "right": 934,
+        "bottom": 110.421875,
+        "width": 250.5,
+        "height": 40
+      },
+      "amount": {
+        "top": -29.578125,
+        "left": 417,
+        "right": 934,
+        "bottom": 26.421875,
+        "width": 517,
+        "height": 56
+      },
+      "reference": {
+        "top": 154.5625,
+        "left": 417,
+        "right": 934,
+        "bottom": 194.5625,
+        "width": 517,
+        "height": 40
+      },
+      "fill": {
+        "top": -59.578125,
+        "left": 831.015625,
+        "right": 934,
+        "bottom": -35.578125,
+        "width": 102.984375,
+        "height": 24
+      },
+      "label": {
+        "top": -57.796875,
+        "left": 417,
+        "right": 488.46875,
+        "bottom": -37.375,
+        "width": 71.46875,
+        "height": 20.421875
+      },
+      "summary": {
+        "top": -271,
+        "left": 417,
+        "right": 934,
+        "bottom": -77.578125,
+        "width": 517,
+        "height": 193.421875
+      },
+      "totals": [
+        {
+          "top": -207.578125
+        },
+        {
+          "top": -207.578125
+        }
+      ],
+      "scrollHeight": 640,
+      "clientHeight": 276,
+      "scrollWidth": 565,
+      "clientWidth": 565,
+      "fillColor": "rgb(115, 87, 207)",
+      "primaryColor": "rgb(115, 87, 207)",
+      "codeEllipsis": "ellipsis"
+    },
+    {
+      "scenario": "125% equivalent CSS viewport/DPR, not native browser zoom",
+      "viewport": [
+        1093,
+        614
+      ],
+      "dpr": 1.25,
+      "modal": {
+        "top": 20,
+        "left": 256.5,
+        "right": 836.5,
+        "bottom": 614,
+        "width": 580,
+        "height": 594
+      },
+      "header": {
+        "top": 20,
+        "left": 256.5,
+        "right": 836.5,
+        "bottom": 101,
+        "width": 580,
+        "height": 81
+      },
+      "body": {
+        "top": 101,
+        "left": 256.5,
+        "right": 836.5,
+        "bottom": 523,
+        "width": 580,
+        "height": 422
+      },
+      "footer": {
+        "top": 523,
+        "left": 256.5,
+        "right": 836.5,
+        "bottom": 594,
+        "width": 580,
+        "height": 71
+      },
+      "date": {
+        "top": 244.421875,
+        "left": 280.5,
+        "right": 531,
+        "bottom": 284.5625,
+        "width": 250.5,
+        "height": 40.140625
+      },
+      "method": {
+        "top": 244.421875,
+        "left": 547,
+        "right": 797.5,
+        "bottom": 284.421875,
+        "width": 250.5,
+        "height": 40
+      },
+      "amount": {
+        "top": 144.421875,
+        "left": 280.5,
+        "right": 797.5,
+        "bottom": 200.421875,
+        "width": 517,
+        "height": 56
+      },
+      "reference": {
+        "top": 328.5625,
+        "left": 280.5,
+        "right": 797.5,
+        "bottom": 368.5625,
+        "width": 517,
+        "height": 40
+      },
+      "fill": {
+        "top": 114.421875,
+        "left": 694.515625,
+        "right": 797.5,
+        "bottom": 138.421875,
+        "width": 102.984375,
+        "height": 24
+      },
+      "label": {
+        "top": 116.203125,
+        "left": 280.5,
+        "right": 351.96875,
+        "bottom": 136.625,
+        "width": 71.46875,
+        "height": 20.421875
+      },
+      "summary": {
+        "top": -97,
+        "left": 280.5,
+        "right": 797.5,
+        "bottom": 96.421875,
+        "width": 517,
+        "height": 193.421875
+      },
+      "totals": [
+        {
+          "top": -33.578125
+        },
+        {
+          "top": -33.578125
+        }
+      ],
+      "scrollHeight": 640,
+      "clientHeight": 422,
+      "scrollWidth": 565,
+      "clientWidth": 565,
+      "fillColor": "rgb(115, 87, 207)",
+      "primaryColor": "rgb(115, 87, 207)",
+      "codeEllipsis": "ellipsis"
+    }
+  ],
+  "errors": [],
+  "unexpected": [],
+  "calls": [
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/users/collection-user",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/users/collection-user/roles",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/sales-orders",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/sales-orders/collect-order/payments",
+      "method": "POST",
+      "raw": "{\"amount\":1,\"paymentDate\":\"2026-10-26\",\"method\":\"CASH\",\"reference\":null,\"note\":null}",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "content-type": "application/json",
+        "idempotency-key": "eaa7424c-92b2-4635-966a-eba5908a7690",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/sales-orders/collect-order/payments",
+      "method": "POST",
+      "raw": "{\"amount\":1,\"paymentDate\":\"2026-10-26\",\"method\":\"CASH\",\"reference\":null,\"note\":null}",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "content-type": "application/json",
+        "idempotency-key": "bde870d1-a976-42a6-ae46-61c1b7311c1b",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/sales-orders",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/users/collection-user",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/users/collection-user/roles",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/sales-orders",
+      "method": "GET",
+      "raw": null,
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/sales-orders/collect-order/payments",
+      "method": "POST",
+      "raw": "{\"amount\":9223372036854775807,\"paymentDate\":\"2026-10-26\",\"method\":\"CASH\",\"reference\":null,\"note\":null}",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "content-type": "application/json",
+        "idempotency-key": "993c7019-4ab3-4da4-9243-48359c01d4f7",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    },
+    {
+      "path": "/sales-orders/collect-order/payments",
+      "method": "POST",
+      "raw": "{\"amount\":9223372036854775807,\"paymentDate\":\"2026-10-26\",\"method\":\"CASH\",\"reference\":null,\"note\":null}",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer collect-ui-fixture",
+        "content-type": "application/json",
+        "idempotency-key": "993c7019-4ab3-4da4-9243-48359c01d4f7",
+        "origin": "http://127.0.0.1:5177",
+        "referer": "http://127.0.0.1:5177/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      }
+    }
+  ]
+}

@@ -95,6 +95,8 @@ const mockUrl = moduleUrl(`
  export const useAuthStore = () => context.auth
  export const useCatalogPermission = () => ({ can: (permission) => context.auth.isCatalogAdmin || context.auth.user.permissions.includes(permission) })
  export const useI18n = () => ({ t: key => key })
+ export const WalletOutlined = defineComponent({ setup() { return () => null } })
+ export const InfoCircleOutlined = WalletOutlined
  export const message = { success() {}, info() {}, error() {} }
  export const Modal = { confirm: options => { context.confirmation = options } }
  export const formatDateTime = value => value
@@ -208,6 +210,7 @@ async function component(path, expose) {
     )
     .replace(/from ['"]\.\/PaymentReceiptDialog.vue['"]/g, 'from ' + JSON.stringify(mockUrl))
   code = code.replace(/from ['"]vue['"]/g, `from '${vueUrl}'`)
+  code = code.replace(/from ['"]@ant-design\/icons-vue['"]/g, 'from ' + JSON.stringify(mockUrl))
   code = code
     .replace(
       /from ['"]@\/composables\/usePaymentReceipt['"]/g,

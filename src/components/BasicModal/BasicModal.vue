@@ -25,7 +25,7 @@ const close = (): void => {
 <template>
   <a-modal
     :open="props.open"
-    :title="props.title"
+    :title="$slots.title ? undefined : props.title"
     :confirm-loading="props.confirmLoading"
     :closable="!props.confirmLoading"
     :mask-closable="!props.confirmLoading"
@@ -35,6 +35,9 @@ const close = (): void => {
     @ok="emit('confirm')"
     @cancel="close"
   >
+    <template #title>
+      <slot name="title">{{ props.title }}</slot>
+    </template>
     <slot />
     <template #footer>
       <slot

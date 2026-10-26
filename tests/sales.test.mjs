@@ -77,6 +77,7 @@ const mockUrl = moduleUrl(`
  export const theme = { useToken: () => ({ token: { value: {} } }) }
  export const message = { success() {}, info() {} }
  export const Modal = { confirm: options => { context.confirmation = options } }
+ export const formatDate = value => value
  export const formatDateTime = value => value
  export const BasicModal = defineComponent({ setup(_, { slots }) { return () => h('modal', [slots.default?.(), slots.footer?.()]) } })
  export const BasicDrawer = defineComponent({ setup(_, { slots, emit }) { return () => h('drawer', [slots.default?.(), slots.footer?.({ close: () => emit('update:open', false) })]) } })
@@ -142,7 +143,7 @@ async function component(path, expose) {
     .replace(/from ['"]@\/utils\/payments['"]/g, 'from ' + JSON.stringify(paymentDomainUrl))
     .replace(/from ['"]@\/stores\/payments['"]/g, 'from ' + JSON.stringify(mockUrl))
     .replace(
-      /from ['"](?:\.\/OrderPaymentPanel.vue|@\/components\/sales\/CollectPaymentDialog.vue)['"]/g,
+      /from ['"](?:\.\/(?:OrderPaymentPanel|SettlementDetails).vue|@\/components\/sales\/CollectPaymentDialog.vue)['"]/g,
       'from ' + JSON.stringify(mockUrl),
     )
   code = code
@@ -177,7 +178,7 @@ const CustomersPage = await component(
 )
 const SalesOrdersPage = await component(
   'src/views/sales/SalesOrdersPage.vue',
-  'load, rows, filters, customers',
+  'load, rows, filters, customers, page, pageSize, changePage, total, columns, scrollRevision',
 )
 const CustomerSelect = await component(
   'src/components/sales/CustomerSelect.vue',
@@ -965,5 +966,119 @@ test('orders with active payments cannot be cancelled and backend rejection expl
     salesDomain.salesError({ status: 409, code: 'SALES_ORDER_HAS_PAYMENTS' }),
     /hoàn tiền/,
   )
+  subject.unmount()
+})
+
+test('sales list keeps all 17 columns, monetary alignment and fixed actions', async () => {
+  reset()
+  context.response = pageData([order()])
+  const subject = mount(SalesOrdersPage, {})
+  await flush()
+  assert.deepEqual(
+    subject.vm.columns.map((item) => item.key),
+    [
+      'code',
+      'warehouse',
+      'customer',
+      'saleDate',
+      'subtotal',
+      'discountAmount',
+      'totalAmount',
+      'returnedAmount',
+      'adjustedTotalAmount',
+      'refundedAmount',
+      'netPaidAmount',
+      'refundableAmount',
+      'paidAmount',
+      'remainingAmount',
+      'paymentStatus',
+      'status',
+      'actions',
+    ],
+  )
+  assert.equal(subject.vm.columns.at(-1).fixed, 'right')
+  for (const column of subject.vm.columns.slice(4, 14)) {
+    assert.equal(column.align, 'right')
+    assert.ok(column.width >= 220)
+    assert.match(column.title, /VND/)
+  }
+  subject.unmount()
+})
+
+test('sales page sizes use API total, reset page and reject unsupported sizes', async () => {
+  reset()
+  context.response = {
+    ...pageData([order(), order({ id: 'foreign', warehouseId: 'denied' })]),
+    total: 137,
+  }
+  const subject = mount(SalesOrdersPage, {})
+  await flush()
+  assert.equal(subject.vm.pageSize, 10)
+  assert.equal(subject.vm.rows.length, 1)
+  assert.equal(subject.vm.total, 137)
+  for (const size of [20, 50, 100, 10]) {
+    subject.vm.changePage(3, subject.vm.pageSize)
+    await flush()
+    const before = context.calls.length
+    subject.vm.changePage(3, size)
+    await flush()
+    assert.equal(context.calls.length, before + 1)
+    assert.equal(subject.vm.page, 1)
+    assert.equal(context.calls.at(-1).config.params.pageSize, size)
+    assert.equal(subject.vm.total, 137)
+  }
+  const before = context.calls.length
+  subject.vm.changePage(1, 5)
+  await flush()
+  assert.equal(context.calls.length, before)
+  subject.unmount()
+})
+
+test('sales filters batch once, retain empty customer query and discard stale results', async () => {
+  reset()
+  let finish
+  context.handler = ({ config }) =>
+    config.params.status === 'DRAFT'
+      ? new Promise((resolve) => {
+          finish = resolve
+        })
+      : { ...pageData([order({ id: 'new', status: 'CONFIRMED' })]), total: 137 }
+  const subject = mount(SalesOrdersPage, {})
+  await flush()
+  assert.equal(context.calls.length, 1)
+  assert.equal('customerId' in context.calls[0].config.params, false)
+  subject.vm.changePage(3, 10)
+  await flush()
+  subject.vm.filters.status = 'DRAFT'
+  await flush()
+  assert.equal(subject.vm.page, 1)
+  subject.vm.filters.status = 'CONFIRMED'
+  await flush()
+  finish(pageData([order({ id: 'old' })]))
+  await flush()
+  assert.equal(subject.vm.rows[0].id, 'new')
+  assert.equal(subject.vm.total, 137)
+  const before = context.calls.length
+  context.warehouses.warehouses = [{ id: 'w2', name: 'Other', code: 'W2', status: 1 }]
+  await flush()
+  assert.equal(context.calls.length, before + 1)
+  assert.equal('warehouseId' in context.calls.at(-1).config.params, false)
+  assert.deepEqual(subject.vm.rows, [])
+  subject.unmount()
+})
+
+test('quantity, price and note edits do not refetch advisory inventory', async () => {
+  reset()
+  context.auth.user.permissions.push('INVENTORY_VIEW')
+  context.handler = () => pageData([{ productId: 'p1', quantity: 0 }])
+  const subject = mount(SalesOrderDialog, { open: true, mode: 'create' })
+  subject.vm.form = form()
+  await flush()
+  const before = context.calls.length
+  subject.vm.form.lines[0].quantity = '99'
+  subject.vm.form.lines[0].unitPrice = '92233720368547758'
+  subject.vm.form.note = 'Keep entered values'
+  await flush()
+  assert.equal(context.calls.length, before)
   subject.unmount()
 })
