@@ -17,6 +17,7 @@ const props = defineProps<{
   rangeLabel: string
   resetKey: number
   rowHeight?: number
+  rowKey?: string | ((record: T) => string)
 }>()
 const emit = defineEmits<{
   pageChange: [page: number, size: number]
@@ -149,7 +150,7 @@ onBeforeUnmount(() => {
         :pagination="false"
         :loading="loading"
         :scroll="{ x: scrollWidth, y: bodyHeight, scrollToFirstRowOnChange: false }"
-        row-key="id"
+        :row-key="rowKey ?? 'id'"
         table-layout="fixed"
         :aria-label="listTitle"
       >
