@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { message, Modal } from 'ant-design-vue'
-import { BasicModal, BasicTable } from '@/components'
+import { BasicTable } from '@/components'
+import ReturnRefundDialog from './ReturnRefundDialog.vue'
+import SettlementAmountSummary from './SettlementAmountSummary.vue'
 import ReturnableOrderSelect from './ReturnableOrderSelect.vue'
 import { usePaymentScope } from '@/composables/usePaymentScope'
 import { useStockStore } from '@/stores/stock'
@@ -24,7 +26,7 @@ import {
   estimateReturn,
 } from '@/utils/returns'
 import { formatStockInteger as fmt, validStockInteger, stockFieldErrors } from '@/utils/stock'
-import { formatDateTime } from '@/utils/date'
+import { formatDate, formatDateTime } from '@/utils/date'
 import type {
   SalesReturn,
   ReturnableLine,
@@ -102,7 +104,29 @@ const columns = [
   ['returnableQuantity', 'Còn được trả'],
   ['quantity', 'Số cây muốn trả'],
   ['estimate', 'Giá trị dự kiến'],
-].map(([key, title]) => ({ key, dataIndex: key, title }))
+].map(([key, title]) => ({
+  key,
+  dataIndex: key,
+  title,
+  width:
+    key === 'productName'
+      ? 240
+      : ['estimate', 'returnAmount', 'allocatedDiscountAmount', 'netLineAmount'].includes(key!)
+        ? 220
+        : 150,
+  ...([
+    'soldQuantity',
+    'returnedQuantity',
+    'returnableQuantity',
+    'quantity',
+    'estimate',
+    'allocatedDiscountAmount',
+    'netLineAmount',
+    'returnAmount',
+  ].includes(key!)
+    ? { align: 'right' as const }
+    : {}),
+}))
 const detailColumns = [
   ['productCode', 'Mã'],
   ['productName', 'Sản phẩm'],
@@ -112,7 +136,29 @@ const detailColumns = [
   ['allocatedDiscountAmount', 'Giảm giá phân bổ'],
   ['netLineAmount', 'Giá trị dòng sau giảm'],
   ['returnAmount', 'Giá trị trả'],
-].map(([key, title]) => ({ key, dataIndex: key, title }))
+].map(([key, title]) => ({
+  key,
+  dataIndex: key,
+  title,
+  width:
+    key === 'productName'
+      ? 240
+      : ['estimate', 'returnAmount', 'allocatedDiscountAmount', 'netLineAmount'].includes(key!)
+        ? 220
+        : 150,
+  ...([
+    'soldQuantity',
+    'returnedQuantity',
+    'returnableQuantity',
+    'quantity',
+    'estimate',
+    'allocatedDiscountAmount',
+    'netLineAmount',
+    'returnAmount',
+  ].includes(key!)
+    ? { align: 'right' as const }
+    : {}),
+}))
 const quantity = (id: string): string =>
   form.value.lines.find((line) => line.productId === id)?.quantity ?? ''
 const setQuantity = (id: string, value: string): void => {
@@ -468,6 +514,11 @@ watch(
     limits.value = []
     quote.value = undefined
     form.value = empty()
+    received.value = false
+    cancelMode.value = false
+    reason.value = ''
+    fields.value = {}
+    editing.value = !props.id
     saving.value = false
     error.value = ''
     if (props.open) void load()
@@ -498,52 +549,118 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
-  <BasicModal :open="open" title="Trả hàng" :width="1150" @update:open="emit('update:open', false)">
+  <ReturnRefundDialog
+    :open="open"
+    :title="editing ? (detail ? 'Sửa phiếu trả nháp' : 'Tạo phiếu trả hàng') : 'Chi tiết phiếu trả'"
+    :width="1150"
+    :saving="saving"
+    @update:open="emit('update:open', false)"
+  >
     <a-spin :spinning="loading">
       <a-alert v-if="error" type="error" :message="error" show-icon />
       <a-alert
         type="info"
+        show-icon
         message="Chỉ nhận hàng còn bán được. Xác nhận nhập lại kho gốc và giảm giá trị phải trả; hoàn tiền là thao tác riêng."
       />
       <template v-if="available">
-        <a-descriptions v-if="detail" bordered :column="2">
-          <a-descriptions-item label="Mã phiếu">{{ detail.code }}</a-descriptions-item>
-          <a-descriptions-item label="Trạng thái">{{
-            $t('sales.' + detail.status)
-          }}</a-descriptions-item>
-          <a-descriptions-item label="Đơn bán hàng">{{
-            sourceLabel || detail.salesOrderId
-          }}</a-descriptions-item>
-          <a-descriptions-item label="Kho">{{
-            warehouses.warehouses.find((w) => w.id === detail?.warehouseId)?.name ??
-            detail.warehouseId
-          }}</a-descriptions-item>
-          <a-descriptions-item label="Khách">{{
-            detail.customerId ?? 'Khách lẻ'
-          }}</a-descriptions-item>
-          <a-descriptions-item
-            :label="detail.status === 'DRAFT' ? 'Giá trị nháp dự kiến đã lưu' : 'Giá trị trả'"
-            >{{ fmt(detail.totalAmount) }} VND</a-descriptions-item
+        <template v-if="detail">
+          <SettlementAmountSummary
+            :code="detail.code"
+            :label="
+              detail.status === 'DRAFT'
+                ? 'Giá trị trả dự kiến'
+                : detail.status === 'CONFIRMED'
+                  ? 'Giá trị trả đã xác nhận'
+                  : 'Giá trị phiếu trả đã hủy'
+            "
+            :amount="detail.totalAmount"
           >
-          <a-descriptions-item label="Ngày trả">{{ detail.returnDate }}</a-descriptions-item>
-          <a-descriptions-item label="Lý do">{{ detail.reason }}</a-descriptions-item>
-          <a-descriptions-item label="Ghi chú">{{ detail.note ?? '—' }}</a-descriptions-item>
-          <a-descriptions-item label="Phiên bản">{{ String(detail.version) }}</a-descriptions-item>
-          <a-descriptions-item label="Người / thời gian tạo"
-            >{{ detail.createdBy }} / {{ formatDateTime(detail.createdAt) }}</a-descriptions-item
-          >
-          <a-descriptions-item label="Cập nhật"
-            >{{ detail.updatedBy }} / {{ formatDateTime(detail.updatedAt) }}</a-descriptions-item
-          >
-          <a-descriptions-item v-if="detail.confirmedAt" label="Xác nhận"
-            >{{ detail.confirmedBy }} /
-            {{ formatDateTime(detail.confirmedAt) }}</a-descriptions-item
-          >
-          <a-descriptions-item v-if="detail.cancelledAt" label="Hủy"
-            >{{ detail.cancelledBy }} / {{ formatDateTime(detail.cancelledAt) }} /
-            {{ detail.cancellationReason }}</a-descriptions-item
-          >
-        </a-descriptions>
+            <template #status
+              ><a-tag
+                :color="
+                  detail.status === 'DRAFT'
+                    ? 'orange'
+                    : detail.status === 'CONFIRMED'
+                      ? 'green'
+                      : 'red'
+                "
+                >{{ $t('sales.' + detail.status) }}</a-tag
+              ></template
+            >
+          </SettlementAmountSummary>
+          <dl v-if="!editing" class="rr-info">
+            <div>
+              <dt>Đơn bán hàng</dt>
+              <dd>{{ sourceLabel || detail.salesOrderId }}</dd>
+            </div>
+            <div>
+              <dt>Ngày trả</dt>
+              <dd>{{ formatDate(detail.returnDate) }}</dd>
+            </div>
+            <div>
+              <dt>Khách hàng</dt>
+              <dd>{{ detail.customerId ?? 'Khách lẻ' }}</dd>
+            </div>
+            <div>
+              <dt>Kho</dt>
+              <dd>
+                {{
+                  warehouses.warehouses.find((w) => w.id === detail?.warehouseId)?.name ??
+                  detail.warehouseId
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Lý do</dt>
+              <dd>{{ detail.reason }}</dd>
+            </div>
+            <div>
+              <dt>Ghi chú</dt>
+              <dd>{{ detail.note ?? '—' }}</dd>
+            </div>
+          </dl>
+          <details class="rr-identifiers">
+            <summary>Thông tin định danh</summary>
+            <dl class="rr-info">
+              <div>
+                <dt>ID phiếu</dt>
+                <dd>{{ detail.id }}</dd>
+              </div>
+              <div>
+                <dt>Phiên bản</dt>
+                <dd>{{ String(detail.version) }}</dd>
+              </div>
+              <div>
+                <dt>ID đơn nguồn</dt>
+                <dd>{{ detail.salesOrderId }}</dd>
+              </div>
+              <div>
+                <dt>ID kho / khách</dt>
+                <dd>{{ detail.warehouseId }} / {{ detail.customerId ?? 'Khách lẻ' }}</dd>
+              </div>
+              <div>
+                <dt>Người / thời gian tạo</dt>
+                <dd>{{ detail.createdBy }} / {{ formatDateTime(detail.createdAt) }}</dd>
+              </div>
+              <div>
+                <dt>Cập nhật</dt>
+                <dd>{{ detail.updatedBy }} / {{ formatDateTime(detail.updatedAt) }}</dd>
+              </div>
+              <div v-if="detail.confirmedAt">
+                <dt>Xác nhận</dt>
+                <dd>{{ detail.confirmedBy }} / {{ formatDateTime(detail.confirmedAt) }}</dd>
+              </div>
+              <div v-if="detail.cancelledAt">
+                <dt>Hủy</dt>
+                <dd>
+                  {{ detail.cancelledBy }} / {{ formatDateTime(detail.cancelledAt) }} /
+                  {{ detail.cancellationReason }}
+                </dd>
+              </div>
+            </dl>
+          </details>
+        </template>
         <template v-if="quote && detail">
           <a-alert
             type="warning"
@@ -566,10 +683,11 @@ onBeforeUnmount(() => {
             VND → báo giá mới {{ fmt(line.returnAmount) }} VND
           </p>
           <BasicTable
+            class="rr-table"
             :columns="detailColumns"
             :data-source="quote.quote.lines"
             row-key="productId"
-            :scroll="{ x: 1100 }"
+            :scroll="{ x: 1850 }"
           >
             <template #bodyCell="{ column, record }"
               ><template
@@ -591,124 +709,209 @@ onBeforeUnmount(() => {
           >
           <p v-else>Cần SALES_RETURN_UPDATE để lưu lại nháp trước khi xác nhận.</p>
         </template>
+
         <template v-if="editing">
-          <a-form-item
-            v-if="open && !detail && !salesOrderId"
-            label="Đơn bán hàng"
-            required
-            :help="fields.salesOrderId"
+          <a-form
+            layout="vertical"
+            class="rr-form"
+            :disabled="saving || loading || blocked || !editable"
           >
-            <ReturnableOrderSelect
-              :value="sourceId || undefined"
-              :selected="sourceOrder"
-              :disabled="saving || blocked || !editable"
-              @selected="selectSource"
-              @denied="deny"
-            />
-            <a-descriptions v-if="sourceOrder" bordered :column="2" size="small">
-              <a-descriptions-item label="Đơn bán hàng">{{ sourceOrder.code }}</a-descriptions-item>
-              <a-descriptions-item label="Khách">{{
-                sourceOrder.customerName
-              }}</a-descriptions-item>
-              <a-descriptions-item label="Kho">{{ sourceOrder.warehouseName }}</a-descriptions-item>
-              <a-descriptions-item label="Ngày bán">{{ sourceOrder.saleDate }}</a-descriptions-item>
-              <a-descriptions-item label="Tổng đơn gốc"
-                >{{ fmt(sourceOrder.totalAmount) }} VND</a-descriptions-item
+            <a-form-item
+              label="Đơn bán hàng"
+              html-for="return-source"
+              required
+              :help="fields.salesOrderId"
+              :validate-status="fields.salesOrderId ? 'error' : undefined"
+            >
+              <ReturnableOrderSelect
+                v-if="open && !detail && !salesOrderId"
+                :value="sourceId || undefined"
+                :selected="sourceOrder"
+                :disabled="saving || blocked || !editable"
+                @selected="selectSource"
+                @denied="deny"
+              />
+              <a-input
+                v-else
+                id="return-source"
+                :value="sourceLabel"
+                readonly
+                :title="sourceLabel"
+              />
+            </a-form-item>
+            <a-form-item
+              label="Ngày trả"
+              html-for="return-date"
+              required
+              :help="fields.returnDate"
+              :validate-status="fields.returnDate ? 'error' : undefined"
+              ><a-date-picker
+                id="return-date"
+                v-model:value="form.returnDate"
+                value-format="YYYY-MM-DD"
+                format="DD/MM/YYYY"
+            /></a-form-item>
+            <a-form-item label="Khách hàng"
+              ><a-input
+                :value="
+                  sourceOrder?.customerName ?? (detail ? (detail.customerId ?? 'Khách lẻ') : '—')
+                "
+                readonly
+            /></a-form-item>
+            <a-form-item label="Kho"
+              ><a-input
+                :value="
+                  sourceOrder?.warehouseName ??
+                  warehouses.warehouses.find((w) => w.id === (detail?.warehouseId ?? warehouseId))
+                    ?.name ??
+                  detail?.warehouseId ??
+                  warehouseId ??
+                  '—'
+                "
+                readonly
+            /></a-form-item>
+            <dl v-if="sourceOrder" class="rr-info rr-wide">
+              <div>
+                <dt>Ngày bán</dt>
+                <dd>{{ formatDate(sourceOrder.saleDate) }}</dd>
+              </div>
+              <div>
+                <dt>Tổng đơn gốc</dt>
+                <dd>{{ fmt(sourceOrder.totalAmount) }} VND</dd>
+              </div>
+            </dl>
+            <a-form-item
+              label="Lý do"
+              html-for="return-reason"
+              required
+              :help="fields.reason"
+              :validate-status="fields.reason ? 'error' : undefined"
+              ><a-textarea
+                id="return-reason"
+                v-model:value="form.reason"
+                :maxlength="2000"
+                :rows="2"
+                show-count
+            /></a-form-item>
+            <a-form-item
+              label="Ghi chú"
+              html-for="return-note"
+              :help="fields.note"
+              :validate-status="fields.note ? 'error' : undefined"
+              ><a-textarea
+                id="return-note"
+                v-model:value="form.note"
+                :maxlength="2000"
+                :rows="2"
+                show-count
+                placeholder="Nhập ghi chú (nếu có)…"
+            /></a-form-item>
+            <div class="rr-wide rr-stack">
+              <a-alert
+                v-for="(text, key) in fields"
+                :key="key"
+                type="error"
+                :message="String(key) + ': ' + text"
+                show-icon
+              />
+              <h3 class="rr-section-title">Danh sách sản phẩm trả</h3>
+              <BasicTable
+                class="rr-table"
+                :columns="columns"
+                :data-source="limits"
+                row-key="productId"
+                :scroll="{ x: 1450 }"
               >
-            </a-descriptions>
-          </a-form-item>
-          <a-form-item v-else-if="!detail" label="Đơn bán hàng"
-            ><a-input :value="sourceLabel" readonly
-          /></a-form-item>
-          <a-form layout="vertical" :disabled="saving || loading || blocked || !editable">
-            <a-form-item label="Ngày trả" required :help="fields.returnDate"
-              ><a-date-picker v-model:value="form.returnDate" value-format="YYYY-MM-DD"
-            /></a-form-item>
-            <a-form-item label="Lý do" required :help="fields.reason"
-              ><a-textarea v-model:value="form.reason" :maxlength="2000"
-            /></a-form-item>
-            <a-form-item label="Ghi chú" :help="fields.note"
-              ><a-textarea v-model:value="form.note" :maxlength="2000"
-            /></a-form-item>
-            <a-alert
-              v-for="(text, key) in fields"
-              :key="key"
-              type="error"
-              :message="String(key) + ': ' + text"
-            />
-            <p>
-              Hạn mức chỉ tham khảo; nháp không giữ chỗ. Giá trị dự kiến tính từ đơn gốc, backend
-              kiểm tra khi xác nhận.
-            </p>
-            <a-button :disabled="saving || loading" @click="refreshLimits"
-              >Cập nhật hạn mức, giữ bản nhập</a-button
-            >
-            <BasicTable
-              :columns="columns"
-              :data-source="limits"
-              row-key="productId"
-              :scroll="{ x: 1100 }"
-            >
-              <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'quantity'"
-                  ><a-input
-                    :value="quantity(record.productId)"
-                    inputmode="numeric"
-                    :disabled="
-                      saving || loading || blocked || BigInt(record.returnableQuantity) <= 0n
+                <template #bodyCell="{ column, record }">
+                  <template v-if="column.key === 'quantity'"
+                    ><a-input
+                      class="rr-quantity"
+                      :aria-label="'Số cây muốn trả: ' + record.productName"
+                      :value="quantity(record.productId)"
+                      inputmode="numeric"
+                      :disabled="
+                        saving || loading || blocked || BigInt(record.returnableQuantity) <= 0n
+                      "
+                      @update:value="setQuantity(record.productId, $event)"
+                    /><small class="rr-field-error">{{
+                      fields[record.productId] ??
+                      fields[
+                        'lines[' +
+                          form.lines.findIndex((line) => line.productId === record.productId) +
+                          '].quantity'
+                      ] ??
+                      fields[
+                        'lines.' +
+                          form.lines.findIndex((line) => line.productId === record.productId) +
+                          '.quantity'
+                      ]
+                    }}</small></template
+                  >
+
+                  <span v-else-if="column.key === 'estimate'" class="rr-money"
+                    >{{ estimate(record) }} VND</span
+                  >
+                  <template
+                    v-else-if="
+                      ['soldQuantity', 'returnedQuantity', 'returnableQuantity'].includes(
+                        String(column.key),
+                      )
                     "
-                    @update:value="setQuantity(record.productId, $event)"
-                  /><small>{{
-                    fields[record.productId] ??
-                    fields[
-                      'lines[' +
-                        form.lines.findIndex((line) => line.productId === record.productId) +
-                        '].quantity'
-                    ] ??
-                    fields[
-                      'lines.' +
-                        form.lines.findIndex((line) => line.productId === record.productId) +
-                        '.quantity'
-                    ]
-                  }}</small></template
+                    >{{ fmt(record[column.key]) }}</template
+                  >
+                  <a-tooltip v-else :title="record[column.dataIndex]"
+                    ><span class="rr-text">{{ record[column.dataIndex] }}</span></a-tooltip
+                  >
+                </template>
+              </BasicTable>
+              <div class="rr-line-toolbar">
+                <p class="rr-help">
+                  Nháp không giữ chỗ số lượng. Giá trị dự kiến tính từ đơn gốc; backend kiểm tra lại
+                  khi xác nhận.
+                </p>
+                <a-button :disabled="saving || loading" @click="refreshLimits"
+                  >Cập nhật hạn mức, giữ bản nhập</a-button
                 >
-                <template v-else-if="column.key === 'estimate'"
-                  >{{ estimate(record) }} VND</template
-                >
-                <template
-                  v-else-if="
-                    ['soldQuantity', 'returnedQuantity', 'returnableQuantity'].includes(
-                      String(column.key),
-                    )
-                  "
-                  >{{ fmt(record[column.key]) }}</template
-                >
-              </template>
-            </BasicTable>
+              </div>
+            </div>
           </a-form>
         </template>
-        <BasicTable
-          v-else-if="detail"
-          :columns="detailColumns"
-          :data-source="detail.lines"
-          row-key="productId"
-          :scroll="{ x: 1100 }"
-        >
-          <template #bodyCell="{ column, record }"
-            ><template
-              v-if="
-                [
-                  'quantity',
-                  'soldQuantity',
-                  'returnAmount',
-                  'allocatedDiscountAmount',
-                  'netLineAmount',
-                ].includes(String(column.key))
-              "
-              >{{ fmt(record[column.key]) }}</template
-            ></template
+        <template v-else-if="detail">
+          <h3 class="rr-section-title">Danh sách sản phẩm</h3>
+          <BasicTable
+            class="rr-table"
+            :columns="detailColumns"
+            :data-source="detail.lines"
+            row-key="productId"
+            :scroll="{ x: 1850 }"
           >
-        </BasicTable>
+            <template #bodyCell="{ column, record }">
+              <span
+                v-if="
+                  [
+                    'quantity',
+                    'soldQuantity',
+                    'returnAmount',
+                    'allocatedDiscountAmount',
+                    'netLineAmount',
+                  ].includes(String(column.key))
+                "
+                :class="{ 'rr-money': column.key === 'returnAmount' }"
+                >{{ fmt(record[column.key])
+                }}{{
+                  ['returnAmount', 'allocatedDiscountAmount', 'netLineAmount'].includes(
+                    String(column.key),
+                  )
+                    ? ' VND'
+                    : ''
+                }}</span
+              >
+              <a-tooltip v-else :title="record[column.dataIndex]"
+                ><span class="rr-text">{{ record[column.dataIndex] }}</span></a-tooltip
+              >
+            </template>
+          </BasicTable>
+        </template>
         <template v-if="detail?.status === 'DRAFT' && !editing && !quote && !blocked">
           <a-checkbox
             v-if="can('SALES_RETURN_CONFIRM')"
@@ -716,21 +919,31 @@ onBeforeUnmount(() => {
             :disabled="saving"
             >Tôi xác nhận đã nhận đủ số hàng còn bán được vào kho.</a-checkbox
           >
-          <template v-if="cancelMode"
+          <a-form-item
+            v-if="cancelMode"
+            label="Lý do hủy nháp"
+            required
+            :help="fields.reason"
+            :validate-status="fields.reason ? 'error' : undefined"
             ><a-textarea
               v-model:value="reason"
               :maxlength="2000"
-              placeholder="Lý do hủy nháp"
+              :rows="3"
+              show-count
               :disabled="saving"
-            /><small>{{ fields.reason }}</small></template
-          >
+          /></a-form-item>
         </template>
         <a-alert
           v-if="detail?.status === 'CONFIRMED'"
           type="info"
+          show-icon
           message="Phiếu đã xác nhận không sửa / hủy đảo. Chưa hỗ trợ điều chỉnh phiếu trả đã xác nhận."
         />
       </template>
+      <a-empty
+        v-else-if="!loading && !error"
+        description="Không có dữ liệu trong phạm vi được phép."
+      />
     </a-spin>
     <template #footer>
       <a-button :disabled="saving" @click="emit('update:open', false)">Đóng</a-button>
@@ -764,5 +977,5 @@ onBeforeUnmount(() => {
         >
       </template>
     </template>
-  </BasicModal>
+  </ReturnRefundDialog>
 </template>

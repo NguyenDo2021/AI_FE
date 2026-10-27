@@ -17,6 +17,7 @@ const props = defineProps<{
   rangeLabel: string
   resetKey: number
   rowHeight?: number
+  bodyMaxHeight?: number
   rowKey?: string | ((record: T) => string)
 }>()
 const emit = defineEmits<{
@@ -125,6 +126,7 @@ onBeforeUnmount(() => {
   <section
     ref="panel"
     class="fitted-list-panel"
+    :class="{ 'fitted-list-panel--content': bodyMaxHeight !== undefined }"
     :style="{
       '--list-body-gutter': `${bodyGutter}px`,
       '--list-hover': token.colorPrimaryBg,
@@ -149,7 +151,11 @@ onBeforeUnmount(() => {
         :data-source="rows"
         :pagination="false"
         :loading="loading"
-        :scroll="{ x: scrollWidth, y: bodyHeight, scrollToFirstRowOnChange: false }"
+        :scroll="{
+          x: scrollWidth,
+          y: bodyMaxHeight ?? bodyHeight,
+          scrollToFirstRowOnChange: false,
+        }"
         :row-key="rowKey ?? 'id'"
         table-layout="fixed"
         :aria-label="listTitle"
@@ -195,6 +201,12 @@ onBeforeUnmount(() => {
   border: 1px solid #e9e4f1;
   border-radius: 12px;
   background: #fff;
+}
+/* Embedded tables size to their content; their body scrolls at the supplied cap. */
+.fitted-list-panel--content {
+  display: block;
+  flex: none;
+  min-height: 0;
 }
 .products-toolbar {
   display: flex;

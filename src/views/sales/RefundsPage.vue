@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
-import { BasicTable } from '@/components'
+import ReturnRefundList from '@/components/sales/ReturnRefundList.vue'
+import { FileTextOutlined, AccountBookOutlined } from '@ant-design/icons-vue'
+import type { TableColumnsType } from 'ant-design-vue'
 import RefundDialog from '@/components/sales/RefundDialog.vue'
 import RefundDetailDialog from '@/components/sales/RefundDetailDialog.vue'
 import PendingRefundRetries from '@/components/sales/PendingRefundRetries.vue'
@@ -10,10 +12,9 @@ import { usePaymentScope } from '@/composables/usePaymentScope'
 import { usePaymentsStore } from '@/stores/payments'
 import { useRefundsStore } from '@/stores/refunds'
 import { getRefunds, getRefundables } from '@/api/sales/returns.api'
-import { returnError, hasNextPage } from '@/utils/returns'
+import { returnError } from '@/utils/returns'
 import { reportValue } from '@/utils/reports'
-import { formatStockInteger as fmt } from '@/utils/stock'
-import { formatDateTime } from '@/utils/date'
+import { formatDate, formatDateTime } from '@/utils/date'
 import type { Refund, OrderSettlementSummary } from '@/types/returns'
 import type { StockInteger } from '@/types/stock'
 import type { ReceiptPaymentStatus, PaymentMethod } from '@/types/payments'
@@ -57,38 +58,53 @@ const money = [
   'refundableAmount',
   'amount',
 ]
-const columns = computed(() =>
-  (props.refundable
-    ? [
-        ['code', 'Mã đơn'],
-        ['customer', 'Khách'],
-        ['warehouseId', 'Kho'],
-        ['saleDate', 'Ngày bán'],
-        ['totalAmount', 'Tổng gốc'],
-        ['returnedAmount', 'Hàng đã trả'],
-        ['adjustedTotalAmount', 'Tổng sau trả'],
-        ['paidAmount', 'Đã thu'],
-        ['refundedAmount', 'Đã hoàn'],
-        ['netPaidAmount', 'Thu ròng'],
-        ['remainingAmount', 'Còn phải thu'],
-        ['refundableAmount', 'Còn cần hoàn'],
-        ['actions', 'Thao tác'],
-      ]
-    : [
-        ['code', 'Mã phiếu'],
-        ['warehouseId', 'Kho'],
-        ['salesOrderId', 'Đơn nguồn'],
-        ['customerId', 'Khách'],
-        ['amount', 'Số tiền'],
-        ['method', 'Hình thức'],
-        ['refundDate', 'Ngày hoàn'],
-        ['reason', 'Lý do'],
-        ['status', 'Trạng thái'],
-        ['createdBy', 'Người tạo'],
-        ['createdAt', 'Thời gian tạo'],
-        ['actions', 'Thao tác'],
-      ]
-  ).map(([key, title]) => ({ key, dataIndex: key, title })),
+const columns = computed(
+  () =>
+    (props.refundable
+      ? [
+          ['code', 'Mã đơn'],
+          ['customer', 'Khách'],
+          ['warehouseId', 'Kho'],
+          ['saleDate', 'Ngày bán'],
+          ['totalAmount', 'Tổng gốc'],
+          ['returnedAmount', 'Hàng đã trả'],
+          ['adjustedTotalAmount', 'Tổng sau trả'],
+          ['paidAmount', 'Đã thu'],
+          ['refundedAmount', 'Đã hoàn'],
+          ['netPaidAmount', 'Thu ròng'],
+          ['remainingAmount', 'Còn phải thu'],
+          ['refundableAmount', 'Còn cần hoàn'],
+          ['actions', 'Thao tác'],
+        ]
+      : [
+          ['code', 'Mã phiếu'],
+          ['warehouseId', 'Kho'],
+          ['salesOrderId', 'Đơn nguồn'],
+          ['customerId', 'Khách'],
+          ['amount', 'Số tiền'],
+          ['method', 'Hình thức'],
+          ['refundDate', 'Ngày hoàn'],
+          ['reason', 'Lý do'],
+          ['status', 'Trạng thái'],
+          ['createdBy', 'Người tạo'],
+          ['createdAt', 'Thời gian tạo'],
+          ['actions', 'Thao tác'],
+        ]
+    ).map(([key, title]) => ({
+      key,
+      dataIndex: key,
+      title,
+      width:
+        key === 'actions'
+          ? 240
+          : money.includes(key!)
+            ? 220
+            : ['saleDate', 'refundDate', 'status', 'method'].includes(key!)
+              ? 140
+              : 220,
+      ...(key === 'actions' ? { fixed: 'right' as const } : {}),
+      ...(money.includes(key!) ? { align: 'right' as const } : {}),
+    })) as TableColumnsType<Refund | OrderSettlementSummary>,
 )
 let sequence = 0
 const load = async (): Promise<void> => {
@@ -177,7 +193,6 @@ watch(
     filters.method,
     filters.from,
     filters.to,
-    filters.pageSize,
   ],
   () => {
     filters.page = 1
@@ -213,124 +228,193 @@ watch(
   { immediate: true },
 )
 onBeforeUnmount(() => ++sequence)
-const change = (delta: number): void => {
-  filters.page += delta
+const changePage = (next: number, size: number): void => {
+  if (loading.value || ![10, 20, 50, 100].includes(size)) return
+  if (next === filters.page && size === filters.pageSize) return
+  filters.page = size === filters.pageSize ? next : 1
+  filters.pageSize = size
   void load()
 }
+const warehouseName = (id: string): string =>
+  warehouses.warehouses.find((w) => w.id === id)?.name ?? id
 </script>
 <template>
-  <section>
-    <h1>{{ refundable ? 'Đơn cần hoàn tiền' : 'Phiếu hoàn tiền' }}</h1>
-    <PendingRefundRetries />
-    <a-alert v-if="error" type="error" :message="error" />
-    <a-alert
-      v-if="!warehouses.warehouses.length"
-      type="info"
-      message="Không có kho được giao. Tải lại phạm vi kho trên thanh công cụ."
-    />
-    <a-form layout="inline" style="margin: 16px 0; gap: 12px">
-      <a-form-item label="Kho"
-        ><a-select
-          v-model:value="filters.warehouseId"
-          :options="options"
-          allow-clear
-          style="min-width: 220px"
-      /></a-form-item>
-      <template v-if="!refundable">
-        <a-form-item label="ID đơn"><a-input v-model:value="filters.salesOrderId" /></a-form-item
-        ><a-form-item label="ID khách"><a-input v-model:value="filters.customerId" /></a-form-item>
-        <a-form-item label="Trạng thái"
-          ><a-select
-            v-model:value="filters.status"
-            allow-clear
-            style="min-width: 150px"
-            :options="[
-              { value: 'ACTIVE', label: 'Hiệu lực' },
-              { value: 'CANCELLED', label: 'Đã hủy' },
-            ]"
-        /></a-form-item>
-        <a-form-item label="Hình thức"
-          ><a-select
-            v-model:value="filters.method"
-            allow-clear
-            style="min-width: 150px"
-            :options="[
-              { value: 'CASH', label: 'Tiền mặt' },
-              { value: 'BANK_TRANSFER', label: 'Chuyển khoản' },
-            ]"
-        /></a-form-item>
-        <a-form-item label="Từ ngày hoàn"
-          ><a-date-picker v-model:value="filters.from" value-format="YYYY-MM-DD" /></a-form-item
-        ><a-form-item label="Đến ngày hoàn (bao gồm)"
-          ><a-date-picker v-model:value="filters.to" value-format="YYYY-MM-DD"
-        /></a-form-item>
-      </template>
-    </a-form>
-    <BasicTable
-      :columns="columns"
-      :data-source="rows"
-      :row-key="(row) => ('id' in row ? row.id : row.salesOrderId)"
-      :loading="loading"
-      :scroll="{ x: 2000 }"
-      @reload="load"
-    >
-      <template #bodyCell="{ column, record }">
-        <template v-if="money.includes(String(column.key))">{{
-          reportValue(record[column.key], true)
-        }}</template>
-        <template v-else-if="column.key === 'customer'">{{
-          record.customerSnapshot?.name ?? record.customerId ?? 'Khách lẻ'
-        }}</template>
-        <template v-else-if="column.key === 'warehouseId'">{{
-          warehouses.warehouses.find((w) => w.id === record.warehouseId)?.name ?? record.warehouseId
-        }}</template>
-        <template v-else-if="column.key === 'method'">{{
-          record.method === 'CASH' ? 'Tiền mặt' : 'Chuyển khoản'
-        }}</template>
-        <template v-else-if="column.key === 'createdAt'">{{
-          formatDateTime(record.createdAt)
-        }}</template>
-        <a-tag v-else-if="column.key === 'status'">{{
-          record.status === 'ACTIVE' ? 'Hiệu lực' : 'Đã hủy'
-        }}</a-tag>
-        <a-space v-else-if="column.key === 'actions'">
-          <a-button
-            v-if="refundable && can('REFUND_CREATE')"
-            type="primary"
-            @click="showRefund(record)"
-            >Hoàn tiền</a-button
+  <a-config-provider
+    :theme="{ token: { colorPrimary: '#7357cf', colorLink: '#7357cf', borderRadius: 8 } }"
+  >
+    <section class="rr-page">
+      <header class="rr-page-heading">
+        <AccountBookOutlined v-if="refundable" aria-hidden="true" /><FileTextOutlined
+          v-else
+          aria-hidden="true"
+        />
+        <div>
+          <h1>{{ refundable ? 'Đơn cần hoàn tiền' : 'Phiếu hoàn tiền' }}</h1>
+          <p>
+            {{
+              refundable
+                ? 'Theo dõi khoản còn cần hoàn theo số liệu quyết toán của đơn.'
+                : 'Tra cứu và xử lý các khoản hoàn tiền đã ghi nhận.'
+            }}
+          </p>
+        </div>
+      </header>
+      <PendingRefundRetries class="rr-pending-retries" />
+      <a-alert v-if="error" type="error" :message="error" show-icon />
+      <a-alert
+        v-if="!warehouses.warehouses.length"
+        type="info"
+        message="Không có kho được giao. Tải lại phạm vi kho trên thanh công cụ."
+        show-icon
+      />
+      <ReturnRefundList
+        :title="refundable ? 'Đơn cần hoàn tiền' : 'Danh sách phiếu hoàn tiền'"
+        :columns="columns"
+        :rows="rows"
+        :loading="loading"
+        :error="error"
+        :total="total"
+        :page="filters.page"
+        :page-size="filters.pageSize"
+        :row-key="(row) => ('id' in row ? row.id : row.salesOrderId)"
+        @reload="load"
+        @page-change="changePage"
+      >
+        <template #filters>
+          <a-form layout="vertical">
+            <a-form-item label="Kho" html-for="refund-filter-warehouse"
+              ><a-select
+                id="refund-filter-warehouse"
+                v-model:value="filters.warehouseId"
+                :options="options"
+                placeholder="Tất cả kho được giao"
+                allow-clear
+            /></a-form-item>
+            <template v-if="!refundable">
+              <a-form-item label="ID đơn" html-for="refund-filter-order"
+                ><a-input
+                  id="refund-filter-order"
+                  v-model:value="filters.salesOrderId"
+                  placeholder="Nhập ID đơn"
+                  allow-clear
+              /></a-form-item>
+              <a-form-item label="ID khách" html-for="refund-filter-customer"
+                ><a-input
+                  id="refund-filter-customer"
+                  v-model:value="filters.customerId"
+                  placeholder="Nhập ID khách"
+                  allow-clear
+              /></a-form-item>
+              <a-form-item label="Trạng thái" html-for="refund-filter-status"
+                ><a-select
+                  id="refund-filter-status"
+                  v-model:value="filters.status"
+                  allow-clear
+                  placeholder="Tất cả"
+                  :options="[
+                    { value: 'ACTIVE', label: 'Hiệu lực' },
+                    { value: 'CANCELLED', label: 'Đã hủy' },
+                  ]"
+              /></a-form-item>
+              <a-form-item label="Hình thức" html-for="refund-filter-method"
+                ><a-select
+                  id="refund-filter-method"
+                  v-model:value="filters.method"
+                  allow-clear
+                  placeholder="Tất cả"
+                  :options="[
+                    { value: 'CASH', label: 'Tiền mặt' },
+                    { value: 'BANK_TRANSFER', label: 'Chuyển khoản' },
+                  ]"
+              /></a-form-item>
+              <a-form-item label="Từ ngày hoàn" html-for="refund-filter-from"
+                ><a-date-picker
+                  id="refund-filter-from"
+                  v-model:value="filters.from"
+                  value-format="YYYY-MM-DD"
+                  format="DD/MM/YYYY"
+                  placeholder="Chọn ngày"
+              /></a-form-item>
+              <a-form-item label="Đến ngày hoàn (bao gồm)" html-for="refund-filter-to"
+                ><a-date-picker
+                  id="refund-filter-to"
+                  v-model:value="filters.to"
+                  value-format="YYYY-MM-DD"
+                  format="DD/MM/YYYY"
+                  placeholder="Chọn ngày"
+              /></a-form-item>
+            </template>
+          </a-form>
+        </template>
+        <template #bodyCell="{ column, record }">
+          <span
+            v-if="money.includes(String(column.key))"
+            class="rr-money"
+            :class="{ 'rr-money-emphasis': column.key === 'refundableAmount' }"
+            >{{ reportValue(record[column.key], true) }}</span
           >
-          <a-button v-if="!refundable" @click="showDetail(record.id)">Chi tiết / xử lý</a-button>
-          <a-button v-if="can('SALES_ORDER_VIEW')" @click="showOrder(record.salesOrderId)"
-            >Xem đơn</a-button
+          <a-tooltip
+            v-else-if="column.key === 'customer'"
+            :title="record.customerSnapshot?.name ?? record.customerId ?? 'Khách lẻ'"
+            ><span class="rr-text">{{
+              record.customerSnapshot?.name ?? record.customerId ?? 'Khách lẻ'
+            }}</span></a-tooltip
           >
-        </a-space>
-      </template>
-    </BasicTable>
-    <a-space
-      ><span>Tổng {{ total === undefined ? '—' : fmt(total) }} · Trang {{ filters.page }}</span
-      ><a-button :disabled="loading || filters.page <= 1" @click="change(-1)">Trước</a-button
-      ><a-button
-        :disabled="loading || !hasNextPage(total, filters.page, filters.pageSize)"
-        @click="change(1)"
-        >Sau</a-button
-      ><a-select
-        v-model:value="filters.pageSize"
-        :options="[10, 20, 50, 100].map((value) => ({ value, label: String(value) }))"
-    /></a-space>
-    <RefundDialog
-      v-if="order"
-      v-model:open="refundOpen"
-      :order="order"
-      @updated="order = $event"
-      @refresh-requested="load"
-    />
-    <RefundDetailDialog :id="detailId" v-model:open="detailOpen" @saved="load" />
-    <SalesOrderDialog
-      v-if="can('SALES_ORDER_VIEW')"
-      :id="orderId"
-      v-model:open="orderOpen"
-      mode="view"
-    />
-  </section>
+          <a-tooltip
+            v-else-if="column.key === 'warehouseId'"
+            :title="warehouseName(record.warehouseId)"
+            ><span class="rr-text">{{ warehouseName(record.warehouseId) }}</span></a-tooltip
+          >
+          <template v-else-if="column.key === 'method'">{{
+            record.method === 'CASH' ? 'Tiền mặt' : 'Chuyển khoản'
+          }}</template>
+          <template v-else-if="column.key === 'createdAt'">{{
+            formatDateTime(record.createdAt)
+          }}</template>
+          <template v-else-if="['saleDate', 'refundDate'].includes(String(column.key))">{{
+            formatDate(record[column.key])
+          }}</template>
+          <a-tag
+            v-else-if="column.key === 'status'"
+            :color="record.status === 'ACTIVE' ? 'green' : 'red'"
+            >{{ record.status === 'ACTIVE' ? 'Hiệu lực' : 'Đã hủy' }}</a-tag
+          >
+          <div v-else-if="column.key === 'actions'" class="rr-actions">
+            <a-button
+              v-if="refundable && can('REFUND_CREATE')"
+              type="primary"
+              @click="showRefund(record)"
+              >Hoàn tiền</a-button
+            >
+            <a-button v-if="!refundable" @click="showDetail(record.id)">Chi tiết / xử lý</a-button>
+            <a-button v-if="can('SALES_ORDER_VIEW')" @click="showOrder(record.salesOrderId)"
+              >Xem đơn</a-button
+            >
+          </div>
+          <a-tooltip
+            v-else
+            :title="record[column.dataIndex] ?? (column.key === 'customerId' ? 'Khách lẻ' : '—')"
+            ><span class="rr-text" :class="{ 'rr-code': column.key === 'code' }">{{
+              record[column.dataIndex] ?? (column.key === 'customerId' ? 'Khách lẻ' : '—')
+            }}</span></a-tooltip
+          >
+        </template>
+      </ReturnRefundList>
+      <RefundDialog
+        v-if="order"
+        v-model:open="refundOpen"
+        :order="order"
+        @updated="order = $event"
+        @refresh-requested="load"
+      />
+      <RefundDetailDialog :id="detailId" v-model:open="detailOpen" @saved="load" />
+      <SalesOrderDialog
+        v-if="can('SALES_ORDER_VIEW')"
+        :id="orderId"
+        v-model:open="orderOpen"
+        mode="view"
+      />
+    </section>
+  </a-config-provider>
 </template>
+<style scoped src="./returnRefundPage.css"></style>

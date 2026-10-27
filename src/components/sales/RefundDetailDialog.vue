@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
-import { BasicModal } from '@/components'
+import ReturnRefundDialog from './ReturnRefundDialog.vue'
+import SettlementAmountSummary from './SettlementAmountSummary.vue'
+import RefundCancelDialog from './RefundCancelDialog.vue'
 import { getRefund, cancelRefund } from '@/api/sales/returns.api'
 import { usePaymentScope } from '@/composables/usePaymentScope'
 import { useRefundsStore } from '@/stores/refunds'
 import { returnError, validReason } from '@/utils/returns'
-import { formatStockInteger as fmt } from '@/utils/stock'
-import { formatDateTime } from '@/utils/date'
+import { formatDate, formatDateTime } from '@/utils/date'
 import type { Refund } from '@/types/returns'
 import type { NormalizedApiError } from '@/utils/request'
 const props = defineProps<{ open: boolean; id?: string }>()
 const emit = defineEmits<{ 'update:open': [value: boolean]; saved: [] }>()
-const { can, inScope, contextKey, refreshAccess } = usePaymentScope()
+const { can, inScope, contextKey, refreshAccess, warehouses } = usePaymentScope()
 const refunds = useRefundsStore()
 const detail = ref<Refund>(),
   error = ref(''),
@@ -34,7 +35,7 @@ const load = async (): Promise<void> => {
   detail.value = undefined
   loading.value = false
   error.value = ''
-  if (!props.id || !can('REFUND_VIEW')) return
+  if (!props.open || !props.id || !can('REFUND_VIEW')) return
   loading.value = true
   try {
     const result = await getRefund(props.id)
@@ -51,6 +52,18 @@ const load = async (): Promise<void> => {
   } finally {
     if (current === sequence) loading.value = false
   }
+}
+const openCancel = (): void => {
+  if (saving.value || loading.value || detail.value?.status !== 'ACTIVE' || !can('REFUND_CANCEL'))
+    return
+  reason.value = ''
+  error.value = ''
+  cancelMode.value = true
+}
+const closeCancel = (): void => {
+  if (saving.value) return
+  cancelMode.value = false
+  error.value = ''
 }
 const cancel = async (): Promise<void> => {
   const original = detail.value
@@ -123,63 +136,150 @@ watch(
 onBeforeUnmount(() => ++sequence)
 </script>
 <template>
-  <BasicModal
-    :open="open"
+  <ReturnRefundDialog
+    :open="open && !cancelMode"
+    instant
     title="Chi tiết phiếu hoàn tiền"
     :width="850"
+    :saving="saving"
     @update:open="emit('update:open', false)"
   >
-    <a-spin :spinning="loading"
-      ><a-alert v-if="error" type="error" :message="error" />
-      <a-descriptions v-if="detail" bordered :column="2">
-        <a-descriptions-item label="Mã phiếu">{{ detail.code }}</a-descriptions-item>
-        <a-descriptions-item label="Trạng thái">{{
-          detail.status === 'ACTIVE' ? 'Hiệu lực' : 'Đã hủy'
-        }}</a-descriptions-item>
-        <a-descriptions-item label="Đơn nguồn">{{ detail.salesOrderId }}</a-descriptions-item>
-        <a-descriptions-item label="Kho">{{ detail.warehouseId }}</a-descriptions-item>
-        <a-descriptions-item label="Khách">{{
-          detail.customerId ?? 'Khách lẻ'
-        }}</a-descriptions-item>
-        <a-descriptions-item label="Số tiền">{{ fmt(detail.amount) }} VND</a-descriptions-item>
-        <a-descriptions-item label="Ngày hoàn">{{ detail.refundDate }}</a-descriptions-item>
-        <a-descriptions-item label="Hình thức">{{
-          detail.method === 'CASH' ? 'Tiền mặt' : 'Chuyển khoản'
-        }}</a-descriptions-item>
-        <a-descriptions-item label="Tham chiếu">{{ detail.reference ?? '—' }}</a-descriptions-item>
-        <a-descriptions-item label="Lý do">{{ detail.reason }}</a-descriptions-item>
-        <a-descriptions-item label="Ghi chú">{{ detail.note ?? '—' }}</a-descriptions-item>
-        <a-descriptions-item label="Người tạo">{{ detail.createdBy }}</a-descriptions-item>
-        <a-descriptions-item label="Thời gian tạo">{{
-          formatDateTime(detail.createdAt)
-        }}</a-descriptions-item>
-        <a-descriptions-item v-if="detail.cancelledAt" label="Hủy"
-          >{{ detail.cancelledBy }} / {{ formatDateTime(detail.cancelledAt) }}</a-descriptions-item
-        >
-        <a-descriptions-item v-if="detail.cancellationReason" label="Lý do hủy">{{
-          detail.cancellationReason
-        }}</a-descriptions-item>
-      </a-descriptions>
-      <template v-if="cancelMode"
-        ><a-alert
-          type="warning"
-          message="Hủy ghi nhận sai, không ghi nhận việc thu lại tiền từ khách." /><a-textarea
-          v-model:value="reason"
-          :maxlength="2000"
-          placeholder="Lý do hủy ghi nhận sai"
-          :disabled="saving"
-      /></template>
+    <a-spin :spinning="loading">
+      <a-alert v-if="error" type="error" :message="error" show-icon />
+      <template v-if="detail">
+        <SettlementAmountSummary :code="detail.code" label="Số tiền hoàn" :amount="detail.amount">
+          <template #status
+            ><a-tag :color="detail.status === 'ACTIVE' ? 'green' : 'red'">{{
+              detail.status === 'ACTIVE' ? 'Hiệu lực' : 'Đã hủy'
+            }}</a-tag></template
+          >
+        </SettlementAmountSummary>
+        <dl class="rr-info">
+          <div>
+            <dt>Đơn nguồn</dt>
+            <dd>{{ detail.salesOrderId }}</dd>
+          </div>
+          <div>
+            <dt>Tham chiếu</dt>
+            <dd>{{ detail.reference ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt>Khách hàng</dt>
+            <dd>{{ detail.customerId ?? 'Khách lẻ' }}</dd>
+          </div>
+          <div>
+            <dt>Lý do</dt>
+            <dd>{{ detail.reason }}</dd>
+          </div>
+          <div>
+            <dt>Kho</dt>
+            <dd>
+              {{
+                warehouses.warehouses.find((w) => w.id === detail?.warehouseId)?.name ??
+                detail.warehouseId
+              }}
+            </dd>
+          </div>
+          <div>
+            <dt>Ghi chú</dt>
+            <dd>{{ detail.note ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt>Ngày hoàn</dt>
+            <dd>{{ formatDate(detail.refundDate) }}</dd>
+          </div>
+          <div>
+            <dt>Người tạo</dt>
+            <dd>{{ detail.createdBy }}</dd>
+          </div>
+          <div>
+            <dt>Hình thức</dt>
+            <dd>{{ detail.method === 'CASH' ? 'Tiền mặt' : 'Chuyển khoản' }}</dd>
+          </div>
+          <div>
+            <dt>Thời gian tạo</dt>
+            <dd>{{ formatDateTime(detail.createdAt) }}</dd>
+          </div>
+        </dl>
+        <section v-if="detail.status === 'CANCELLED'" class="refund-cancellation">
+          <h3 class="rr-section-title">Thông tin hủy ghi nhận</h3>
+          <dl class="rr-info">
+            <div>
+              <dt>Người hủy</dt>
+              <dd>{{ detail.cancelledBy ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt>Thời gian hủy</dt>
+              <dd>{{ detail.cancelledAt ? formatDateTime(detail.cancelledAt) : '—' }}</dd>
+            </div>
+            <div class="rr-wide">
+              <dt>Lý do hủy</dt>
+              <dd>{{ detail.cancellationReason ?? '—' }}</dd>
+            </div>
+          </dl>
+        </section>
+        <details class="rr-identifiers">
+          <summary>Thông tin định danh</summary>
+          <dl class="rr-info">
+            <div>
+              <dt>ID phiếu</dt>
+              <dd>{{ detail.id }}</dd>
+            </div>
+            <div>
+              <dt>ID đơn nguồn</dt>
+              <dd>{{ detail.salesOrderId }}</dd>
+            </div>
+            <div>
+              <dt>ID kho</dt>
+              <dd>{{ detail.warehouseId }}</dd>
+            </div>
+            <div>
+              <dt>ID khách</dt>
+              <dd>{{ detail.customerId ?? 'Khách lẻ' }}</dd>
+            </div>
+            <div>
+              <dt>ID người tạo</dt>
+              <dd>{{ detail.createdBy }}</dd>
+            </div>
+            <div v-if="detail.cancelledBy">
+              <dt>ID người hủy</dt>
+              <dd>{{ detail.cancelledBy }}</dd>
+            </div>
+          </dl>
+        </details>
+      </template>
+      <a-empty
+        v-else-if="!loading && !error"
+        description="Không có dữ liệu phiếu hoàn trong phạm vi được phép."
+      />
     </a-spin>
-    <template #footer
-      ><a-button :disabled="saving" @click="emit('update:open', false)">Đóng</a-button
-      ><a-button :disabled="saving || loading" @click="load">Tải lại</a-button
-      ><a-button
+    <template #footer>
+      <a-button :disabled="saving" @click="emit('update:open', false)">Đóng</a-button>
+      <a-button :disabled="saving || loading" @click="load">Tải lại</a-button>
+      <a-button
         v-if="detail?.status === 'ACTIVE' && can('REFUND_CANCEL')"
         danger
-        :loading="saving"
-        @click="cancelMode ? cancel() : (cancelMode = true)"
-        >{{ cancelMode ? 'Xác nhận hủy ghi nhận' : 'Hủy ghi nhận sai' }}</a-button
-      ></template
-    >
-  </BasicModal>
+        :disabled="saving || loading"
+        @click="openCancel"
+        >Hủy ghi nhận sai</a-button
+      >
+    </template>
+  </ReturnRefundDialog>
+  <RefundCancelDialog
+    v-model:reason="reason"
+    :open="open && cancelMode"
+    :refund="detail"
+    :saving="saving"
+    :error="error"
+    @close="closeCancel"
+    @submit="cancel"
+  />
 </template>
+<style scoped>
+.refund-cancellation {
+  padding: 14px;
+  border: 1px solid #ffd7dc;
+  border-radius: 10px;
+  background: #fff7f8;
+}
+</style>

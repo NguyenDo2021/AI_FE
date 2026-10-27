@@ -264,6 +264,7 @@ const show = (payment: Payment, cancel = false): void => {
       </div>
       <FittedListTable
         class="payment-list-panel"
+        :body-max-height="orderId ? 300 : undefined"
         :columns="columns"
         :rows="rows"
         :loading="loading"
@@ -475,7 +476,6 @@ const show = (payment: Payment, cancel = false): void => {
 }
 .payment-history--embedded .payment-list-panel {
   flex: none;
-  height: 400px;
 }
 .payment-filters--embedded {
   grid-template-columns: minmax(160px, 1fr) auto;

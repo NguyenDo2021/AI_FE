@@ -79,6 +79,11 @@ const mockUrl = url(`
   refreshAccess:async()=>{c.refreshes++},
  })
  export const formatDateTime = value => value
+ export const formatDate = value => value
+ export const InboxOutlined = defineComponent({render:()=>null})
+ export const PlusOutlined = InboxOutlined
+ export const FileTextOutlined = InboxOutlined
+ export const AccountBookOutlined = InboxOutlined
  export const message = {success:text=>c.notices.push(text),info:text=>c.notices.push(text)}
  export const Modal = {confirm:options=>{c.confirmation=options}}
  export const BasicModal = defineComponent({setup(_, {slots}) {return ()=>h('modal',[slots.default?.(),slots.footer?.()])}})
@@ -95,6 +100,7 @@ const mocked = new Set([
   '@/composables/usePaymentScope',
   '@/utils/date',
   'ant-design-vue',
+  '@ant-design/icons-vue',
   'vue-router',
   '@/components',
 ])
@@ -217,11 +223,15 @@ const RefundDialog = await component(
 )
 const RefundsPage = await component(
   'src/views/sales/RefundsPage.vue',
-  'rows,filters,load,total,error',
+  'rows,filters,load,total,error,changePage,showOrder,orderOpen,showDetail,detailOpen',
+)
+const ReturnsPage = await component(
+  'src/views/sales/ReturnsPage.vue',
+  'rows,filters,load,total,error,changePage,show,open',
 )
 const RefundDetail = await component(
   'src/components/sales/RefundDetailDialog.vue',
-  'detail,reason,cancel,error',
+  'detail,reason,cancel,error,cancelMode,openCancel,closeCancel',
 )
 const pending = await component('src/components/sales/PendingRefundRetries.vue', 'rows,retry,error')
 const all = [
@@ -1040,5 +1050,81 @@ test('selector 403 clears results and delegates access refresh without presentin
   assert.deepEqual(subject.vm.rows, [])
   assert.equal(subject.vm.searched, false)
   assert.equal(subject.vm.keyword, '')
+  subject.unmount()
+})
+
+test('all three lists change server pages once and preserve filters when detail opens and closes', async () => {
+  for (const [Component, props, path, item] of [
+    [ReturnsPage, {}, '/sales-returns', draft()],
+    [RefundsPage, { refundable: true }, '/refundables', summary()],
+    [RefundsPage, { refundable: false }, '/refunds', refund()],
+  ]) {
+    reset()
+    context.handler = ({ config }) => ({
+      items: [item],
+      total: 9223372036854775807n,
+      page: config.params.page,
+      pageSize: config.params.pageSize,
+    })
+    const subject = mount(Component, props)
+    await flush()
+    const calls = () => context.calls.filter((call) => call.path === path)
+    let count = calls().length
+    subject.vm.changePage(2, 10)
+    await flush()
+    assert.equal(calls().length, ++count)
+    assert.equal(calls().at(-1).config.params.page, 2)
+    for (const size of [20, 50, 100, 10]) {
+      subject.vm.changePage(2, size)
+      await flush()
+      assert.equal(calls().length, ++count)
+      assert.equal(calls().at(-1).config.params.page, 1)
+      assert.equal(calls().at(-1).config.params.pageSize, size)
+      assert.equal(subject.vm.total, 9223372036854775807n)
+    }
+    subject.vm.changePage(2, 10)
+    await flush()
+    count = calls().length
+    if (Component === ReturnsPage) {
+      subject.vm.show('r1')
+      subject.vm.open = false
+    } else {
+      subject.vm.showDetail('h1')
+      subject.vm.detailOpen = false
+    }
+    await flush()
+    assert.equal(subject.vm.filters.page, 2)
+    assert.equal(subject.vm.filters.warehouseId, 'w1')
+    assert.equal(calls().length, count)
+    subject.unmount()
+  }
+})
+
+test('refund cancellation is a separate view; returning preserves detail and API errors preserve reason', async () => {
+  reset()
+  context.handler = () => refund()
+  const subject = mount(RefundDetail, { open: true, id: 'h1' })
+  await flush()
+  const original = subject.vm.detail
+  const count = context.calls.length
+  subject.vm.openCancel()
+  assert.equal(subject.vm.cancelMode, true)
+  subject.vm.closeCancel()
+  assert.equal(subject.vm.cancelMode, false)
+  assert.equal(subject.vm.detail, original)
+  assert.equal(context.calls.length, count)
+  subject.vm.openCancel()
+  subject.vm.reason = 'Giữ lý do khi backend từ chối'
+  context.handler = () => {
+    throw failure('INVALID_REQUEST', 400)
+  }
+  await subject.vm.cancel()
+  assert.equal(subject.vm.reason, 'Giữ lý do khi backend từ chối')
+  assert.equal(subject.vm.cancelMode, true)
+  assert.equal(subject.vm.detail, original)
+  subject.state.id = 'h2'
+  await flush()
+  assert.equal(subject.vm.cancelMode, false)
+  assert.equal(subject.vm.reason, '')
   subject.unmount()
 })
