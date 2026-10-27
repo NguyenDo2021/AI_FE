@@ -97,9 +97,18 @@ const mockUrl = moduleUrl(`
  export const useI18n = () => ({ t: key => key })
  export const WalletOutlined = defineComponent({ setup() { return () => null } })
  export const InfoCircleOutlined = WalletOutlined
+ export const EyeOutlined = WalletOutlined
+ export const PrinterOutlined = WalletOutlined
+ export const CloseCircleOutlined = WalletOutlined
+ export const ReloadOutlined = WalletOutlined
+ export const MoreOutlined = WalletOutlined
+ export const FileTextOutlined = WalletOutlined
+ export const DownloadOutlined = WalletOutlined
+ export const ExportOutlined = WalletOutlined
  export const message = { success() {}, info() {}, error() {} }
  export const Modal = { confirm: options => { context.confirmation = options } }
  export const formatDateTime = value => value
+ export const formatDate = value => value
  export const BasicModal = defineComponent({ setup(_, { slots }) { return () => h('modal', [slots.default?.(), slots.footer?.()]) } })
  export const BasicTable = defineComponent({ props: ['columns','dataSource'], setup(props, { slots }) { return () => h('table', (props.dataSource ?? []).flatMap(record => props.columns.map(column => h('cell', { column: column.key }, slots.bodyCell?.({ column, record }))))) } })
  export default defineComponent({ setup() { return () => null } })
@@ -199,7 +208,7 @@ const ReceiptHarness = defineComponent({
 })
 
 async function component(path, expose) {
-  let source = await read(path)
+  let source = (await read(path)).replace(/import ['"]\.\/paymentDialogs\.css['"]/g, '')
   source = source.replace('</script>', `defineExpose({ ${expose} })\n</script>`)
   const { descriptor } = parse(source)
   let code = compileScript(descriptor, { id: `test-${index}`, inlineTemplate: true }).content
@@ -209,6 +218,10 @@ async function component(path, expose) {
       'from ' + JSON.stringify(receiptControllerUrl),
     )
     .replace(/from ['"]\.\/PaymentReceiptDialog.vue['"]/g, 'from ' + JSON.stringify(mockUrl))
+  code = code.replace(
+    /from ['"](?:@\/components\/catalog\/FittedListTable.vue|\.\/PaymentAmountSummary.vue|\.\/PaymentCancelDialog.vue)['"]/g,
+    'from ' + JSON.stringify(mockUrl),
+  )
   code = code.replace(/from ['"]vue['"]/g, `from '${vueUrl}'`)
   code = code.replace(/from ['"]@ant-design\/icons-vue['"]/g, 'from ' + JSON.stringify(mockUrl))
   code = code
@@ -342,7 +355,7 @@ const CollectDialog = await component(
 )
 const History = await component(
   'src/components/sales/PaymentHistory.vue',
-  'load, rows, filters, page, pageSize, changePage, total, error',
+  'load, rows, filters, page, pageSize, changePage, total, error, show, detailOpen, detailId',
 )
 const CustomerDebt = await component(
   'src/components/sales/CustomerReceivablesDialog.vue',
@@ -354,7 +367,7 @@ const DebtPage = await component(
 )
 const DetailDialog = await component(
   'src/components/sales/PaymentDetailDialog.vue',
-  'load, submit, detail, reason, fields, error',
+  'load, submit, detail, reason, fields, error, cancelling, saving, openCancel, closeCancel, closeDetail',
 )
 const order = (extra = {}) => ({
   id: 's1',
@@ -1211,5 +1224,150 @@ test('print waits for viewer load, prints only its frame and offers a separate P
     globalThis.window = originalWindow
     subject.unmount()
     controller.unmount()
+  }
+})
+
+test('payment page sizes reset once and opening details preserves filters and pagination', async () => {
+  reset(['PAYMENT_VIEW'])
+  context.response = pageData([receipt()], 137)
+  const subject = mount(History, {})
+  await flush()
+  subject.vm.filters.customerId = 'customer-uuid'
+  await flush()
+  for (const size of [20, 50, 100, 10]) {
+    const before = context.calls.length
+    subject.vm.changePage(4, size)
+    await flush()
+    assert.equal(context.calls.length, before + 1)
+    assert.equal(subject.vm.page, 1)
+    assert.deepEqual(context.calls.at(-1).config.params, {
+      warehouseId: 'w1',
+      customerId: 'customer-uuid',
+      page: 1,
+      pageSize: size,
+    })
+  }
+  subject.vm.changePage(3, 10)
+  await flush()
+  const before = context.calls.length
+  subject.vm.show(receipt())
+  subject.vm.detailOpen = false
+  await flush()
+  assert.equal(subject.vm.page, 3)
+  assert.equal(subject.vm.filters.customerId, 'customer-uuid')
+  assert.equal(context.calls.length, before)
+  subject.unmount()
+})
+
+test('cancel dialog returns to the same detail, resets for another receipt and never preloads PDF', async () => {
+  reset()
+  context.response = receipt()
+  const subject = mount(DetailDialog, { open: true, id: 'p1' })
+  await flush()
+  assert.ok(context.calls.every((call) => call.url === '/payments/p1'))
+  subject.vm.openCancel()
+  assert.equal(subject.vm.cancelling, true)
+  subject.vm.reason = 'old reason'
+  subject.vm.closeCancel()
+  assert.equal(subject.vm.cancelling, false)
+  assert.equal(subject.vm.detail.id, 'p1')
+  subject.vm.openCancel()
+  assert.equal(subject.vm.reason, '')
+  subject.vm.reason = 'another reason'
+  context.response = receipt({ id: 'p2' })
+  subject.state.id = 'p2'
+  await flush()
+  assert.equal(subject.vm.reason, '')
+  assert.deepEqual(subject.vm.fields, {})
+  assert.equal(subject.vm.detail.id, 'p2')
+  subject.unmount()
+})
+
+test('cancel failure retains reason, fields and authoritative state; pending submit blocks duplicates and closing', async () => {
+  const store = reset()
+  context.response = receipt()
+  const subject = mount(DetailDialog, { open: true, id: 'p1' })
+  await flush()
+  subject.vm.openCancel()
+  subject.vm.reason = 'Giữ nguyên lý do'
+  let fail
+  context.handler = () =>
+    new Promise((_resolve, reject) => {
+      fail = reject
+    })
+  const pending = subject.vm.submit()
+  assert.equal(subject.vm.saving, true)
+  subject.vm.closeCancel()
+  assert.equal(subject.vm.cancelling, true)
+  await subject.vm.submit()
+  assert.equal(writes().length, 1)
+  fail(
+    Object.assign(new Error('Dữ liệu đã thay đổi'), {
+      status: 409,
+      code: 'VALIDATION_ERROR',
+      details: { reason: 'Kiểm tra lại lý do' },
+    }),
+  )
+  await pending
+  assert.equal(subject.vm.reason, 'Giữ nguyên lý do')
+  assert.equal(subject.vm.fields.reason, 'Kiểm tra lại lý do')
+  assert.equal(subject.vm.detail.status, 'ACTIVE')
+  assert.equal(subject.vm.cancelling, true)
+  assert.equal(subject.vm.saving, false)
+  assert.deepEqual(store.summaries, {})
+  subject.unmount()
+})
+
+test('viewer close preserves an ongoing print URL until afterprint releases it', async () => {
+  reset(['PAYMENT_VIEW'])
+  context.response = pdfResponse()
+  const subject = mount(ReceiptHarness, {})
+  await subject.vm.show(receipt())
+  assert.equal(subject.vm.state.paymentCode, 'PT1')
+  const url = subject.vm.state.url
+  const release = subject.vm.holdPrint()
+  subject.vm.close()
+  await nextTick()
+  assert.equal(await (await fetch(url)).text(), '%PDF-1.7\nreceipt')
+  release()
+  release()
+  await assert.rejects(fetch(url))
+  subject.unmount()
+})
+
+test('closing or replacing the viewer keeps an independently opened PDF alive until scope invalidation', async () => {
+  reset(['PAYMENT_VIEW'])
+  context.response = pdfResponse()
+  const subject = mount(ReceiptHarness, {})
+  await subject.vm.show(receipt())
+  const originalWindow = globalThis.window
+  let url
+  const popup = {
+    closed: false,
+    opener: null,
+    location: {
+      replace(value) {
+        url = value
+      },
+    },
+    close() {
+      this.closed = true
+    },
+  }
+  try {
+    globalThis.window = { open: () => popup }
+    subject.vm.openPdf()
+    subject.vm.close()
+    await nextTick()
+    assert.equal(popup.closed, false)
+    assert.equal(await (await fetch(url)).text(), '%PDF-1.7\nreceipt')
+    await subject.vm.show(receipt({ id: 'p2' }))
+    assert.equal(popup.closed, false)
+    context.auth.user.permissions = []
+    assert.equal(popup.closed, true)
+    await assert.rejects(fetch(url))
+  } finally {
+    globalThis.window = originalWindow
+    subject.unmount()
   }
 })
