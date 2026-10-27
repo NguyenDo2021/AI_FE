@@ -1,0 +1,162 @@
+/* Limited to the payment dialogs, including their teleported modal content. */
+.payment-dialog .ant-modal {
+  top: 20px;
+  max-width: calc(100vw - 24px);
+  margin: 0 auto;
+  padding-bottom: 20px;
+}
+.payment-dialog .ant-modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 40px);
+  padding: 0;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.payment-dialog .ant-modal-header {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 20px 56px 20px 24px;
+  border-bottom: 1px solid #ece7f3;
+}
+.payment-dialog .ant-modal-close {
+  top: 20px;
+  right: 20px;
+}
+.payment-dialog .ant-modal-body {
+  min-height: 0;
+  padding: 22px 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.payment-dialog .ant-modal-footer {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 14px 24px;
+  border-top: 1px solid #ece7f3;
+  background: #faf9fc;
+}
+.payment-dialog .payment-dialog-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.payment-dialog .payment-dialog-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #f2ecfc;
+  color: #7950d7;
+}
+.payment-dialog .payment-dialog-heading small {
+  display: block;
+  margin-top: 4px;
+  color: #797184;
+  font-size: 13px;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.payment-dialog .payment-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.payment-dialog .payment-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 24px;
+  margin: 0;
+}
+.payment-dialog .payment-info-grid > div {
+  min-width: 0;
+}
+.payment-dialog .payment-info-grid dt {
+  color: #797184;
+  font-size: 13px;
+}
+.payment-dialog .payment-info-grid dd {
+  margin: 8px 0 0;
+  color: #373047;
+  font-weight: 500;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.payment-dialog .payment-info-wide {
+  grid-column: 1 / -1;
+}
+.payment-dialog .payment-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.payment-dialog .payment-dialog-footer .ant-btn {
+  max-width: 100%;
+  height: auto;
+  min-height: 36px;
+  margin-inline-start: 0;
+  padding-block: 6px;
+  white-space: normal;
+}
+.payment-dialog .payment-identifiers {
+  border: 1px solid #ece7f3;
+  border-radius: 10px;
+}
+.payment-dialog .payment-identifiers > summary {
+  padding: 12px 14px;
+  color: #625b70;
+  cursor: pointer;
+}
+.payment-dialog .payment-identifiers .payment-info-grid {
+  padding: 8px 14px 16px;
+}
+.payment-dialog .payment-cancellation {
+  padding: 16px;
+  border: 1px solid #ffd7dc;
+  border-radius: 10px;
+  background: #fff7f8;
+}
+.payment-dialog .payment-cancellation h3 {
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+@media (max-width: 480px) {
+  .payment-dialog .ant-modal-header {
+    padding: 16px 48px 16px 16px;
+  }
+  .payment-dialog .ant-modal-close {
+    top: 16px;
+    right: 12px;
+  }
+  .payment-dialog .ant-modal-body {
+    padding: 18px 16px;
+  }
+  .payment-dialog .ant-modal-footer {
+    padding: 12px 16px;
+  }
+  .payment-dialog .payment-info-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+}
+@media (max-height: 650px) {
+  .payment-dialog .ant-modal {
+    top: 8px;
+    padding-bottom: 8px;
+  }
+  .payment-dialog .ant-modal-content {
+    max-height: calc(100dvh - 16px);
+  }
+  .payment-dialog .ant-modal-header {
+    padding-block: 12px;
+  }
+  .payment-dialog .ant-modal-close {
+    top: 12px;
+  }
+  .payment-dialog .ant-modal-body {
+    padding-block: 16px;
+  }
+}

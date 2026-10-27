@@ -17,12 +17,30 @@ export const usePaymentReceipt = () => {
     open: false,
     loading: false,
     paymentId: '',
+    paymentCode: '',
     filename: '',
     url: '',
     error: '',
     ready: false,
     printHint: '',
   })
+  const printLeases = new Map<string, number>()
+  const holdPrint = (): (() => void) => {
+    const url = state.url
+    if (!url) return () => undefined
+    printLeases.set(url, (printLeases.get(url) ?? 0) + 1)
+    let released = false
+    return () => {
+      if (released) return
+      released = true
+      const count = (printLeases.get(url) ?? 1) - 1
+      if (count > 0) printLeases.set(url, count)
+      else {
+        printLeases.delete(url)
+        if (state.url !== url) URL.revokeObjectURL(url)
+      }
+    }
+  }
   const releaseViewer = (): void => {
     const previous = state.url
     state.url = ''
@@ -30,7 +48,10 @@ export const usePaymentReceipt = () => {
     blob = undefined
     state.filename = ''
     // Vue removes the iframe before its URL is revoked.
-    if (previous) void nextTick(() => URL.revokeObjectURL(previous))
+    if (previous)
+      void nextTick(() => {
+        if (!printLeases.has(previous)) URL.revokeObjectURL(previous)
+      })
   }
   const closeDetached = (): void => {
     for (const item of detached) {
@@ -49,15 +70,16 @@ export const usePaymentReceipt = () => {
     state.error = ''
     state.printHint = ''
     state.paymentId = ''
+    state.paymentCode = ''
     selected = undefined
     releaseViewer()
-    closeDetached()
   }
   const show = async (payment: Pick<Payment, 'id' | 'code' | 'warehouseId'>): Promise<void> => {
     close()
     if (!can('PAYMENT_VIEW') || !inScope(payment.warehouseId)) return
     selected = { ...payment }
     state.paymentId = payment.id
+    state.paymentCode = payment.code
     state.open = true
     state.loading = true
     const current = sequence
@@ -133,9 +155,15 @@ export const usePaymentReceipt = () => {
   const loaded = (url: string): void => {
     if (url && url === state.url && state.open && !state.loading) state.ready = true
   }
-  watch(contextKey, close, { flush: 'sync' })
-  onBeforeUnmount(close)
-  return { state, show, close, retry, download, openPdf, loaded }
+  const invalidate = (): void => {
+    close()
+    closeDetached()
+    for (const url of printLeases.keys()) URL.revokeObjectURL(url)
+    printLeases.clear()
+  }
+  watch(contextKey, invalidate, { flush: 'sync' })
+  onBeforeUnmount(invalidate)
+  return { state, show, close, retry, download, openPdf, loaded, holdPrint }
 }
 
 export type PaymentReceiptController = ReturnType<typeof usePaymentReceipt>
