@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url'
 const { chromium } = await import(
   pathToFileURL(
     process.env.PLAYWRIGHT_MODULE ||
-      join(process.env.TEMP, 'codex-dashboard-browser/node_modules/playwright/index.mjs'),
+      join(process.env.TEMP, 'codex-stocktake-browser/node_modules/playwright/index.mjs'),
   ).href
 )
 const artifacts = join(process.env.TEMP, 'codex-sales-report-browser')
@@ -37,6 +37,7 @@ let empty = false,
   apiError = '',
   exportError = '',
   delay = 0
+let rowLimit
 let permissions = ['REPORT_SALES_VIEW']
 const warehouses = [
   { id: 'w1', code: 'K01', name: 'Kho trung tâm', status: 1 },
@@ -95,19 +96,26 @@ await context.route('**/api/**', async (route) => {
     }
     const items = empty
       ? []
-      : Array.from({ length: size }, (_, n) => ({
-          ...summary,
+      : Array.from({ length: rowLimit ?? size }, (_, n) => ({
           warehouseId: 'w' + ((page - 1) * size + n),
           warehouseCode: 'K' + n,
           warehouseName: n === 0 ? 'Warehouse with a very long name '.repeat(10) : 'Warehouse ' + n,
           confirmedOrderCount: n + 1,
+          cancelledConfirmedOrderCount: n,
+          confirmedQuantity: 100 + n,
+          cancelledQuantity: 3 + n,
+          grossSalesAmount: 10000 + n * 100,
+          discountAmount: 100 + n,
+          confirmedSalesAmount: 9900 + n * 100,
+          cancelledSalesAmount: 200 + n,
+          ...(n === 2 ? {} : { returnedSalesAmount: 3500 + n * 100 }),
           netSalesAmount: n === 0 ? '__EXACT_INT64__' : -91,
         }))
     return route.fulfill({
       contentType: 'application/json',
       body: JSON.stringify({
         items,
-        total: empty ? 0 : 137,
+        total: empty ? 0 : (rowLimit ?? 137),
         page,
         pageSize: size,
         summary,
@@ -153,7 +161,32 @@ const select = async (field, text) => {
     .click()
 }
 const geometry = async () => {
-  await page.waitForTimeout(200)
+  // Sidebar width animates across the mobile breakpoint. Wait until both its
+  // geometry and the table's ResizeObserver updates have settled.
+  await page.evaluate(() => {
+    globalThis.__salesTableLayout = undefined
+  })
+  await page.waitForFunction(() => {
+    const selectors = [
+      '.report-table',
+      '.products-table-region',
+      '.ant-table-header',
+      '.ant-table-body',
+      '.products-footer',
+      '.ant-table-header th',
+      '.ant-table-row td',
+    ]
+    const signature = selectors
+      .map((selector) => {
+        const rect = document.querySelector(selector)?.getBoundingClientRect()
+        return rect ? [rect.left, rect.right, rect.top, rect.bottom].join(',') : ''
+      })
+      .join('|')
+    const previous = globalThis.__salesTableLayout
+    const stable = previous?.signature === signature ? previous.stable + 1 : 0
+    globalThis.__salesTableLayout = { signature, stable }
+    return stable >= 4
+  })
   return page.evaluate(() => {
     const body = document.querySelector('.ant-table-body'),
       region = document.querySelector('.products-table-region'),
@@ -170,6 +203,10 @@ const geometry = async () => {
       body: rect(body),
       region: rect(region),
       footer: rect(footer),
+      panel: rect(document.querySelector('.report-table')),
+      rowHeights: [...document.querySelectorAll('.ant-table-row')].map(
+        (el) => el.getBoundingClientRect().height,
+      ),
       clientHeight: body.clientHeight,
       scrollHeight: body.scrollHeight,
       clientWidth: body.clientWidth,
@@ -189,10 +226,50 @@ const assertGeometry = async (name) => {
   check(name + ': no page horizontal overflow', m.pageWidth <= m.width + 1)
   check(name + ': all 11 columns', m.header.length === 11 && m.cells.length === 11)
   check(name + ': table scroll stays before pagination', m.body.bottom <= m.footer.top + 1)
+  check(name + ': pagination stays inside table panel', m.footer.bottom <= m.panel.bottom + 1)
   check(name + ': horizontal scrolling available', m.scrollWidth > m.clientWidth)
   for (let n = 0; n < 11; n++)
     assert.ok(Math.abs(m.header[n].right - m.cells[n].right) < 2, name + ': header alignment ' + n)
   return m
+}
+const expectedHeaders = [
+  'Kho',
+  'Số đơn xác nhận',
+  'Số đơn đã xác nhận bị hủy',
+  'Số cây xác nhận',
+  'Số cây bị hủy',
+  'Giá trị trước giảm giá',
+  'Giảm giá',
+  'Giá trị bán xác nhận',
+  'Giá trị bán bị hủy',
+  'Giá trị hàng đã trả',
+  'Giá trị bán ròng',
+]
+const assertWarehouseValues = async () => {
+  const headerText = await page
+    .locator('.ant-table-header th:not(.ant-table-cell-scrollbar)')
+    .allInnerTexts()
+  assert.deepEqual(
+    headerText.map((text) => text.replace(/\s+/g, ' ').trim()),
+    expectedHeaders,
+  )
+  const money = (value) => BigInt(value).toLocaleString('vi-VN') + ' ₫'
+  for (let n = 0; n < 2; n++) {
+    const values = await page.locator('.ant-table-row').nth(n).locator('td').allInnerTexts()
+    assert.deepEqual(values.slice(1), [
+      String(n + 1),
+      String(n),
+      String(100 + n),
+      String(3 + n),
+      money(10000 + n * 100),
+      money(100 + n),
+      money(9900 + n * 100),
+      money(200 + n),
+      money(3500 + n * 100),
+      money(n === 0 ? '-9223372036854775808' : -91),
+    ])
+    check('Warehouse ' + n + ': all ten cells read their own fields, including positive returns')
+  }
 }
 try {
   await page.goto((process.env.SALES_REPORT_TEST_URL || 'http://127.0.0.1:5178') + '/reports/sales')
@@ -200,6 +277,11 @@ try {
   check('Initial request exactly once', listCalls().length === 1)
   check('Correct heading', (await page.locator('h1').innerText()).includes('bán hàng'))
   check('All ten metrics present', (await page.locator('[data-metric]').count()) === 10)
+  await assertWarehouseValues()
+  check(
+    'Missing row return field is not replaced by zero',
+    (await page.locator('.ant-table-row').nth(2).locator('td').nth(9).innerText()) === '—',
+  )
   check(
     'Summary uses backend, not page totals',
     (await page.locator('[data-metric="confirmedOrderCount"]').innerText()) === '137',
@@ -311,6 +393,35 @@ try {
     await page.locator('.report-expand').click()
   const desktop = await assertGeometry('1440 desktop')
   check('Desktop fits viewport', desktop.pageHeight <= desktop.height + 2)
+  check(
+    'Wide headers remain readable',
+    await page
+      .locator('.ant-table-header th')
+      .evaluateAll((elements) => elements.every((el) => el.getBoundingClientRect().height <= 72)),
+  )
+  for (const position of [0, 0.5, 1]) {
+    await page.locator('.ant-table-body').evaluate((el, ratio) => {
+      el.scrollLeft = (el.scrollWidth - el.clientWidth) * ratio
+    }, position)
+    await assertGeometry('horizontal scroll ' + position)
+    if (position === 1) {
+      check(
+        'Returns and net sales visible at horizontal end',
+        await page.evaluate(() => {
+          const body = document.querySelector('.ant-table-body').getBoundingClientRect()
+          const headers = [
+            ...document.querySelectorAll('.ant-table-header th:not(.ant-table-cell-scrollbar)'),
+          ]
+          return headers.slice(-2).every((el) => {
+            const rect = el.getBoundingClientRect()
+            return rect.left >= body.left - 1 && rect.right <= body.right + 1
+          })
+        }),
+      )
+      await page.mouse.move(0, 0)
+      await page.screenshot({ path: join(artifacts, 'returns-columns.png'), fullPage: true })
+    }
+  }
   await page.locator('.ant-table-body').evaluate((el) => {
     el.scrollLeft = el.scrollWidth
   })
@@ -341,7 +452,39 @@ try {
     el.scrollLeft = 0
     el.scrollTop = 0
   })
+  const rowHeights = await page
+    .locator('.ant-table-row')
+    .evaluateAll((elements) => elements.map((el) => el.getBoundingClientRect().height))
+  for (const count of [2, 1]) {
+    rowLimit = count
+    await reload()
+    const few = await assertGeometry(count + ' warehouse rows')
+    check(
+      count + ' rows: unused space reserved without stretching rows',
+      few.rowHeights.every((height, n) => Math.abs(height - rowHeights[n]) <= 1),
+    )
+    check(count + ' rows: no unnecessary vertical scrollbar', few.scrollHeight <= few.clientHeight)
+    if (count === 2) await assertWarehouseValues()
+  }
+  rowLimit = undefined
+  await reload()
   await page.screenshot({ path: join(artifacts, 'desktop.png'), fullPage: true })
+  await page.setViewportSize({ width: 1440, height: 1200 })
+  const closedFilter = await geometry()
+  const beforeFilterLayout = listCalls().length
+  await page.locator('.report-expand').click()
+  const openFilter = await assertGeometry('filter consumes remaining table space')
+  check(
+    'Filter expansion reduces table body height',
+    openFilter.clientHeight < closedFilter.clientHeight,
+  )
+  await page.locator('.report-expand').click()
+  const restoredFilter = await geometry()
+  check(
+    'Filter collapse restores table body height',
+    Math.abs(restoredFilter.clientHeight - closedFilter.clientHeight) <= 1,
+  )
+  check('Table height changes never request data', listCalls().length === beforeFilterLayout)
   const beforeLayout = listCalls().length
   for (const width of [320, 375, 390, 414, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 })
@@ -450,6 +593,7 @@ try {
   largeSummary = false
   await page.setViewportSize({ width: 1440, height: 1000 })
   await reload()
+  const beforeSidebarLayout = listCalls().length
   const sidebarToggle = page.locator('.app-header button[aria-label*="thanh bên"]')
   if (await sidebarToggle.count()) {
     await sidebarToggle.click()
@@ -472,9 +616,23 @@ try {
   await page.evaluate(() => {
     document.documentElement.style.zoom = ''
   })
+  check(
+    'Sidebar, short viewport and zoom never request data',
+    listCalls().length === beforeSidebarLayout,
+  )
   empty = true
   await reload()
   check('Empty state', await page.locator('.ant-table-placeholder').isVisible())
+  const emptyGeometry = await geometry()
+  check('Empty state keeps all headers', emptyGeometry.header.length === 11)
+  check(
+    'Empty state pagination remains outside body',
+    emptyGeometry.body.bottom <= emptyGeometry.footer.top + 1,
+  )
+  check(
+    'Empty state pagination remains in panel',
+    emptyGeometry.footer.bottom <= emptyGeometry.panel.bottom + 1,
+  )
   empty = false
   apiError = 'NUMERIC_OVERFLOW'
   await reload()

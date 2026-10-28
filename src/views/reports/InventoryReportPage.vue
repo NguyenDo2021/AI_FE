@@ -285,7 +285,15 @@ onBeforeUnmount(() => {
 
 <template>
   <a-config-provider
-    :theme="{ token: { colorPrimary: '#7c3aed', borderRadius: 8, controlHeight: 38 } }"
+    :theme="{
+      token: {
+        colorPrimary: '#7c3aed',
+        borderRadius: 8,
+        controlHeight: mobile ? 40 : 32,
+        controlHeightSM: 24,
+        controlHeightLG: 40,
+      },
+    }"
   >
     <section class="inventory-report">
       <header class="report-heading">
@@ -561,10 +569,10 @@ onBeforeUnmount(() => {
   width: 100%;
 }
 .report-field :deep(.ant-picker) {
-  height: 38px;
+  height: 32px;
 }
 .report-field :deep(.ant-select-selector) {
-  min-height: 38px;
+  min-height: 32px;
 }
 .report-actions {
   display: flex;
@@ -759,7 +767,8 @@ onBeforeUnmount(() => {
   }
   .report-field :deep(.ant-select-selector),
   .report-field :deep(.ant-picker) {
-    min-height: 44px;
+    min-height: 40px;
+    height: 40px;
   }
   .report-note {
     padding: 12px;

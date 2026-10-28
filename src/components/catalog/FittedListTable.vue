@@ -17,6 +17,7 @@ const props = defineProps<{
   rangeLabel: string
   resetKey: number
   rowHeight?: number
+  minBodyHeight?: number
   bodyMaxHeight?: number
   flow?: boolean
   rowKey?: string | ((record: T) => string)
@@ -38,6 +39,7 @@ const region = ref<HTMLElement>()
 const width = ref(1200)
 const bodyHeight = ref(160)
 const bodyGutter = ref(0)
+const panelMinHeight = ref<number>()
 const compact = computed(() => width.value < 600)
 const sizedColumns = computed<TableColumnsType<T>>(() =>
   props.columns.map((column) =>
@@ -70,6 +72,20 @@ const measure = (): void => {
   if (disposed || !region.value || !panel.value) return
   width.value = panel.value.clientWidth
   const header = region.value.querySelector<HTMLElement>('.ant-table-header')
+  if (props.minBodyHeight !== undefined) {
+    // An explicit minimum must depend on the chrome, never on the current body
+    // height; otherwise a previously tall body prevents the flex panel shrinking.
+    const toolbar = panel.value.querySelector<HTMLElement>('.products-toolbar')
+    const footer = panel.value.querySelector<HTMLElement>('.products-footer')
+    const minimum = Math.ceil(
+      (toolbar?.offsetHeight ?? 0) +
+        (footer?.offsetHeight ?? 0) +
+        (header?.offsetHeight ?? 48) +
+        props.minBodyHeight +
+        2,
+    )
+    if (minimum !== panelMinHeight.value) panelMinHeight.value = minimum
+  }
   const next = Math.max(80, Math.floor(region.value.clientHeight - (header?.offsetHeight ?? 48)))
   if (next !== bodyHeight.value) bodyHeight.value = next
   const body = region.value.querySelector<HTMLElement>('.ant-table-body')
@@ -92,6 +108,12 @@ onMounted(async () => {
     panel.value,
     region.value,
     region.value?.querySelector('.ant-table-header'),
+    ...(props.minBodyHeight === undefined
+      ? []
+      : [
+          panel.value?.querySelector('.products-toolbar'),
+          panel.value?.querySelector('.products-footer'),
+        ]),
   ]) {
     if (element) observer.observe(element)
   }
@@ -129,6 +151,7 @@ onBeforeUnmount(() => {
     class="fitted-list-panel"
     :class="{ 'fitted-list-panel--content': bodyMaxHeight !== undefined || flow }"
     :style="{
+      minHeight: panelMinHeight === undefined ? undefined : `${panelMinHeight}px`,
       '--list-body-gutter': `${bodyGutter}px`,
       '--list-hover': token.colorPrimaryBg,
       '--list-selected': token.controlItemBgActive,

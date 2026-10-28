@@ -1,4 +1,24 @@
 export default {
+  paymentsReport: {
+    title: 'Báo cáo thu / hoàn',
+    description: 'Theo thời điểm tạo và hủy phiếu trong hệ thống',
+    receipts: 'Chi tiết thu',
+    refunds: 'Chi tiết hoàn',
+    detail: 'Chi tiết theo kho',
+    range: 'Hiển thị {from}–{to} / {total} kho',
+    scopeNote: 'Trong phạm vi được phép, bao gồm kho ngừng hoạt động.',
+    note: 'Tính theo thời điểm tạo/hủy phiếu thu/hoàn, không theo ngày thu/ngày hoàn. Thu ròng, hoàn ròng và dòng tiền ghi nhận ròng là các khoản riêng, có thể âm. Hủy phiếu chỉ đảo ghi nhận sai. Số liệu chưa khẳng định đối soát ngân hàng.',
+    waitBeforeExport: 'Hãy tìm kiếm và chờ bảng tải xong trước khi xuất Excel.',
+  },
+  lowStockReport: {
+    title: 'Báo cáo hàng tồn thấp',
+    description: 'Theo dõi tồn hiện tại so với ngưỡng cảnh báo',
+    scopeNote: 'Dữ liệu trong phạm vi kho được phép.',
+    pairCount: '{total} cặp kho / sản phẩm tồn thấp',
+    shortageNote: 'Thiếu tới ngưỡng là mức chênh lệch cảnh báo, không phải lượng đặt hàng tối ưu.',
+    detail: 'Danh sách hàng tồn thấp',
+    results: '{total} kết quả',
+  },
   receivablesReport: {
     title: 'Báo cáo công nợ hiện tại',
     description: 'Tổng hợp khoản còn phải thu trong phạm vi kho được phép',

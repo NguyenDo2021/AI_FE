@@ -177,7 +177,14 @@ onBeforeUnmount(() => ++sequence)
 <template>
   <a-config-provider
     :theme="{
-      token: { colorPrimary: '#7c3aed', colorLink: '#7c3aed', borderRadius: 8, controlHeight: 40 },
+      token: {
+        colorPrimary: '#7c3aed',
+        colorLink: '#7c3aed',
+        borderRadius: 8,
+        controlHeight: mobile ? 40 : 32,
+        controlHeightSM: 24,
+        controlHeightLG: 40,
+      },
     }"
   >
     <section class="receivables-report" :aria-labelledby="id + '-title'" :aria-busy="loading">
@@ -635,9 +642,11 @@ onBeforeUnmount(() => ++sequence)
   .report-reset {
     order: -1;
   }
-  .receivables-report :deep(.ant-btn),
-  .report-field :deep(.ant-select-selector) {
+  .receivables-report :deep(.ant-btn) {
     min-height: 44px;
+  }
+  .report-field :deep(.ant-select-selector) {
+    min-height: 40px;
   }
   .report-filter-panel {
     margin-bottom: 16px;

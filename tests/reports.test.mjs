@@ -62,6 +62,7 @@ export const UpOutlined = DownOutlined
 export const FileExcelOutlined = DownOutlined
 export const FilterOutlined = DownOutlined
 export const InfoCircleFilled = DownOutlined
+export const InboxOutlined = DownOutlined
 export const ReloadOutlined = DownOutlined
 export const SearchOutlined = DownOutlined
 export const BarChartOutlined = DownOutlined
@@ -73,6 +74,7 @@ export const InfoCircleOutlined = DownOutlined
 export const SolutionOutlined = DownOutlined
 export const TeamOutlined = DownOutlined
 export const WalletOutlined = DownOutlined
+export const AccountBookOutlined = DownOutlined
 export const useCatalogPermission = () => ({ can: permission => ctx.auth.isCatalogAdmin || !!ctx.auth.user?.permissions.includes(permission) })
 export const downloadBlob = (blob, filename) => ctx.downloads.push({ blob, filename })
 export const message = { success: text => ctx.notices.push(text) }
@@ -162,6 +164,33 @@ for (const [name, value] of [
 ])
   inventoryCode = inventoryCode.replaceAll("from '" + name + "'", 'from ' + JSON.stringify(value))
 const InventoryPage = (await import(url(transpile(inventoryCode)))).default
+const lowStockSource = (await read('src/views/reports/LowStockReportPage.vue')).replace(
+  '</script>',
+  'defineExpose({ exportExcel, exportLoading, exportError, appliedFilters, load, filters, rows, total, error, ready, loading, options, changePage, submit, reset, mobileOpen, columns, reloadScope })\n</script>',
+)
+let lowStockCode = compileScript(parse(lowStockSource).descriptor, {
+  id: 'low-stock-report-test',
+}).content
+lowStockCode = lowStockCode.replace(/from ['"]vue['"]/g, 'from ' + JSON.stringify(vueUrl))
+for (const name of [
+  'vue-i18n',
+  'ant-design-vue',
+  '@ant-design/icons-vue',
+  '@vueuse/core',
+  '@/utils/paymentReceipt',
+  '@/components/catalog/FittedListTable.vue',
+  '@/components/stock/ProductSelect.vue',
+  '@/composables/useSalesScope',
+])
+  lowStockCode = lowStockCode.replaceAll("from '" + name + "'", 'from ' + JSON.stringify(mockUrl))
+for (const [name, value] of [
+  ['@/utils/reports', utilsUrl],
+  ['@/utils/reportExport', exportUtilsUrl],
+  ['@/api/reports/reports.api', apiUrl],
+  ['@/api/reports/reportExport.api', exportApiUrl],
+])
+  lowStockCode = lowStockCode.replaceAll("from '" + name + "'", 'from ' + JSON.stringify(value))
+const LowStockPage = (await import(url(transpile(lowStockCode)))).default
 const salesSource = (await read('src/views/reports/SalesReportPage.vue')).replace(
   '</script>',
   'defineExpose({ exportExcel, exportLoading, exportError, appliedFilters, load, filters, rows, sales, period, total, error, ready, loading, options, changePage, submit, reset, preset, validationError, expanded, mobileOpen, columns, primaryMetrics, secondaryMetrics, metricValue })\n</script>',
@@ -186,6 +215,32 @@ for (const [name, value] of [
 ])
   salesCode = salesCode.replaceAll("from '" + name + "'", 'from ' + JSON.stringify(value))
 const SalesPage = (await import(url(transpile(salesCode)))).default
+const paymentsSource = (await read('src/views/reports/PaymentsReportPage.vue')).replace(
+  '</script>',
+  'defineExpose({ exportExcel, exportLoading, exportError, appliedFilters, load, filters, rows, payments, period, total, error, ready, loading, options, changePage, submit, reset, preset, validationError, expanded, mobileOpen, columns, primaryMetrics, detailGroups, detailOpen, metricValue, scopeLabel, reloadScope })\n</script>',
+)
+let paymentsCode = compileScript(parse(paymentsSource).descriptor, {
+  id: 'payments-report-test',
+}).content
+paymentsCode = paymentsCode.replace(/from ['"]vue['"]/g, 'from ' + JSON.stringify(vueUrl))
+for (const name of [
+  'vue-i18n',
+  'ant-design-vue',
+  '@ant-design/icons-vue',
+  '@vueuse/core',
+  '@/utils/paymentReceipt',
+  '@/components/catalog/FittedListTable.vue',
+  '@/composables/useSalesScope',
+])
+  paymentsCode = paymentsCode.replaceAll("from '" + name + "'", 'from ' + JSON.stringify(mockUrl))
+for (const [name, value] of [
+  ['@/utils/reports', utilsUrl],
+  ['@/utils/reportExport', exportUtilsUrl],
+  ['@/api/reports/reports.api', apiUrl],
+  ['@/api/reports/reportExport.api', exportApiUrl],
+])
+  paymentsCode = paymentsCode.replaceAll("from '" + name + "'", 'from ' + JSON.stringify(value))
+const PaymentsPage = (await import(url(transpile(paymentsCode)))).default
 const receivablesSource = (await read('src/views/reports/ReceivablesReportPage.vue')).replace(
   '</script>',
   'defineExpose({ filters, appliedFilters, data, displayedWarehouseId, detailLocation, metricValue, timestamp, loading, ready, error, options, mobileOpen, load, submit, reset, reloadScope })\n</script>',
@@ -881,6 +936,502 @@ test('refund dashboard section is optional and available without SALES_ORDER_VIE
   dashboard.unmount()
 })
 
+test('payments report preserves all 19 backend metrics, negative net values, zero, missing fields and exact int64', async () => {
+  reset()
+  const summary = Object.fromEntries(utils.paymentMetrics.map((key, index) => [key, index + 1]))
+  summary.netRecordedAmount = 100
+  summary.netRefundedAmount = 250
+  summary.netCashFlowAmount = -999 // Deliberately different from receipt minus refund.
+  summary.cancelledRefundCount = 0
+  const exact = JSON.stringify(page({ summary })).replace(
+    '"netCashAmount":7',
+    '"netCashAmount":-9223372036854775808',
+  )
+  context.handler = async () => exact
+  const { vm, unmount } = mount('payments', PaymentsPage)
+  await flush()
+  const keys = [
+    ...vm.primaryMetrics.map(({ key }) => key),
+    ...vm.detailGroups.flatMap(({ metrics }) => metrics),
+  ]
+  assert.equal(keys.length, 19)
+  assert.equal(new Set(keys).size, 19)
+  assert.deepEqual([...keys].sort(), [...utils.paymentMetrics].sort())
+  assert.deepEqual(
+    vm.detailGroups.map(({ metrics }) => metrics.length),
+    [8, 8],
+  )
+  assert.equal(vm.columns.length, 20)
+  assert.deepEqual(
+    vm.columns.slice(1).map(({ key }) => key),
+    utils.paymentMetrics,
+  )
+  assert.equal(vm.metricValue('netCashAmount'), '-9.223.372.036.854.775.808 ₫')
+  assert.equal(vm.metricValue('netCashFlowAmount'), '-999 ₫')
+  assert.equal(vm.metricValue('cancelledRefundCount'), '0')
+  for (const key of utils.paymentMetrics.filter((key) => key !== 'netCashAmount'))
+    assert.equal(vm.payments[key], summary[key])
+  context.handler = async () => page({ summary: { netRecordedAmount: 0 } })
+  await vm.load()
+  assert.equal(vm.metricValue('netRecordedAmount'), '0 ₫')
+  assert.equal(vm.metricValue('netRefundedAmount'), '—')
+  unmount()
+})
+
+test('payments report keeps creation and cancellation metrics in their backend periods without recomputing net values', async () => {
+  reset()
+  context.handler = async (_url, config) => {
+    const cancellation = config.params.from === '2026-10-01'
+    return page({
+      summary: cancellation
+        ? {
+            createdPaymentCount: 0,
+            cancelledPaymentCount: 1,
+            recordedCashAmount: 0,
+            reversedCashAmount: 500,
+            netRecordedAmount: -500,
+            createdRefundCount: 0,
+            cancelledRefundCount: 1,
+            reversedRefundCashAmount: 50,
+            netRefundedAmount: -50,
+            netCashFlowAmount: -450,
+          }
+        : {
+            createdPaymentCount: 1,
+            cancelledPaymentCount: 0,
+            recordedCashAmount: 500,
+            reversedCashAmount: 0,
+            netRecordedAmount: 500,
+            createdRefundCount: 1,
+            cancelledRefundCount: 0,
+            recordedRefundCashAmount: 50,
+            netRefundedAmount: 50,
+            netCashFlowAmount: 450,
+          },
+      period: { from: config.params.from, to: config.params.to, timezone: period.timezone },
+    })
+  }
+  const { vm, unmount } = mount('payments', PaymentsPage)
+  await flush()
+  Object.assign(vm.filters, { from: '2026-09-01', to: '2026-09-30' })
+  vm.submit()
+  await flush()
+  assert.equal(vm.payments.createdPaymentCount, 1)
+  assert.equal(vm.metricValue('netCashFlowAmount'), '450 ₫')
+  Object.assign(vm.filters, { from: '2026-10-01', to: '2026-10-28' })
+  vm.submit()
+  await flush()
+  assert.equal(vm.payments.createdPaymentCount, 0)
+  assert.equal(vm.payments.cancelledPaymentCount, 1)
+  assert.equal(vm.metricValue('netRecordedAmount'), '-500 ₫')
+  assert.equal(vm.metricValue('netRefundedAmount'), '-50 ₫')
+  assert.equal(vm.metricValue('netCashFlowAmount'), '-450 ₫')
+  assert.equal(vm.period.from, '2026-10-01')
+  unmount()
+})
+
+test('payments report submits once and keeps summary, reload, pagination and export on applied filters', async () => {
+  reset()
+  context.handler = async () => page({ summary: { netCashFlowAmount: -77 } })
+  const { vm, unmount } = mount('payments', PaymentsPage)
+  await flush()
+  assert.equal(context.calls.length, 1)
+  const initial = { ...vm.appliedFilters }
+  vm.filters.warehouseId = 'w1'
+  vm.filters.from = '2026-09-01'
+  vm.filters.to = '2026-09-30'
+  vm.expanded = true
+  vm.expanded = false
+  vm.mobileOpen = true
+  vm.mobileOpen = false
+  vm.detailOpen.receipts = false
+  vm.detailOpen.refunds = false
+  await flush()
+  assert.equal(context.calls.length, 1)
+  await vm.load()
+  assert.deepEqual(context.calls.at(-1).config.params, utils.reportQuery('payments', initial))
+  vm.changePage(2, 10)
+  await flush()
+  assert.equal(vm.payments.netCashFlowAmount, -77)
+  assert.equal(vm.total, 25)
+  assert.deepEqual(
+    context.calls.at(-1).config.params,
+    utils.reportQuery('payments', { ...initial, page: 2 }),
+  )
+  await vm.exportExcel()
+  assert.deepEqual(
+    context.exportCalls.at(-1).config.params,
+    exportUtils.exportQuery('payments', initial),
+  )
+  const count = context.calls.length
+  vm.submit()
+  await flush()
+  assert.equal(context.calls.length, count + 1)
+  assert.deepEqual(context.calls.at(-1).config.params, {
+    warehouseId: 'w1',
+    from: '2026-09-01',
+    to: '2026-09-30',
+    page: 1,
+    pageSize: 10,
+  })
+  for (const size of [20, 50, 100, 10]) {
+    const before = context.calls.length
+    vm.changePage(3, size)
+    await flush()
+    assert.equal(context.calls.length, before + 1)
+    assert.equal(context.calls.at(-1).config.params.page, 1)
+    assert.equal(context.calls.at(-1).config.params.pageSize, size)
+  }
+  unmount()
+})
+
+test('payments report validates before applying and each date preset/reset sends one request', async () => {
+  reset()
+  const { vm, unmount } = mount('payments', PaymentsPage)
+  await flush()
+  const initial = { ...vm.appliedFilters }
+  vm.filters.from = '2026-10-29'
+  vm.filters.to = '2026-10-01'
+  vm.submit()
+  await flush()
+  assert.equal(context.calls.length, 1)
+  assert.equal(vm.ready, true)
+  assert.ok(vm.validationError)
+  assert.deepEqual(vm.appliedFilters, initial)
+  for (const preset of ['today', 'month', 'previous']) {
+    const before = context.calls.length
+    vm.preset(preset)
+    await flush()
+    assert.equal(context.calls.length, before + 1)
+    assert.equal(vm.validationError, '')
+    assert.deepEqual(
+      { from: vm.appliedFilters.from, to: vm.appliedFilters.to },
+      utils.reportRange(preset),
+    )
+  }
+  const before = context.calls.length
+  vm.reset()
+  await flush()
+  assert.equal(context.calls.length, before + 1)
+  assert.deepEqual(vm.appliedFilters, {
+    ...utils.reportRange('month'),
+    warehouseId: undefined,
+    page: 1,
+    pageSize: 10,
+  })
+  unmount()
+})
+
+test('payments report commits period, summary and table together, rejects stale responses and keeps drafts on errors', async () => {
+  reset()
+  const { vm, unmount } = mount('payments', PaymentsPage)
+  await flush()
+  const pending = []
+  context.handler = () => new Promise((resolve) => pending.push(resolve))
+  vm.filters.warehouseId = 'w1'
+  vm.submit()
+  assert.equal(vm.payments, undefined)
+  assert.equal(vm.period, undefined)
+  assert.deepEqual(vm.rows, [])
+  vm.filters.warehouseId = undefined
+  vm.submit()
+  pending[1](
+    page({
+      summary: { netRecordedAmount: 42 },
+      items: [{ warehouseId: 'w2', netRecordedAmount: 1 }],
+      period: { ...period, from: '2026-09-01' },
+      total: 19,
+    }),
+  )
+  await flush()
+  pending[0](page({ summary: { netRecordedAmount: 99 }, total: 99 }))
+  await flush()
+  assert.equal(vm.payments.netRecordedAmount, 42)
+  assert.equal(vm.rows[0].warehouseId, 'w2')
+  assert.equal(vm.period.from, '2026-09-01')
+  assert.equal(vm.total, 19)
+  context.handler = async () => {
+    throw Object.assign(new Error('Date too large'), { code: 'REPORT_PERIOD_TOO_LARGE' })
+  }
+  vm.filters.from = '2025-01-01'
+  vm.submit()
+  await flush()
+  assert.equal(vm.filters.from, '2025-01-01')
+  assert.match(vm.validationError, /366/)
+  assert.equal(vm.payments, undefined)
+  assert.equal(vm.period, undefined)
+  assert.deepEqual(vm.rows, [])
+  unmount()
+})
+
+test('payments report respects permission, ADMIN and revoked warehouse scope', async () => {
+  reset()
+  context.auth.user.permissions = []
+  const { vm, unmount } = mount('payments', PaymentsPage)
+  await flush()
+  assert.equal(context.calls.length, 0)
+  assert.equal(vm.error, 'reports.forbidden')
+  context.auth.isCatalogAdmin = true
+  await flush()
+  assert.equal(context.calls.length, 1)
+  vm.filters.warehouseId = 'w1'
+  vm.submit()
+  await flush()
+  context.warehouses.warehouses = []
+  await flush()
+  assert.equal(vm.appliedFilters.warehouseId, undefined)
+  assert.equal(vm.filters.warehouseId, undefined)
+  context.handler = async () => {
+    throw Object.assign(new Error('Denied'), { code: 'WAREHOUSE_ACCESS_DENIED', status: 403 })
+  }
+  await vm.load()
+  assert.equal(context.refreshes, 1)
+  assert.equal(vm.loading, false)
+  assert.equal(vm.ready, false)
+  context.auth.isCatalogAdmin = false
+  assert.deepEqual(vm.rows, [])
+  assert.equal(vm.payments, undefined)
+  assert.equal(vm.error, 'reports.forbidden')
+  unmount()
+})
+
+test('payments export uses applied dates, handles JSON blob errors, prevents duplicates and cancels on new filters', async () => {
+  reset()
+  const { vm, unmount } = mount('payments', PaymentsPage)
+  await flush()
+  const snapshot = { ...vm.appliedFilters }
+  vm.filters.from = '2020-01-01'
+  await vm.exportExcel()
+  assert.deepEqual(
+    context.exportCalls[0].config.params,
+    exportUtils.exportQuery('payments', snapshot),
+  )
+  let finish
+  context.exportHandler = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const pending = vm.exportExcel()
+  await vm.exportExcel()
+  assert.equal(context.exportCalls.length, 2)
+  const signal = context.exportCalls.at(-1).config.signal
+  vm.preset('today')
+  assert.equal(signal.aborted, true)
+  finish(xlsxResponse())
+  await pending
+  await flush()
+  assert.equal(context.downloads.length, 1)
+  for (const [code, message, pattern] of [
+    ['EXPORT_TOO_LARGE', 'Too large', /thu hẹp bộ lọc/],
+    ['CUSTOM_ERROR', 'Thông báo BE', /Thông báo BE/],
+    ['NUMERIC_OVERFLOW', 'Overflow', /vượt giới hạn/],
+  ]) {
+    context.exportHandler = async () => ({
+      data: new Blob([JSON.stringify({ code, message })]),
+      headers: { 'content-type': 'application/json' },
+    })
+    await vm.exportExcel()
+    assert.match(vm.exportError, pattern)
+    assert.equal(vm.exportLoading, false)
+  }
+  context.exportHandler = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const revoked = vm.exportExcel()
+  context.auth.user.permissions = []
+  finish(xlsxResponse())
+  await revoked
+  assert.equal(context.downloads.length, 1)
+  unmount()
+})
+
+test('low stock submits once and page/reload/export use applied filters while drafts remain intact', async () => {
+  reset()
+  context.auth.user.permissions.push('PRODUCT_VIEW')
+  const { vm, unmount } = mount('low-stock', LowStockPage)
+  await flush()
+  assert.equal(context.calls.length, 1)
+  assert.deepEqual(context.calls[0].config.params, { page: 1, pageSize: 10 })
+  vm.filters.warehouseId = 'w1'
+  vm.filters.productId = 'p1'
+  vm.mobileOpen = true
+  vm.mobileOpen = false
+  await flush()
+  assert.equal(context.calls.length, 1)
+  await vm.load()
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10 })
+  vm.changePage(2, 10)
+  await flush()
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 2, pageSize: 10 })
+  await vm.exportExcel()
+  assert.deepEqual(context.exportCalls.at(-1).config.params, {})
+  const before = context.calls.length
+  vm.submit()
+  await flush()
+  assert.equal(context.calls.length, before + 1)
+  assert.deepEqual(context.calls.at(-1).config.params, {
+    warehouseId: 'w1',
+    productId: 'p1',
+    page: 1,
+    pageSize: 10,
+  })
+  vm.filters.productId = undefined
+  await vm.exportExcel()
+  assert.deepEqual(context.exportCalls.at(-1).config.params, { warehouseId: 'w1', productId: 'p1' })
+  for (const size of [20, 50, 100, 10]) {
+    const count = context.calls.length
+    vm.changePage(3, size)
+    await flush()
+    assert.equal(context.calls.length, count + 1)
+    assert.deepEqual(context.calls.at(-1).config.params, {
+      warehouseId: 'w1',
+      productId: 'p1',
+      page: 1,
+      pageSize: size,
+    })
+  }
+  const count = context.calls.length
+  vm.submit()
+  await flush()
+  assert.equal(context.calls.length, count + 1)
+  assert.equal(context.calls.at(-1).config.params.productId, undefined)
+  vm.reset()
+  await flush()
+  assert.equal(context.calls.length, count + 2)
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10 })
+  unmount()
+})
+
+test('low stock keeps backend order, duplicate products in distinct warehouses, total and exact quantities', async () => {
+  reset()
+  context.handler = async () =>
+    '{"items":[{"warehouseId":"w2","productId":"p1","unit":"Hộp","quantity":0,"lowStockThreshold":9223372036854775807,"shortageQuantity":9223372036854775806},{"warehouseId":"w1","productId":"p1","quantity":0,"lowStockThreshold":5,"shortageQuantity":4}],"total":137}'
+  const { vm, unmount } = mount('low-stock', LowStockPage)
+  await flush()
+  assert.equal(vm.rows.length, 2)
+  assert.equal(vm.rows[0].warehouseId, 'w2')
+  assert.equal(vm.rows[0].unit, 'Hộp')
+  assert.equal(vm.rows[0].quantity, 0)
+  assert.equal(vm.rows[0].shortageQuantity, 9223372036854775806n)
+  assert.equal(vm.rows[1].shortageQuantity, 4)
+  assert.equal(vm.total, 137)
+  vm.changePage(2, 10)
+  await flush()
+  assert.equal(vm.total, 137)
+  assert.equal(vm.columns.length, 6)
+  assert.deepEqual(
+    vm.columns.slice(3).map((column) => column.key),
+    utils.lowStockMetrics,
+  )
+  unmount()
+})
+
+test('low stock ignores late responses and clears results on errors without losing the draft', async () => {
+  reset()
+  const { vm, unmount } = mount('low-stock', LowStockPage)
+  await flush()
+  const pending = []
+  context.handler = () => new Promise((resolve) => pending.push(resolve))
+  vm.filters.warehouseId = 'w1'
+  vm.submit()
+  assert.equal(vm.rows.length, 0)
+  assert.equal(vm.ready, false)
+  vm.filters.warehouseId = undefined
+  vm.submit()
+  pending[1](page({ total: 17 }))
+  await flush()
+  pending[0](page({ total: 99 }))
+  await flush()
+  assert.equal(vm.total, 17)
+  context.handler = async () => {
+    throw new Error('Backend failure')
+  }
+  vm.filters.warehouseId = 'w1'
+  vm.submit()
+  await flush()
+  assert.equal(vm.error, 'Backend failure')
+  assert.equal(vm.filters.warehouseId, 'w1')
+  assert.equal(vm.ready, false)
+  assert.deepEqual(vm.rows, [])
+  assert.equal(vm.total, 0)
+  unmount()
+})
+
+test('low stock enforces view permission and admin exception and reconciles warehouse scope', async () => {
+  reset()
+  context.auth.user.permissions = []
+  const { vm, unmount } = mount('low-stock', LowStockPage)
+  await flush()
+  assert.equal(context.calls.length, 0)
+  assert.equal(vm.error, 'reports.forbidden')
+  context.auth.isCatalogAdmin = true
+  await flush()
+  assert.equal(context.calls.length, 1)
+  vm.filters.warehouseId = 'w1'
+  vm.submit()
+  await flush()
+  context.warehouses.warehouses = []
+  await flush()
+  assert.equal(vm.filters.warehouseId, undefined)
+  assert.equal(vm.appliedFilters.warehouseId, undefined)
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10 })
+  context.handler = async () => {
+    throw Object.assign(new Error('Denied'), { code: 'WAREHOUSE_ACCESS_DENIED' })
+  }
+  await vm.load()
+  assert.equal(context.refreshes, 1)
+  assert.equal(vm.loading, false)
+  assert.equal(vm.ready, false)
+  unmount()
+})
+
+test('low stock cancels previous-filter exports and handles JSON blob errors without duplicate exports', async () => {
+  reset()
+  const { vm, unmount } = mount('low-stock', LowStockPage)
+  await flush()
+  let finish
+  context.exportHandler = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const pending = vm.exportExcel()
+  await vm.exportExcel()
+  assert.equal(context.exportCalls.length, 1)
+  const signal = context.exportCalls[0].config.signal
+  vm.filters.warehouseId = 'w1'
+  vm.submit()
+  assert.equal(signal.aborted, true)
+  finish(xlsxResponse())
+  await pending
+  await flush()
+  assert.equal(context.downloads.length, 0)
+  for (const [code, message, pattern] of [
+    ['EXPORT_TOO_LARGE', 'Too large', /thu hẹp bộ lọc/],
+    ['CUSTOM_ERROR', 'Thông báo BE', /Thông báo BE/],
+  ]) {
+    context.exportHandler = async () => ({
+      data: new Blob([JSON.stringify({ code, message })]),
+      headers: { 'content-type': 'application/json' },
+    })
+    await vm.exportExcel()
+    assert.match(vm.exportError, pattern)
+    assert.equal(vm.exportLoading, false)
+  }
+  context.exportHandler = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const revoked = vm.exportExcel()
+  context.auth.user.permissions = []
+  finish(xlsxResponse())
+  await revoked
+  assert.equal(context.downloads.length, 0)
+  assert.equal(vm.ready, false)
+  assert.deepEqual(vm.rows, [])
+  unmount()
+})
+
 test('inventory screen applies once, preserves hidden drafts, and reload/page/export use applied filters', async () => {
   reset()
   context.auth.user.permissions.push('PRODUCT_VIEW')
@@ -1252,7 +1803,18 @@ test('sales screen preserves backend summary, all metric mappings, exact negativ
   assert.equal(vm.rows[0].netSalesAmount, 900)
   assert.deepEqual(
     vm.columns.slice(1).map((column) => column.dataIndex),
-    [...utils.salesMetrics],
+    [
+      'confirmedOrderCount',
+      'cancelledConfirmedOrderCount',
+      'confirmedQuantity',
+      'cancelledQuantity',
+      'grossSalesAmount',
+      'discountAmount',
+      'confirmedSalesAmount',
+      'cancelledSalesAmount',
+      'returnedSalesAmount',
+      'netSalesAmount',
+    ],
   )
   assert.deepEqual(
     [...vm.primaryMetrics.map((metric) => metric.key), ...vm.secondaryMetrics].sort(),

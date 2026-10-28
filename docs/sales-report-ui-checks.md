@@ -1,5 +1,54 @@
 # Báo cáo hoạt động bán hàng — 28/10/2026
 
+## Cập nhật bảng Chi tiết theo kho
+
+Phạm vi lượt sửa này chỉ gồm bảng và layout liên quan; giữ các thay đổi kích thước input từ lượt trước. Không đổi filter, summary, export, API, permission hoặc nghiệp vụ.
+
+### Kết quả kiểm tra và nguyên nhân
+
+- `SalesSummary` có `returnedSalesAmount`; API wrapper giữ nguyên `result.items`, bảng đọc đúng `dataIndex` của từng dòng. Không phát hiện cấu hình thiếu cột hoặc lấy summary điền vào từng kho.
+- Cột hàng trả trước đây đứng **sau** `netSalesAmount`, ở cuối bảng. Đo trước sửa tại viewport 1440px: mép trái cột này ở x=1983, trong khi vùng nhìn thấy của bảng kết thúc tại x=1399. Cột nằm ngoài vùng nhìn thấy ban đầu, không bị ẩn bởi permission/CSS.
+- Các metric dùng chung chiều rộng tối thiểu 150px, chưa phân biệt tiêu đề dài, tiền và số lượng. Cột Kho trước đây rộng 230px.
+- Chiều cao đã có observer trong `FittedListTable`, nhưng màn bán hàng còn đặt min-height riêng 320/400px và minimum track khác. Lượt này bỏ các minimum cố định đó, dùng một cơ chế đo tại component bảng để footer wrap vẫn được dành đủ chỗ.
+
+### Thay đổi
+
+- `src/views/reports/SalesReportPage.vue`: thứ tự cột riêng cho table, đưa hàng trả trước bán ròng; Kho 280px, metric tối thiểu 160–210px và mở rộng theo chuỗi số chính xác. Header chữ 14px, wrap theo từ; số căn phải. Không sửa display của tr/th/td. Summary vẫn dùng mapping/thứ tự cũ.
+- `src/components/catalog/FittedListTable.vue`: thêm tùy chọn `minBodyHeight`, chỉ màn bán hàng sử dụng. Observer hiện có đo chiều cao header, toolbar và footer để tính minimum độc lập với chiều cao body hiện tại. Theo dõi thêm toolbar/footer khi bật tùy chọn; không thêm observer hay công thức chiều cao ở page. Các caller không truyền tùy chọn giữ hành vi cũ.
+- `tests/reports.test.mjs`: đối chiếu đúng thứ tự 11 cột; giữ các kiểm thử summary/filter/export hiện có.
+- `tests/sales-report.browser.mjs`: fixture từng kho có 10 metric riêng, khác summary, hàng trả dương; kiểm tra rendered cells và các ca layout mới.
+
+Thứ tự table sau sửa:
+
+| Cột                       | Field của từng dòng               |
+| ------------------------- | --------------------------------- |
+| Kho                       | `warehouseCode` / `warehouseName` |
+| Số đơn xác nhận           | `confirmedOrderCount`             |
+| Số đơn đã xác nhận bị hủy | `cancelledConfirmedOrderCount`    |
+| Số cây xác nhận           | `confirmedQuantity`               |
+| Số cây bị hủy             | `cancelledQuantity`               |
+| Giá trị trước giảm giá    | `grossSalesAmount`                |
+| Giảm giá                  | `discountAmount`                  |
+| Giá trị bán xác nhận      | `confirmedSalesAmount`            |
+| Giá trị bán bị hủy        | `cancelledSalesAmount`            |
+| Giá trị hàng đã trả       | `returnedSalesAmount`             |
+| Giá trị bán ròng          | `netSalesAmount`                  |
+
+Giữ `reportValue` và parser int64; thiếu field hiển thị `—`, không fallback 0, không tính lại net/returns. Kho có title đầy đủ khi tên dài. Cuộn ngang nằm trong bảng, body cuộn dọc, footer ngoài vùng cuộn. Khoảng trống dưới ít dòng là vùng danh sách nhận phần không gian còn lại; không kéo giãn từng dòng.
+
+### Xác minh lượt sửa table
+
+- `pnpm type-check`, `pnpm lint`, `pnpm build`: đạt. Build vẫn cảnh báo chunk dashboard trên 500 kB hiện có.
+- `pnpm test:reports`: 52/52 đạt.
+- `node tests/sales-report.browser.mjs`: 266 kiểm tra đạt bằng Chrome và API giả lập. Có đối chiếu cả 10 rendered cells của hai kho khác nhau, hàng trả 3.500/3.600 ₫ khác summary; trường hợp thiếu field hàng trả không hiển thị 0.
+- Cuộn đầu/giữa/cuối xác nhận đủ 11 cột, header/body thẳng hàng; hai cột hàng trả/bán ròng thấy đầy đủ ở cuối. Kiểm tra int64 âm, header không bó hẹp, 1/2/nhiều dòng và rỗng, hàng không kéo giãn, không có scrollbar dọc khi chỉ 1/2 dòng.
+- Desktop 1440px; responsive 320/375/390/414/768/1024px; filter đóng/mở, sidebar thu/mở, viewport thấp và CSS zoom 125%. Xác nhận filter mở giảm phần thân bảng, đóng trả lại chiều cao; resize/sidebar/zoom không gọi API hoặc đổi pageSize. Footer nằm ngoài vùng cuộn và trong panel, gồm trạng thái rỗng.
+- Ảnh `returns-columns.png` thể hiện hai cột cuối và giá trị từng kho; các ảnh khác và `results.json` ở `%TEMP%/codex-sales-report-browser/`.
+
+**Giới hạn dữ liệu thật:** đã thử GET chỉ đọc tới endpoint đang cấu hình `https://he-thong-ban-hang-api.onrender.com/api/reports/sales` hai lần, với timeout 25s và 40s; cả hai không nhận được response (HTTP 000). Chưa có response báo cáo thực tế đã xác thực để đối chiếu hai kho thật. Kiểm tra mapping/rendering nêu trên dùng dữ liệu giả lập, không khẳng định đã xác minh dữ liệu BE thật.
+
+Các phần bên dưới ghi lại lần refactor màn bán hàng trước lượt sửa table này.
+
 ## Thay đổi
 
 - `src/views/reports/SalesReportPage.vue`: màn riêng cho `/reports/sales`, dùng Vue 3, TypeScript và Ant Design Vue. Header, xuất Excel, bộ lọc, kỳ/phạm vi, bốn chỉ số chính, sáu chỉ số bổ sung, chú thích nghiệp vụ và bảng chi tiết theo kho.

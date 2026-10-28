@@ -22,6 +22,7 @@ const { can } = usePermission()
         route.name === 'stock-inventory' ||
         route.name === 'reports-inventory' ||
         route.name === 'reports-sales' ||
+        route.name === 'reports-low-stock' ||
         route.name === 'stock-movements',
     }"
   >
@@ -32,6 +33,7 @@ const { can } = usePermission()
         class="admin-layout__content"
         :class="{
           'admin-layout__content--receivables-report': route.name === 'reports-receivables-summary',
+          'admin-layout__content--payments-report': route.name === 'reports-payments',
           'admin-layout__content--products':
             route.name === 'products' ||
             route.name === 'product-groups' ||
@@ -40,6 +42,7 @@ const { can } = usePermission()
             route.name === 'stock-inventory' ||
             route.name === 'reports-inventory' ||
             route.name === 'reports-sales' ||
+            route.name === 'reports-low-stock' ||
             route.name === 'stock-movements',
           'admin-layout__content--overview':
             route.name === 'dashboard' &&
@@ -83,7 +86,17 @@ const { can } = usePermission()
   background: #fff;
   border-radius: 0;
 }
+.admin-layout__content--payments-report {
+  min-width: 0;
+  margin: 0;
+  padding: 20px 24px;
+  background: #f5f3fa;
+  border-radius: 0;
+}
 @media (max-width: 767px) {
+  .admin-layout__content--payments-report {
+    padding: 16px 12px;
+  }
   .admin-layout__content--receivables-report {
     padding: 16px 12px;
   }

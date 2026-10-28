@@ -96,8 +96,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'reports/payments',
         name: 'reports-payments',
-        component: () => import('@/views/reports/ReportsPage.vue'),
-        props: { kind: 'payments' },
+        component: () => import('@/views/reports/PaymentsReportPage.vue'),
         meta: {
           title: 'reports.payments',
           requiresAuth: true,
@@ -119,8 +118,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'reports/low-stock',
         name: 'reports-low-stock',
-        component: () => import('@/views/reports/ReportsPage.vue'),
-        props: { kind: 'low-stock' },
+        component: () => import('@/views/reports/LowStockReportPage.vue'),
         meta: {
           title: 'reports.low-stock',
           requiresAuth: true,

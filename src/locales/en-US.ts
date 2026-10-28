@@ -1,4 +1,25 @@
 export default {
+  paymentsReport: {
+    title: 'Payments / refunds report',
+    description: 'By creation and cancellation time in the system',
+    receipts: 'Payment details',
+    refunds: 'Refund details',
+    detail: 'Warehouse details',
+    range: 'Showing {from}–{to} / {total} warehouses',
+    scopeNote: 'Within your authorized scope, including inactive warehouses.',
+    note: 'Based on payment/refund creation and cancellation times, not payment/refund dates. Net receipts, net refunds and net recorded cash flow are separate and may be negative. Cancellation only reverses incorrect records. These figures do not confirm bank reconciliation.',
+    waitBeforeExport:
+      'Apply the filters and wait for the table to finish loading before exporting.',
+  },
+  lowStockReport: {
+    title: 'Low stock report',
+    description: 'Track current stock against alert thresholds',
+    scopeNote: 'Data is limited to your permitted warehouses.',
+    pairCount: '{total} low-stock warehouse / product pairs',
+    shortageNote: 'Shortage to threshold is an alert difference, not an optimal purchase quantity.',
+    detail: 'Low stock list',
+    results: '{total} results',
+  },
   receivablesReport: {
     title: 'Current receivables report',
     description: 'Outstanding receivables within your authorized warehouses',

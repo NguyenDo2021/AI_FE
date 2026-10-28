@@ -97,14 +97,28 @@ const displayDate = (value: string): string => {
   const match = /^(\d{4}-\d{2}-\d{2})/.exec(value)
   return match ? match[1]!.split('-').reverse().join('/') : value
 }
+// Table order is independent of the summary cards. Keep returns next to net
+// sales, and reserve enough width for wrapped headers as well as exact values.
+const tableMetrics = [
+  ['confirmedOrderCount', 160],
+  ['cancelledConfirmedOrderCount', 210],
+  ['confirmedQuantity', 160],
+  ['cancelledQuantity', 160],
+  ['grossSalesAmount', 200],
+  ['discountAmount', 180],
+  ['confirmedSalesAmount', 200],
+  ['cancelledSalesAmount', 200],
+  ['returnedSalesAmount', 200],
+  ['netSalesAmount', 200],
+] as const satisfies readonly (readonly [keyof SalesSummary, number])[]
 const columns = computed<TableColumnsType<SalesRow>>(() => [
-  { title: t('reports.warehouse'), key: 'warehouse', width: 230 },
-  ...salesMetrics.map((key) => ({
+  { title: t('reports.warehouse'), key: 'warehouse', width: 280, align: 'left' },
+  ...tableMetrics.map(([key, width]) => ({
     title: t('reports.' + key),
     key,
     dataIndex: key,
     width: Math.max(
-      150,
+      width,
       ...rows.value.map((row) => reportValue(row[key], key.endsWith('Amount')).length * 8 + 32),
     ),
     align: 'right' as const,
@@ -306,7 +320,15 @@ onBeforeUnmount(() => {
 
 <template>
   <a-config-provider
-    :theme="{ token: { colorPrimary: '#7c3aed', borderRadius: 8, controlHeight: 38 } }"
+    :theme="{
+      token: {
+        colorPrimary: '#7c3aed',
+        borderRadius: 8,
+        controlHeight: mobile ? 40 : 32,
+        controlHeightSM: 24,
+        controlHeightLG: 40,
+      },
+    }"
   >
     <section class="sales-report">
       <header class="report-heading">
@@ -488,6 +510,7 @@ onBeforeUnmount(() => {
         :page-size="appliedFilters.pageSize"
         :reset-key="scrollRevision"
         :row-height="48"
+        :min-body-height="120"
         :list-title="t('salesReport.detail')"
         total-label=""
         :range-label="rangeLabel"
@@ -723,10 +746,10 @@ onBeforeUnmount(() => {
   width: 100%;
 }
 .report-field :deep(.ant-picker) {
-  height: 38px;
+  height: 32px;
 }
 .report-field :deep(.ant-select-selector) {
-  min-height: 38px;
+  min-height: 32px;
 }
 .report-actions {
   display: flex;
@@ -796,10 +819,6 @@ onBeforeUnmount(() => {
   overflow: hidden;
   overflow-wrap: anywhere;
 }
-.report-table {
-  min-height: 320px;
-  grid-template-rows: auto minmax(150px, 1fr) auto;
-}
 .report-quantity {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -807,6 +826,10 @@ onBeforeUnmount(() => {
 .report-table :deep(.ant-table-thead > tr > th) {
   background: #f2edff;
   color: #29203f;
+  font-size: 14px;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 .report-table :deep(.products-toolbar) {
   border-radius: 12px 12px 0 0;
@@ -888,9 +911,6 @@ onBeforeUnmount(() => {
     padding: 10px 12px;
     font-size: 12px;
   }
-  .report-table {
-    min-height: 400px;
-  }
   .report-heading h1 {
     font-size: 22px;
   }
@@ -953,7 +973,8 @@ onBeforeUnmount(() => {
   }
   .report-field :deep(.ant-select-selector),
   .report-field :deep(.ant-picker) {
-    min-height: 44px;
+    min-height: 40px;
+    height: 40px;
   }
   .report-note {
     padding: 12px;
