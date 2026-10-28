@@ -68,9 +68,22 @@ const mockUrl = moduleUrl(`
  export const theme = { useToken: () => ({ token: { value: {} } }) }
  export const message = { success() {} }
  export const formatDateTime = value => value
+ export const formatDate = value => value
  export const BasicModal = defineComponent({ setup(_, { slots }) { return () => h('modal', [slots.default?.(), slots.footer?.()]) } })
  export const ReloadOutlined = defineComponent({ setup() { return () => null } })
  export const ShopOutlined = ReloadOutlined
+ export const PlusOutlined = ReloadOutlined
+ export const DeleteOutlined = ReloadOutlined
+ export const SaveOutlined = ReloadOutlined
+ export const CheckOutlined = ReloadOutlined
+ export const InfoCircleOutlined = ReloadOutlined
+ export const SearchOutlined = ReloadOutlined
+ export const FilterOutlined = ReloadOutlined
+ export const DownOutlined = ReloadOutlined
+ export const UpOutlined = ReloadOutlined
+ export const EyeOutlined = ReloadOutlined
+ export const EditOutlined = ReloadOutlined
+ export const CloseCircleOutlined = ReloadOutlined
  export const FittedListTable = defineComponent({ setup() { return () => null } })
  export const BasicTable = defineComponent({ setup() { return () => null } })
  export default defineComponent({ setup() { return () => null } })
@@ -93,6 +106,10 @@ async function component(path, expose) {
     "import { FittedListTable } from '" + mockUrl + "'",
   )
   code = code.replace(/from ['"]@ant-design\/icons-vue['"]/g, "from '" + mockUrl + "'")
+  code = code.replace(
+    /from ['"](?:\.\/ReceiptSummary.vue|@\/components\/stock\/StocktakeTable.vue)['"]/g,
+    `from '${mockUrl}'`,
+  )
   code = code.replace(/from ['"]vue['"]/g, `from '${vueUrl}'`)
   code = code.replace(
     /from ['"](?:vue-i18n|ant-design-vue|@\/components|@\/stores\/warehouse|@\/stores\/stock|@\/stores\/auth|@\/composables\/useCatalogPermission|@\/utils\/date|\.\/ProductSelect.vue|@\/components\/stock\/ProductSelect.vue|@\/components\/stock\/ReceiptDialog.vue|@\/components\/sales\/SalesOrderDialog.vue)['"]/g,
@@ -105,7 +122,11 @@ async function component(path, expose) {
 }
 const ReceiptDialog = await component(
   'src/components/stock/ReceiptDialog.vue',
-  'submit, load, form, detail, fields, blocked, reason, loading',
+  'submit, load, form, detail, fields, blocked, reason, loading, addLine, removeLine, estimate, lineEstimate',
+)
+const ReceiptsPage = await component(
+  'src/views/stock/ReceiptsPage.vue',
+  'filters, applied, pendingFilters, applyFilters, resetFilters, expanded, mobileOpen, rangeError, page, pageSize, total, rows, changePage, load, open, show',
 )
 const InventoryPage = await component(
   'src/views/stock/InventoryPage.vue',
@@ -675,5 +696,164 @@ test('empty last page returns to a valid server page even when the total becomes
   await flush()
   assert.equal(subject.vm.page, 1)
   assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10 })
+  subject.unmount()
+})
+
+test('receipt filters submit explicitly, pagination uses applied values, reset restores context', async () => {
+  reset()
+  context.handler = () => ({ items: [receipt()], total: 137 })
+  const subject = mount(ReceiptsPage, {})
+  await flush()
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10, warehouseId: 'w1' })
+  const before = context.calls.length
+  subject.vm.filters.status = 'CONFIRMED'
+  subject.vm.filters.from = '2026-10-01'
+  subject.vm.filters.to = '2026-10-28'
+  subject.vm.expanded = true
+  subject.vm.mobileOpen = true
+  await flush()
+  assert.equal(context.calls.length, before)
+  assert.equal(subject.vm.pendingFilters, true)
+  subject.vm.applyFilters()
+  await flush()
+  assert.deepEqual(context.calls.at(-1).config.params, {
+    page: 1,
+    pageSize: 10,
+    warehouseId: 'w1',
+    status: 'CONFIRMED',
+    from: '2026-10-01',
+    to: '2026-10-28',
+  })
+  subject.vm.filters.status = 'DRAFT'
+  subject.vm.changePage(3, 10)
+  await flush()
+  assert.equal(context.calls.at(-1).config.params.status, 'CONFIRMED')
+  for (const size of [20, 50, 100, 10]) {
+    subject.vm.changePage(4, size)
+    await flush()
+    assert.equal(context.calls.at(-1).config.params.page, 1)
+    assert.equal(context.calls.at(-1).config.params.pageSize, size)
+  }
+  subject.vm.resetFilters()
+  await flush()
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10, warehouseId: 'w1' })
+  assert.equal(subject.vm.pendingFilters, false)
+  subject.unmount()
+})
+
+test('invalid hidden receipt dates reveal validation without replacing applied results', async () => {
+  reset()
+  context.handler = () => ({ items: [receipt()], total: 1 })
+  const subject = mount(ReceiptsPage, {})
+  await flush()
+  const before = context.calls.length
+  subject.vm.filters.from = '2026-10-28'
+  subject.vm.filters.to = '2026-10-01'
+  subject.vm.applyFilters()
+  await flush()
+  assert.equal(context.calls.length, before)
+  assert.equal(subject.vm.expanded, true)
+  assert.equal(subject.vm.mobileOpen, true)
+  assert.equal(subject.vm.rangeError, 'stock.invalidRange')
+  assert.equal(subject.vm.rows.length, 1)
+  assert.equal(subject.vm.applied.from, '')
+  subject.unmount()
+})
+
+test('receipt modal toggles preserve list page and do not fetch; stale list requests are ignored', async () => {
+  reset()
+  let resolveOld
+  context.handler = ({ config }) =>
+    config.params.status === 'DRAFT'
+      ? new Promise((resolve) => {
+          resolveOld = resolve
+        })
+      : { items: [receipt({ code: 'LATEST' })], total: 90 }
+  const subject = mount(ReceiptsPage, {})
+  await flush()
+  subject.vm.changePage(3, 10)
+  await flush()
+  const before = context.calls.length
+  subject.vm.show('view', receipt())
+  subject.vm.open = false
+  subject.vm.expanded = true
+  subject.vm.expanded = false
+  await flush()
+  assert.equal(subject.vm.page, 3)
+  assert.equal(context.calls.length, before)
+  subject.vm.filters.status = 'DRAFT'
+  subject.vm.applyFilters()
+  await flush()
+  subject.vm.filters.status = 'CONFIRMED'
+  subject.vm.applyFilters()
+  await flush()
+  resolveOld({ items: [receipt({ code: 'STALE' })], total: 1 })
+  await flush()
+  assert.equal(subject.vm.rows[0].code, 'LATEST')
+  assert.equal(subject.vm.total, 90)
+  subject.unmount()
+})
+
+test('receipt permission loss clears results and pending response; ADMIN still reads', async () => {
+  reset()
+  let resolveOld
+  context.handler = () =>
+    new Promise((resolve) => {
+      resolveOld = resolve
+    })
+  const subject = mount(ReceiptsPage, {})
+  await flush()
+  context.auth.user.permissions = []
+  await flush()
+  resolveOld({ items: [receipt()], total: 1 })
+  await flush()
+  assert.deepEqual(subject.vm.rows, [])
+  assert.equal(context.calls.length, 1)
+  context.handler = () => ({ items: [receipt()], total: 1 })
+  context.auth.isCatalogAdmin = true
+  await flush()
+  assert.equal(subject.vm.rows.length, 1)
+  subject.unmount()
+})
+
+test('receipt row removal preserves stable keys, values and validation on remaining rows', async () => {
+  reset()
+  const subject = mount(ReceiptDialog, { open: true, mode: 'create' })
+  subject.vm.addLine()
+  const original = subject.vm.form.lines[1].key
+  subject.vm.form.lines[1].quantity = '9007199254740993'
+  subject.vm.form.lines[1].unitPrice = '3'
+  subject.vm.fields = { 'lines[1].productId': 'required', note: 'note error' }
+  subject.vm.removeLine(0)
+  assert.equal(subject.vm.form.lines[0].key, original)
+  assert.equal(subject.vm.fields['lines[0].productId'], 'required')
+  assert.equal(subject.vm.fields.note, 'note error')
+  assert.equal(subject.vm.estimate, 27021597764222979n)
+  assert.equal(subject.vm.lineEstimate(subject.vm.form.lines[0]), 27021597764222979n)
+  subject.vm.form.lines[0].unitPrice = '0'
+  assert.equal(subject.vm.estimate, 0n)
+  subject.vm.form.lines[0].quantity = '1.5'
+  assert.equal(subject.vm.lineEstimate(subject.vm.form.lines[0]), undefined)
+  subject.unmount()
+})
+
+test('opening another receipt clears the previous total and ignores older detail responses', async () => {
+  reset()
+  let resolveOld
+  context.handler = ({ url }) =>
+    url.endsWith('/r1')
+      ? new Promise((resolve) => {
+          resolveOld = resolve
+        })
+      : receipt({ id: 'r2', totalAmount: 22 })
+  const subject = mount(ReceiptDialog, { open: true, id: 'r1', mode: 'view' })
+  await flush()
+  subject.state.id = 'r2'
+  await flush()
+  assert.equal(subject.vm.detail.totalAmount, 22)
+  resolveOld(receipt({ totalAmount: 999 }))
+  await flush()
+  assert.equal(subject.vm.detail.id, 'r2')
+  assert.equal(subject.vm.detail.totalAmount, 22)
   subject.unmount()
 })
