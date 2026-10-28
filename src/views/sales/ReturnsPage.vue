@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ReturnRefundList from '@/components/sales/ReturnRefundList.vue'
-import { InboxOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { EyeOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import ReturnDialog from '@/components/sales/ReturnDialog.vue'
 import { usePaymentScope } from '@/composables/usePaymentScope'
@@ -47,7 +47,7 @@ const columns: TableColumnsType<SalesReturn> = [
   { key: 'status', dataIndex: 'status', title: 'Trạng thái', width: 140 },
   { key: 'createdBy', dataIndex: 'createdBy', title: 'Người tạo', width: 200 },
   { key: 'createdAt', dataIndex: 'createdAt', title: 'Thời gian tạo', width: 190 },
-  { key: 'actions', title: 'Thao tác', width: 170, fixed: 'right' },
+  { key: 'actions', title: 'Thao tác', width: 88, fixed: 'right', align: 'center' },
 ]
 const warehouseName = (id: string): string =>
   warehouses.warehouses.find((w) => w.id === id)?.name ?? id
@@ -135,6 +135,26 @@ const changePage = (next: number, size: number): void => {
   filters.pageSize = size
   void load()
 }
+const search = (): void => {
+  if (loading.value) return
+  filters.page = 1
+  void load()
+}
+const resetFilters = (): void => {
+  if (loading.value) return
+  const defaults = {
+    warehouseId: warehouses.selectedId,
+    salesOrderId: '',
+    status: undefined,
+    from: '',
+    to: '',
+  }
+  const changed = (Object.keys(defaults) as (keyof typeof defaults)[]).some(
+    (key) => filters[key] !== defaults[key],
+  )
+  Object.assign(filters, defaults)
+  if (!changed) search()
+}
 </script>
 <template>
   <a-config-provider
@@ -142,11 +162,16 @@ const changePage = (next: number, size: number): void => {
   >
     <section class="rr-page">
       <header class="rr-page-heading">
-        <InboxOutlined aria-hidden="true" />
         <div>
           <h1>Trả hàng</h1>
           <p>Quản lý phiếu trả và xác nhận hàng nhập lại kho.</p>
         </div>
+        <a-button
+          v-if="can('SALES_RETURN_CREATE') && can('SALES_RETURN_VIEW')"
+          type="primary"
+          @click="show()"
+          ><template #icon><PlusOutlined /></template>Tạo phiếu trả</a-button
+        >
       </header>
       <a-alert v-if="error" type="error" :message="error" show-icon />
       <a-alert
@@ -157,6 +182,7 @@ const changePage = (next: number, size: number): void => {
       />
       <ReturnRefundList
         title="Danh sách phiếu trả hàng"
+        item-label="phiếu trả hàng"
         :columns="columns"
         :rows="rows"
         :loading="loading"
@@ -167,20 +193,13 @@ const changePage = (next: number, size: number): void => {
         @reload="load"
         @page-change="changePage"
       >
-        <template #actions
-          ><a-button
-            v-if="can('SALES_RETURN_CREATE') && can('SALES_RETURN_VIEW')"
-            type="primary"
-            @click="show()"
-            ><template #icon><PlusOutlined /></template>Tạo phiếu trả</a-button
-          ></template
-        >
-        <template #filters>
-          <a-form layout="vertical">
+        <template #filters="{ popupAlign }">
+          <a-form layout="vertical" class="rr-return-filters" @finish="search">
             <a-form-item label="Kho" html-for="return-filter-warehouse"
               ><a-select
                 id="return-filter-warehouse"
                 v-model:value="filters.warehouseId"
+                :dropdown-align="popupAlign"
                 :options="options"
                 placeholder="Tất cả kho được giao"
                 allow-clear
@@ -191,13 +210,15 @@ const changePage = (next: number, size: number): void => {
                 v-model:value="filters.salesOrderId"
                 placeholder="Nhập ID đơn bán"
                 allow-clear
+                @press-enter.prevent="search"
             /></a-form-item>
             <a-form-item label="Trạng thái" html-for="return-filter-status"
               ><a-select
                 id="return-filter-status"
                 v-model:value="filters.status"
+                :dropdown-align="popupAlign"
                 allow-clear
-                placeholder="Tất cả"
+                placeholder="Tất cả trạng thái"
                 :options="
                   ['DRAFT', 'CONFIRMED', 'CANCELLED'].map((value) => ({
                     value,
@@ -209,18 +230,28 @@ const changePage = (next: number, size: number): void => {
               ><a-date-picker
                 id="return-filter-from"
                 v-model:value="filters.from"
+                :dropdown-align="popupAlign"
                 value-format="YYYY-MM-DD"
                 format="DD/MM/YYYY"
-                placeholder="Chọn ngày"
+                placeholder="Từ ngày trả"
             /></a-form-item>
             <a-form-item label="Đến ngày trả (bao gồm)" html-for="return-filter-to"
               ><a-date-picker
                 id="return-filter-to"
                 v-model:value="filters.to"
+                :dropdown-align="popupAlign"
                 value-format="YYYY-MM-DD"
                 format="DD/MM/YYYY"
-                placeholder="Chọn ngày"
+                placeholder="Đến ngày trả (bao gồm)"
             /></a-form-item>
+            <div class="rr-filter-actions">
+              <a-button type="primary" :loading="loading" @click="search"
+                ><template #icon><SearchOutlined aria-hidden="true" /></template>Tìm kiếm</a-button
+              >
+              <a-button :disabled="loading" @click="resetFilters"
+                ><template #icon><ReloadOutlined aria-hidden="true" /></template>Đặt lại</a-button
+              >
+            </div>
           </a-form>
         </template>
         <template #bodyCell="{ column, record }">
@@ -247,7 +278,11 @@ const changePage = (next: number, size: number): void => {
             >{{ $t('sales.' + record.status) }}</a-tag
           >
           <div v-else-if="column.key === 'actions'" class="rr-actions">
-            <a-button @click="show(record.id)">Chi tiết / xử lý</a-button>
+            <a-tooltip title="Chi tiết / xử lý" :trigger="['hover', 'focus']">
+              <a-button type="text" aria-label="Chi tiết / xử lý" @click="show(record.id)">
+                <template #icon><EyeOutlined aria-hidden="true" /></template>
+              </a-button>
+            </a-tooltip>
           </div>
           <a-tooltip
             v-else

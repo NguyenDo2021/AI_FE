@@ -6,17 +6,16 @@
   min-height: 0;
   min-width: 0;
 }
-.rr-page > :not(.rr-list) {
+.rr-page-heading,
+.rr-page > .ant-alert,
+.rr-pending-retries {
   flex-shrink: 0;
 }
 .rr-page-heading {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-.rr-page-heading > .anticon {
-  color: #7950d7;
-  font-size: 24px;
+  justify-content: space-between;
+  gap: 12px;
 }
 .rr-page-heading h1 {
   margin: 0;
@@ -26,17 +25,31 @@
   font-weight: 650;
 }
 .rr-page-heading p {
-  margin: 3px 0 0;
+  margin: 4px 0 0;
   color: #797184;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 20px;
 }
 .rr-pending-retries {
   max-height: 25dvh;
   overflow: auto;
 }
+@container workspace (max-width: 500px) {
+  .rr-page-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .rr-page-heading > div {
+    flex-basis: 100%;
+  }
+}
 :global(.admin-layout:has(.rr-page)) {
   height: 100dvh;
   min-height: 0;
+}
+/* Let a vertical page scrollbar reduce the width below the app's 320px body minimum. */
+:global(body:has(.rr-page)) {
+  min-width: 0;
 }
 :global(.admin-layout:has(.rr-page) > .admin-layout__main) {
   height: 100%;
@@ -59,7 +72,15 @@
   :global(.admin-layout__content:has(.rr-page)) {
     padding: 12px;
   }
-  .rr-page-heading h1 {
-    font-size: 21px;
+}
+@media (max-height: 500px) {
+  .rr-page {
+    gap: 8px;
+  }
+  .rr-page-heading p {
+    display: none;
+  }
+  :global(.admin-layout__content:has(.rr-page)) {
+    padding: 8px;
   }
 }

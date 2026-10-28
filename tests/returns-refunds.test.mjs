@@ -84,6 +84,10 @@ const mockUrl = url(`
  export const PlusOutlined = InboxOutlined
  export const FileTextOutlined = InboxOutlined
  export const AccountBookOutlined = InboxOutlined
+ export const EyeOutlined = InboxOutlined
+ export const WalletOutlined = InboxOutlined
+ export const ReloadOutlined = InboxOutlined
+ export const SearchOutlined = InboxOutlined
  export const message = {success:text=>c.notices.push(text),info:text=>c.notices.push(text)}
  export const Modal = {confirm:options=>{c.confirmation=options}}
  export const BasicModal = defineComponent({setup(_, {slots}) {return ()=>h('modal',[slots.default?.(),slots.footer?.()])}})
@@ -223,11 +227,11 @@ const RefundDialog = await component(
 )
 const RefundsPage = await component(
   'src/views/sales/RefundsPage.vue',
-  'rows,filters,load,total,error,changePage,showOrder,orderOpen,showDetail,detailOpen',
+  'rows,filters,load,total,error,changePage,showOrder,orderOpen,showDetail,detailOpen,search,resetFilters',
 )
 const ReturnsPage = await component(
   'src/views/sales/ReturnsPage.vue',
-  'rows,filters,load,total,error,changePage,show,open',
+  'rows,filters,load,total,error,changePage,show,open,search,resetFilters',
 )
 const RefundDetail = await component(
   'src/components/sales/RefundDetailDialog.vue',
@@ -1096,6 +1100,57 @@ test('all three lists change server pages once and preserve filters when detail 
     assert.equal(subject.vm.filters.page, 2)
     assert.equal(subject.vm.filters.warehouseId, 'w1')
     assert.equal(calls().length, count)
+    subject.unmount()
+  }
+})
+
+test('list search and reset send one request, keep page size and block repeated clicks while loading', async () => {
+  for (const [Component, props, path, item] of [
+    [ReturnsPage, {}, '/sales-returns', draft()],
+    [RefundsPage, { refundable: true }, '/refundables', summary()],
+    [RefundsPage, { refundable: false }, '/refunds', refund()],
+  ]) {
+    reset()
+    const result = (config) => ({
+      items: [item],
+      total: 137,
+      page: config.params.page,
+      pageSize: config.params.pageSize,
+    })
+    context.handler = ({ config }) => result(config)
+    const subject = mount(Component, props)
+    await flush()
+    const calls = () => context.calls.filter((call) => call.path === path)
+    subject.vm.changePage(2, 20)
+    await flush()
+    subject.vm.filters.warehouseId = undefined
+    await flush()
+    let count = calls().length
+    subject.vm.search()
+    await flush()
+    assert.equal(calls().length, ++count)
+    assert.equal(calls().at(-1).config.params.page, 1)
+    assert.equal(calls().at(-1).config.params.pageSize, 20)
+    assert.equal(calls().at(-1).config.params.warehouseId, undefined)
+    subject.vm.resetFilters()
+    await flush()
+    assert.equal(calls().length, ++count)
+    assert.equal(calls().at(-1).config.params.warehouseId, 'w1')
+    assert.equal(calls().at(-1).config.params.pageSize, 20)
+    subject.vm.resetFilters()
+    await flush()
+    assert.equal(calls().length, ++count)
+    let finish
+    context.handler = ({ config }) =>
+      new Promise((resolve) => {
+        finish = () => resolve(result(config))
+      })
+    subject.vm.search()
+    subject.vm.search()
+    subject.vm.resetFilters()
+    assert.equal(calls().length, ++count)
+    finish()
+    await flush()
     subject.unmount()
   }
 })

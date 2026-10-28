@@ -2,7 +2,13 @@
 import { useRoute } from 'vue-router'
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import ReturnRefundList from '@/components/sales/ReturnRefundList.vue'
-import { FileTextOutlined, AccountBookOutlined } from '@ant-design/icons-vue'
+import {
+  FileTextOutlined,
+  EyeOutlined,
+  WalletOutlined,
+  ReloadOutlined,
+  SearchOutlined,
+} from '@ant-design/icons-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import RefundDialog from '@/components/sales/RefundDialog.vue'
 import RefundDetailDialog from '@/components/sales/RefundDetailDialog.vue'
@@ -58,6 +64,9 @@ const money = [
   'refundableAmount',
   'amount',
 ]
+const actionColumnWidth = computed(() =>
+  (!props.refundable || can('REFUND_CREATE')) && can('SALES_ORDER_VIEW') ? 112 : 88,
+)
 const columns = computed(
   () =>
     (props.refundable
@@ -96,13 +105,13 @@ const columns = computed(
       title,
       width:
         key === 'actions'
-          ? 240
+          ? actionColumnWidth.value
           : money.includes(key!)
             ? 220
             : ['saleDate', 'refundDate', 'status', 'method'].includes(key!)
               ? 140
               : 220,
-      ...(key === 'actions' ? { fixed: 'right' as const } : {}),
+      ...(key === 'actions' ? { fixed: 'right' as const, align: 'center' as const } : {}),
       ...(money.includes(key!) ? { align: 'right' as const } : {}),
     })) as TableColumnsType<Refund | OrderSettlementSummary>,
 )
@@ -235,6 +244,28 @@ const changePage = (next: number, size: number): void => {
   filters.pageSize = size
   void load()
 }
+const search = (): void => {
+  if (loading.value) return
+  filters.page = 1
+  void load()
+}
+const resetFilters = (): void => {
+  if (loading.value) return
+  const defaults = {
+    warehouseId: warehouses.selectedId,
+    salesOrderId: '',
+    customerId: '',
+    status: undefined,
+    method: undefined,
+    from: '',
+    to: '',
+  }
+  const changed = (Object.keys(defaults) as (keyof typeof defaults)[]).some(
+    (key) => filters[key] !== defaults[key],
+  )
+  Object.assign(filters, defaults)
+  if (!changed) search()
+}
 const warehouseName = (id: string): string =>
   warehouses.warehouses.find((w) => w.id === id)?.name ?? id
 </script>
@@ -244,10 +275,6 @@ const warehouseName = (id: string): string =>
   >
     <section class="rr-page">
       <header class="rr-page-heading">
-        <AccountBookOutlined v-if="refundable" aria-hidden="true" /><FileTextOutlined
-          v-else
-          aria-hidden="true"
-        />
         <div>
           <h1>{{ refundable ? 'Đơn cần hoàn tiền' : 'Phiếu hoàn tiền' }}</h1>
           <p>
@@ -269,6 +296,7 @@ const warehouseName = (id: string): string =>
       />
       <ReturnRefundList
         :title="refundable ? 'Đơn cần hoàn tiền' : 'Danh sách phiếu hoàn tiền'"
+        :item-label="refundable ? 'đơn bán' : 'phiếu hoàn tiền'"
         :columns="columns"
         :rows="rows"
         :loading="loading"
@@ -280,12 +308,17 @@ const warehouseName = (id: string): string =>
         @reload="load"
         @page-change="changePage"
       >
-        <template #filters>
-          <a-form layout="vertical">
+        <template #filters="{ popupAlign }">
+          <a-form
+            layout="vertical"
+            :class="refundable ? 'rr-refundable-filters' : 'rr-refund-filters'"
+            @finish="search"
+          >
             <a-form-item label="Kho" html-for="refund-filter-warehouse"
               ><a-select
                 id="refund-filter-warehouse"
                 v-model:value="filters.warehouseId"
+                :dropdown-align="popupAlign"
                 :options="options"
                 placeholder="Tất cả kho được giao"
                 allow-clear
@@ -297,6 +330,7 @@ const warehouseName = (id: string): string =>
                   v-model:value="filters.salesOrderId"
                   placeholder="Nhập ID đơn"
                   allow-clear
+                  @press-enter.prevent="search"
               /></a-form-item>
               <a-form-item label="ID khách" html-for="refund-filter-customer"
                 ><a-input
@@ -304,13 +338,15 @@ const warehouseName = (id: string): string =>
                   v-model:value="filters.customerId"
                   placeholder="Nhập ID khách"
                   allow-clear
+                  @press-enter.prevent="search"
               /></a-form-item>
               <a-form-item label="Trạng thái" html-for="refund-filter-status"
                 ><a-select
                   id="refund-filter-status"
                   v-model:value="filters.status"
+                  :dropdown-align="popupAlign"
                   allow-clear
-                  placeholder="Tất cả"
+                  placeholder="Tất cả trạng thái"
                   :options="[
                     { value: 'ACTIVE', label: 'Hiệu lực' },
                     { value: 'CANCELLED', label: 'Đã hủy' },
@@ -320,8 +356,9 @@ const warehouseName = (id: string): string =>
                 ><a-select
                   id="refund-filter-method"
                   v-model:value="filters.method"
+                  :dropdown-align="popupAlign"
                   allow-clear
-                  placeholder="Tất cả"
+                  placeholder="Tất cả hình thức"
                   :options="[
                     { value: 'CASH', label: 'Tiền mặt' },
                     { value: 'BANK_TRANSFER', label: 'Chuyển khoản' },
@@ -331,19 +368,29 @@ const warehouseName = (id: string): string =>
                 ><a-date-picker
                   id="refund-filter-from"
                   v-model:value="filters.from"
+                  :dropdown-align="popupAlign"
                   value-format="YYYY-MM-DD"
                   format="DD/MM/YYYY"
-                  placeholder="Chọn ngày"
+                  placeholder="Từ ngày hoàn"
               /></a-form-item>
               <a-form-item label="Đến ngày hoàn (bao gồm)" html-for="refund-filter-to"
                 ><a-date-picker
                   id="refund-filter-to"
                   v-model:value="filters.to"
+                  :dropdown-align="popupAlign"
                   value-format="YYYY-MM-DD"
                   format="DD/MM/YYYY"
-                  placeholder="Chọn ngày"
+                  placeholder="Đến ngày hoàn (bao gồm)"
               /></a-form-item>
             </template>
+            <div class="rr-filter-actions">
+              <a-button type="primary" :loading="loading" @click="search"
+                ><template #icon><SearchOutlined aria-hidden="true" /></template>Tìm kiếm</a-button
+              >
+              <a-button :disabled="loading" @click="resetFilters"
+                ><template #icon><ReloadOutlined aria-hidden="true" /></template>Đặt lại</a-button
+              >
+            </div>
           </a-form>
         </template>
         <template #bodyCell="{ column, record }">
@@ -380,16 +427,33 @@ const warehouseName = (id: string): string =>
             >{{ record.status === 'ACTIVE' ? 'Hiệu lực' : 'Đã hủy' }}</a-tag
           >
           <div v-else-if="column.key === 'actions'" class="rr-actions">
-            <a-button
+            <a-tooltip
               v-if="refundable && can('REFUND_CREATE')"
-              type="primary"
-              @click="showRefund(record)"
-              >Hoàn tiền</a-button
+              title="Ghi nhận hoàn tiền"
+              :trigger="['hover', 'focus']"
             >
-            <a-button v-if="!refundable" @click="showDetail(record.id)">Chi tiết / xử lý</a-button>
-            <a-button v-if="can('SALES_ORDER_VIEW')" @click="showOrder(record.salesOrderId)"
-              >Xem đơn</a-button
+              <a-button type="text" aria-label="Ghi nhận hoàn tiền" @click="showRefund(record)">
+                <template #icon><WalletOutlined aria-hidden="true" /></template>
+              </a-button>
+            </a-tooltip>
+            <a-tooltip v-if="!refundable" title="Chi tiết / xử lý" :trigger="['hover', 'focus']">
+              <a-button type="text" aria-label="Chi tiết / xử lý" @click="showDetail(record.id)">
+                <template #icon><EyeOutlined aria-hidden="true" /></template>
+              </a-button>
+            </a-tooltip>
+            <a-tooltip
+              v-if="can('SALES_ORDER_VIEW')"
+              title="Xem đơn bán hàng"
+              :trigger="['hover', 'focus']"
             >
+              <a-button
+                type="text"
+                aria-label="Xem đơn bán hàng"
+                @click="showOrder(record.salesOrderId)"
+              >
+                <template #icon><FileTextOutlined aria-hidden="true" /></template>
+              </a-button>
+            </a-tooltip>
           </div>
           <a-tooltip
             v-else
