@@ -1,5 +1,7 @@
 # Báo cáo và Dashboard FE
 
+Màn nhập–xuất–tồn đã có giao diện và cơ chế submit riêng từ 28/10/2026; xem [bàn giao và kiểm tra responsive](inventory-report-ui-checks.md). Các mô tả tự tải bộ lọc bên dưới là hành vi trước thay đổi này hoặc của các báo cáo còn lại.
+
 Module triển khai theo hai tài liệu API đính kèm ngày 13/10/2026. Base URL hiện tại đã có /api; các request mới dùng /reports/... để không lặp prefix.
 
 ## Sử dụng và permission

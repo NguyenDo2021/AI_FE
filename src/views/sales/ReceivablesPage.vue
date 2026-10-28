@@ -21,6 +21,7 @@ import { formatStockInteger } from '@/utils/stock'
 import type { Receivable } from '@/types/payments'
 import type { SalesOrder } from '@/types/sales'
 import type { NormalizedApiError } from '@/utils/request'
+const props = defineProps<{ initialWarehouseId?: string }>()
 const { can, warehouses, inScope, contextKey, refreshAccess } = usePaymentScope()
 const payments = usePaymentsStore()
 const tab = ref<'customers' | 'walk-in'>('customers')
@@ -161,6 +162,12 @@ watch(
       for (const state of Object.values(states)) {
         state.filters = defaults()
         state.applied = defaults()
+        // Only seed the initial visit from the report. Later context changes
+        // retain the existing working-warehouse behavior and scope checks.
+        if (!previous && props.initialWarehouseId !== undefined) {
+          state.filters.warehouseId = props.initialWarehouseId || undefined
+          state.applied.warehouseId = props.initialWarehouseId || undefined
+        }
         state.page = 1
       }
     }

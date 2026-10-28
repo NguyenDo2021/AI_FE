@@ -20,6 +20,8 @@ const { can } = usePermission()
         route.name === 'warehouses' ||
         route.name === 'sales-customers' ||
         route.name === 'stock-inventory' ||
+        route.name === 'reports-inventory' ||
+        route.name === 'reports-sales' ||
         route.name === 'stock-movements',
     }"
   >
@@ -29,12 +31,15 @@ const { can } = usePermission()
       <a-layout-content
         class="admin-layout__content"
         :class="{
+          'admin-layout__content--receivables-report': route.name === 'reports-receivables-summary',
           'admin-layout__content--products':
             route.name === 'products' ||
             route.name === 'product-groups' ||
             route.name === 'warehouses' ||
             route.name === 'sales-customers' ||
             route.name === 'stock-inventory' ||
+            route.name === 'reports-inventory' ||
+            route.name === 'reports-sales' ||
             route.name === 'stock-movements',
           'admin-layout__content--overview':
             route.name === 'dashboard' &&
@@ -72,7 +77,16 @@ const { can } = usePermission()
   background: #f4f5fa;
   padding: 24px;
 }
+.admin-layout__content--receivables-report {
+  margin: 0;
+  padding: 24px;
+  background: #fff;
+  border-radius: 0;
+}
 @media (max-width: 767px) {
+  .admin-layout__content--receivables-report {
+    padding: 16px 12px;
+  }
   .admin-layout__content--overview {
     margin: 12px;
     padding: 12px;
