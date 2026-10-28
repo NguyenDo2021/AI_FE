@@ -101,6 +101,10 @@ const mockUrl = moduleUrl(`
  export const PrinterOutlined = WalletOutlined
  export const CloseCircleOutlined = WalletOutlined
  export const ReloadOutlined = WalletOutlined
+ export const SearchOutlined = WalletOutlined
+ export const FilterOutlined = WalletOutlined
+ export const DownOutlined = WalletOutlined
+ export const UpOutlined = WalletOutlined
  export const MoreOutlined = WalletOutlined
  export const FileTextOutlined = WalletOutlined
  export const DownloadOutlined = WalletOutlined
@@ -359,11 +363,11 @@ const History = await component(
 )
 const CustomerDebt = await component(
   'src/components/sales/CustomerReceivablesDialog.vue',
-  'load, detail, page, pageSize, changePage, error',
+  'load, detail, page, pageSize, changePage, error, reload',
 )
 const DebtPage = await component(
   'src/views/sales/ReceivablesPage.vue',
-  'load, rows, orders, tab, filters, page, pageSize, changePage, total',
+  'load, rows, orders, tab, filters, page, pageSize, changePage, total, submitFilters, resetFilters, expanded, mobileFiltersOpen, showCustomer, customerId, open',
 )
 const DetailDialog = await component(
   'src/components/sales/PaymentDetailDialog.vue',
@@ -692,6 +696,154 @@ test('walk-in orders are loaded in a separate tab and never synthesize a custome
   assert.equal(subject.vm.orders.length, 1)
   assert.deepEqual(subject.vm.rows, [])
   assert.equal('customerId' in context.calls.at(-1).config.params, false)
+  subject.unmount()
+})
+
+test('receivable filters submit once, isolate UUID, and retain context on reset', async () => {
+  reset(['RECEIVABLE_VIEW'])
+  context.response = pageData([])
+  const subject = mount(DebtPage, {})
+  await flush()
+  const initial = context.calls.length
+  subject.vm.filters.keyword = '  KH / Anh Bắc / 0901234567  '
+  subject.vm.filters.customerId = 'direct-customer-id'
+  subject.vm.filters.warehouseId = 'w2'
+  subject.vm.expanded = true
+  subject.vm.mobileFiltersOpen = true
+  await flush()
+  assert.equal(context.calls.length, initial)
+  subject.vm.submitFilters()
+  await flush()
+  assert.equal(context.calls.length, initial + 1)
+  assert.deepEqual(context.calls.at(-1).config.params, {
+    page: 1,
+    pageSize: 10,
+    warehouseId: 'w2',
+    keyword: '  KH / Anh Bắc / 0901234567  ',
+  })
+  subject.vm.changePage(3, 10)
+  await flush()
+  subject.vm.filters.keyword = 'not submitted'
+  subject.vm.changePage(4, 10)
+  await flush()
+  assert.equal(context.calls.at(-1).config.params.keyword, '  KH / Anh Bắc / 0901234567  ')
+  const count = context.calls.length
+  subject.vm.expanded = false
+  subject.vm.mobileFiltersOpen = false
+  await flush()
+  assert.equal(context.calls.length, count)
+  assert.equal(subject.vm.filters.customerId, 'direct-customer-id')
+  subject.vm.showCustomer(subject.vm.filters.customerId)
+  await flush()
+  assert.equal(subject.vm.open, true)
+  assert.equal(subject.vm.customerId, 'direct-customer-id')
+  assert.equal(context.calls.length, count)
+  subject.vm.resetFilters()
+  await flush()
+  assert.equal(context.calls.length, count + 1)
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10, warehouseId: 'w1' })
+  assert.equal(subject.vm.filters.customerId, '')
+  subject.unmount()
+})
+
+test('receivable tabs retain independent applied filters and pagination; layout does not fetch', async () => {
+  reset(['RECEIVABLE_VIEW'])
+  context.response = pageData([])
+  const subject = mount(DebtPage, {})
+  await flush()
+  subject.vm.filters.keyword = 'customer'
+  subject.vm.submitFilters()
+  subject.vm.changePage(3, 20)
+  subject.vm.changePage(3, 20)
+  await flush()
+  subject.vm.tab = 'walk-in'
+  await flush()
+  assert.equal(subject.vm.page, 1)
+  assert.equal(subject.vm.pageSize, 10)
+  subject.vm.filters.warehouseId = 'w2'
+  subject.vm.submitFilters()
+  await flush()
+  assert.deepEqual(context.calls.at(-1).config.params, { page: 1, pageSize: 10, warehouseId: 'w2' })
+  subject.vm.tab = 'customers'
+  await flush()
+  assert.equal(subject.vm.page, 3)
+  assert.equal(subject.vm.pageSize, 20)
+  assert.deepEqual(context.calls.at(-1).config.params, {
+    page: 3,
+    pageSize: 20,
+    warehouseId: 'w1',
+    keyword: 'customer',
+  })
+  const count = context.calls.length
+  context.warehouses.selectedId = 'w2'
+  await flush()
+  assert.equal(context.calls.length, count + 1)
+  assert.equal(subject.vm.page, 1)
+  assert.equal(subject.vm.open, false)
+  subject.unmount()
+})
+
+test('late receivable list responses cannot overwrite the active tab or revoked scope', async () => {
+  reset(['RECEIVABLE_VIEW'])
+  let finish
+  context.handler = ({ url }) =>
+    url === '/receivables'
+      ? new Promise((resolve) => {
+          finish = resolve
+        })
+      : pageData([order()])
+  const subject = mount(DebtPage, {})
+  await flush()
+  subject.vm.tab = 'walk-in'
+  await flush()
+  finish(pageData([{ customerId: 'old', warehouseId: 'w1' }]))
+  await flush()
+  assert.deepEqual(subject.vm.rows, [])
+  assert.equal(subject.vm.orders[0].id, 's1')
+  const count = context.calls.length
+  context.auth.user.permissions = []
+  await flush()
+  assert.equal(context.calls.length, count)
+  assert.deepEqual(subject.vm.orders, [])
+  context.auth.isCatalogAdmin = true
+  await flush()
+  assert.equal(context.calls.length, count + 1)
+  assert.equal(subject.vm.orders[0].id, 's1')
+  subject.unmount()
+})
+
+test('late customer detail cannot replace a new customer and manual reload emits one list refresh', async () => {
+  reset(['RECEIVABLE_VIEW'])
+  let finish
+  let reloads = 0
+  context.handler = ({ url }) =>
+    url === '/customers/c1/receivables'
+      ? new Promise((resolve) => {
+          finish = resolve
+        })
+      : {
+          customerId: 'c2',
+          warehouseId: 'w2',
+          remainingAmount: '9223372036854775807',
+          orders: pageData([]),
+        }
+  const subject = mount(CustomerDebt, { open: true, customerId: 'c1', onReload: () => reloads++ })
+  await flush()
+  subject.state.customerId = 'c2'
+  await flush()
+  assert.equal(subject.vm.detail.customerId, 'c2')
+  finish({ customerId: 'c1', warehouseId: 'w1', remainingAmount: 1, orders: pageData([order()]) })
+  await flush()
+  assert.equal(subject.vm.detail.customerId, 'c2')
+  assert.equal(String(subject.vm.detail.remainingAmount), '9223372036854775807')
+  const count = context.calls.length
+  subject.vm.reload()
+  await flush()
+  assert.equal(context.calls.length, count + 1)
+  assert.equal(reloads, 1)
+  subject.state.open = false
+  await flush()
+  assert.equal(subject.vm.detail, undefined)
   subject.unmount()
 })
 test('scope/user change discards late payment list responses', async () => {

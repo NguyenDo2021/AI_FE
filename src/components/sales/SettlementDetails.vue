@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { OrderPaymentSummary } from '@/types/payments'
 import { reportValue } from '@/utils/reports'
-defineProps<{ settlement: Omit<OrderPaymentSummary, 'salesOrderId'>; compact?: boolean }>()
+defineProps<{
+  settlement: Omit<OrderPaymentSummary, 'salesOrderId'>
+  compact?: boolean
+  presentation?: 'receivable'
+}>()
 const fields = [
   ['totalAmount', 'Tổng đơn gốc'],
   ['returnedAmount', 'Giá trị hàng đã trả'],
@@ -14,8 +18,16 @@ const fields = [
 ] as const
 </script>
 <template>
-  <dl v-if="compact" class="settlement-grid">
-    <div v-for="[key, label] in fields" :key="key">
+  <dl
+    v-if="compact || presentation === 'receivable'"
+    class="settlement-grid"
+    :class="{ 'settlement-grid--receivable': presentation === 'receivable' }"
+  >
+    <div
+      v-for="[key, label] in fields"
+      :key="key"
+      :class="{ 'settlement-remaining': key === 'remainingAmount' }"
+    >
       <dt>{{ label }}</dt>
       <dd :class="{ 'settlement-refund': key === 'refundableAmount' }">
         {{ reportValue(settlement[key], true) }}
@@ -70,6 +82,34 @@ const fields = [
 .settlement-refund {
   color: #7357cf;
   font-weight: 600;
+}
+.settlement-grid--receivable {
+  gap: 0 28px;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+.settlement-grid--receivable > div {
+  padding: 12px 0;
+  background: transparent;
+}
+.settlement-grid--receivable dt {
+  font-size: 14px;
+}
+.settlement-grid--receivable .settlement-remaining {
+  padding-inline: 12px;
+  border-radius: 8px;
+  background: #f3eefc;
+}
+.settlement-grid--receivable .settlement-remaining dt,
+.settlement-grid--receivable .settlement-remaining dd {
+  color: #7357cf;
+  font-weight: 650;
+}
+@media (max-width: 767px) {
+  .settlement-grid--receivable {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 @media (max-width: 550px) {
   .settlement-grid {

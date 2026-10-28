@@ -18,6 +18,7 @@ const props = defineProps<{
   resetKey: number
   rowHeight?: number
   bodyMaxHeight?: number
+  flow?: boolean
   rowKey?: string | ((record: T) => string)
 }>()
 const emit = defineEmits<{
@@ -126,7 +127,7 @@ onBeforeUnmount(() => {
   <section
     ref="panel"
     class="fitted-list-panel"
-    :class="{ 'fitted-list-panel--content': bodyMaxHeight !== undefined }"
+    :class="{ 'fitted-list-panel--content': bodyMaxHeight !== undefined || flow }"
     :style="{
       '--list-body-gutter': `${bodyGutter}px`,
       '--list-hover': token.colorPrimaryBg,
@@ -153,7 +154,7 @@ onBeforeUnmount(() => {
         :loading="loading"
         :scroll="{
           x: scrollWidth,
-          y: bodyMaxHeight ?? bodyHeight,
+          y: flow ? undefined : (bodyMaxHeight ?? bodyHeight),
           scrollToFirstRowOnChange: false,
         }"
         :row-key="rowKey ?? 'id'"
