@@ -21,7 +21,7 @@ import { paymentError } from '@/utils/payments'
 import { formatStockInteger } from '@/utils/stock'
 import type { Payment, PaymentParams } from '@/types/payments'
 import type { NormalizedApiError } from '@/utils/request'
-const props = defineProps<{ orderId?: string }>()
+const props = defineProps<{ orderId?: string; flowLayout?: boolean }>()
 const { can, warehouses, inScope, contextKey, refreshAccess } = usePaymentScope()
 const payments = usePaymentsStore()
 const receipt = usePaymentReceipt()
@@ -265,6 +265,7 @@ const show = (payment: Payment, cancel = false): void => {
       <FittedListTable
         class="payment-list-panel"
         :body-max-height="orderId ? 300 : undefined"
+        :flow="flowLayout"
         :columns="columns"
         :rows="rows"
         :loading="loading"
