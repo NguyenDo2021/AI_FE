@@ -1082,37 +1082,6 @@ const reload = (): void => {
 .order-settlement-content :deep(.order-payment-panel > a) {
   margin: 8px 8px 8px 0;
 }
-/* Align the embedded history controls without changing standalone payment pages. */
-.order-settlement-content :deep(.order-payment-panel > section) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 12px;
-}
-.order-settlement-content :deep(.order-payment-panel > section > .ant-alert) {
-  grid-column: 1 / -1;
-}
-.order-settlement-content :deep(.order-payment-panel > section > .filters) {
-  align-items: center;
-  margin: 0;
-}
-.order-settlement-content :deep(.order-payment-panel > section > .filters > .ant-btn) {
-  min-width: 0;
-}
-.order-settlement-content :deep(.order-payment-panel > section > .basic-table) {
-  display: contents;
-}
-.order-settlement-content :deep(.order-payment-panel > section .basic-table__toolbar) {
-  grid-column: 2;
-  margin-bottom: 0;
-}
-.order-settlement-content :deep(.order-payment-panel > section .basic-table__search:empty) {
-  display: none;
-}
-.order-settlement-content :deep(.order-payment-panel > section .ant-table-wrapper) {
-  grid-column: 1 / -1;
-  min-width: 0;
-}
 .order-dialog-footer {
   display: flex;
   align-items: center;

@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { BasicTable } from '@/components'
+import ReturnRefundList from '@/components/sales/ReturnRefundList.vue'
+import { EyeOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons-vue'
+import type { TableColumnsType } from 'ant-design-vue'
 import ReturnDialog from '@/components/sales/ReturnDialog.vue'
 import { usePaymentScope } from '@/composables/usePaymentScope'
 import { getReturns } from '@/api/sales/returns.api'
-import { returnError, hasNextPage } from '@/utils/returns'
+import { returnError } from '@/utils/returns'
 import { formatStockInteger as fmt } from '@/utils/stock'
-import { formatDateTime } from '@/utils/date'
+import { formatDate, formatDateTime } from '@/utils/date'
 import type { SalesReturn } from '@/types/returns'
 import type { StockInteger, ReceiptStatus } from '@/types/stock'
 const { warehouses, can, inScope, contextKey, refreshAccess } = usePaymentScope()
@@ -28,18 +30,27 @@ const filters = reactive({
   pageSize: 10,
 })
 let sequence = 0
-const columns = [
-  ['code', 'Mã phiếu'],
-  ['warehouseId', 'Kho'],
-  ['salesOrderId', 'Đơn nguồn'],
-  ['returnDate', 'Ngày trả'],
-  ['reason', 'Lý do'],
-  ['totalAmount', 'Giá trị trả'],
-  ['status', 'Trạng thái'],
-  ['createdBy', 'Người tạo'],
-  ['createdAt', 'Thời gian tạo'],
-  ['actions', 'Thao tác'],
-].map(([key, title]) => ({ key, dataIndex: key, title }))
+const columns: TableColumnsType<SalesReturn> = [
+  { key: 'code', dataIndex: 'code', title: 'Mã phiếu', width: 200 },
+  { key: 'salesOrderId', dataIndex: 'salesOrderId', title: 'Đơn bán', width: 240 },
+  { key: 'customerId', dataIndex: 'customerId', title: 'Khách', width: 220 },
+  { key: 'warehouseId', dataIndex: 'warehouseId', title: 'Kho', width: 200 },
+  { key: 'returnDate', dataIndex: 'returnDate', title: 'Ngày trả', width: 130 },
+  { key: 'reason', dataIndex: 'reason', title: 'Lý do', width: 240 },
+  {
+    key: 'totalAmount',
+    dataIndex: 'totalAmount',
+    title: 'Giá trị trả',
+    width: 240,
+    align: 'right',
+  },
+  { key: 'status', dataIndex: 'status', title: 'Trạng thái', width: 140 },
+  { key: 'createdBy', dataIndex: 'createdBy', title: 'Người tạo', width: 200 },
+  { key: 'createdAt', dataIndex: 'createdAt', title: 'Thời gian tạo', width: 190 },
+  { key: 'actions', title: 'Thao tác', width: 88, fixed: 'right', align: 'center' },
+]
+const warehouseName = (id: string): string =>
+  warehouses.warehouses.find((w) => w.id === id)?.name ?? id
 const options = computed(() =>
   warehouses.warehouses.map((w) => ({ value: w.id, label: w.code + ' — ' + w.name })),
 )
@@ -89,14 +100,7 @@ const load = async (): Promise<void> => {
   }
 }
 watch(
-  () => [
-    filters.warehouseId,
-    filters.salesOrderId,
-    filters.status,
-    filters.from,
-    filters.to,
-    filters.pageSize,
-  ],
+  () => [filters.warehouseId, filters.salesOrderId, filters.status, filters.from, filters.to],
   () => {
     filters.page = 1
     void load()
@@ -124,93 +128,173 @@ watch(
   { immediate: true },
 )
 onBeforeUnmount(() => ++sequence)
-const change = (delta: number): void => {
-  filters.page += delta
+const changePage = (next: number, size: number): void => {
+  if (loading.value || ![10, 20, 50, 100].includes(size)) return
+  if (next === filters.page && size === filters.pageSize) return
+  filters.page = size === filters.pageSize ? next : 1
+  filters.pageSize = size
   void load()
+}
+const search = (): void => {
+  if (loading.value) return
+  filters.page = 1
+  void load()
+}
+const resetFilters = (): void => {
+  if (loading.value) return
+  const defaults = {
+    warehouseId: warehouses.selectedId,
+    salesOrderId: '',
+    status: undefined,
+    from: '',
+    to: '',
+  }
+  const changed = (Object.keys(defaults) as (keyof typeof defaults)[]).some(
+    (key) => filters[key] !== defaults[key],
+  )
+  Object.assign(filters, defaults)
+  if (!changed) search()
 }
 </script>
 <template>
-  <section>
-    <h1>Trả hàng</h1>
-    <a-button
-      v-if="can('SALES_RETURN_CREATE') && can('SALES_RETURN_VIEW')"
-      type="primary"
-      @click="show()"
-      >Tạo phiếu trả nháp</a-button
-    >
-    <a-alert v-if="error" type="error" :message="error" />
-    <a-alert
-      v-if="!warehouses.warehouses.length"
-      type="info"
-      message="Không có kho được giao. Tải lại phạm vi kho trên thanh công cụ."
-    />
-    <a-form layout="inline" style="margin: 16px 0; gap: 12px">
-      <a-form-item label="Kho"
-        ><a-select
-          v-model:value="filters.warehouseId"
-          :options="options"
-          allow-clear
-          style="min-width: 200px"
-      /></a-form-item>
-      <a-form-item label="ID đơn nguồn"
-        ><a-input v-model:value="filters.salesOrderId"
-      /></a-form-item>
-      <a-form-item label="Trạng thái"
-        ><a-select
-          v-model:value="filters.status"
-          allow-clear
-          style="min-width: 150px"
-          :options="
-            ['DRAFT', 'CONFIRMED', 'CANCELLED'].map((value) => ({
-              value,
-              label: $t('sales.' + value),
-            }))
-          "
-      /></a-form-item>
-      <a-form-item label="Từ ngày trả"
-        ><a-date-picker v-model:value="filters.from" value-format="YYYY-MM-DD"
-      /></a-form-item>
-      <a-form-item label="Đến ngày trả (bao gồm)"
-        ><a-date-picker v-model:value="filters.to" value-format="YYYY-MM-DD"
-      /></a-form-item>
-    </a-form>
-    <BasicTable
-      :columns="columns"
-      :data-source="rows"
-      :loading="loading"
-      :scroll="{ x: 1600 }"
-      @reload="load"
-    >
-      <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'warehouseId'">{{
-          warehouses.warehouses.find((w) => w.id === record.warehouseId)?.name ?? record.warehouseId
-        }}</template>
-        <template v-else-if="column.key === 'totalAmount'"
-          >{{ fmt(record.totalAmount) }} VND<span v-if="record.status === 'DRAFT'">
-            (Dự kiến)</span
-          ></template
+  <a-config-provider
+    :theme="{ token: { colorPrimary: '#7357cf', colorLink: '#7357cf', borderRadius: 8 } }"
+  >
+    <section class="rr-page">
+      <header class="rr-page-heading">
+        <div>
+          <h1>Trả hàng</h1>
+          <p>Quản lý phiếu trả và xác nhận hàng nhập lại kho.</p>
+        </div>
+        <a-button
+          v-if="can('SALES_RETURN_CREATE') && can('SALES_RETURN_VIEW')"
+          type="primary"
+          @click="show()"
+          ><template #icon><PlusOutlined /></template>Tạo phiếu trả</a-button
         >
-        <template v-else-if="column.key === 'createdAt'">{{
-          formatDateTime(record.createdAt)
-        }}</template>
-        <a-tag v-else-if="column.key === 'status'">{{ $t('sales.' + record.status) }}</a-tag>
-        <a-button v-else-if="column.key === 'actions'" @click="show(record.id)"
-          >Chi tiết / xử lý</a-button
-        >
-      </template>
-    </BasicTable>
-    <a-space
-      ><span
-        >Tổng {{ total === undefined ? '—' : fmt(total) }} phiếu ? Trang {{ filters.page }}</span
-      ><a-button :disabled="filters.page <= 1 || loading" @click="change(-1)">Trước</a-button
-      ><a-button
-        :disabled="loading || !hasNextPage(total, filters.page, filters.pageSize)"
-        @click="change(1)"
-        >Sau</a-button
-      ><a-select
-        v-model:value="filters.pageSize"
-        :options="[10, 20, 50, 100].map((value) => ({ value, label: String(value) }))"
-    /></a-space>
-    <ReturnDialog :id="id" v-model:open="open" @saved="load" />
-  </section>
+      </header>
+      <a-alert v-if="error" type="error" :message="error" show-icon />
+      <a-alert
+        v-if="!warehouses.warehouses.length"
+        type="info"
+        message="Không có kho được giao. Tải lại phạm vi kho trên thanh công cụ."
+        show-icon
+      />
+      <ReturnRefundList
+        title="Danh sách phiếu trả hàng"
+        item-label="phiếu trả hàng"
+        :columns="columns"
+        :rows="rows"
+        :loading="loading"
+        :error="error"
+        :total="total"
+        :page="filters.page"
+        :page-size="filters.pageSize"
+        @reload="load"
+        @page-change="changePage"
+      >
+        <template #filters="{ popupAlign }">
+          <a-form layout="vertical" class="rr-return-filters" @finish="search">
+            <a-form-item label="Kho" html-for="return-filter-warehouse"
+              ><a-select
+                id="return-filter-warehouse"
+                v-model:value="filters.warehouseId"
+                :dropdown-align="popupAlign"
+                :options="options"
+                placeholder="Tất cả kho được giao"
+                allow-clear
+            /></a-form-item>
+            <a-form-item label="ID đơn nguồn" html-for="return-filter-order"
+              ><a-input
+                id="return-filter-order"
+                v-model:value="filters.salesOrderId"
+                placeholder="Nhập ID đơn bán"
+                allow-clear
+                @press-enter.prevent="search"
+            /></a-form-item>
+            <a-form-item label="Trạng thái" html-for="return-filter-status"
+              ><a-select
+                id="return-filter-status"
+                v-model:value="filters.status"
+                :dropdown-align="popupAlign"
+                allow-clear
+                placeholder="Tất cả trạng thái"
+                :options="
+                  ['DRAFT', 'CONFIRMED', 'CANCELLED'].map((value) => ({
+                    value,
+                    label: $t('sales.' + value),
+                  }))
+                "
+            /></a-form-item>
+            <a-form-item label="Từ ngày trả" html-for="return-filter-from"
+              ><a-date-picker
+                id="return-filter-from"
+                v-model:value="filters.from"
+                :dropdown-align="popupAlign"
+                value-format="YYYY-MM-DD"
+                format="DD/MM/YYYY"
+                placeholder="Từ ngày trả"
+            /></a-form-item>
+            <a-form-item label="Đến ngày trả (bao gồm)" html-for="return-filter-to"
+              ><a-date-picker
+                id="return-filter-to"
+                v-model:value="filters.to"
+                :dropdown-align="popupAlign"
+                value-format="YYYY-MM-DD"
+                format="DD/MM/YYYY"
+                placeholder="Đến ngày trả (bao gồm)"
+            /></a-form-item>
+            <div class="rr-filter-actions">
+              <a-button type="primary" :loading="loading" @click="search"
+                ><template #icon><SearchOutlined aria-hidden="true" /></template>Tìm kiếm</a-button
+              >
+              <a-button :disabled="loading" @click="resetFilters"
+                ><template #icon><ReloadOutlined aria-hidden="true" /></template>Đặt lại</a-button
+              >
+            </div>
+          </a-form>
+        </template>
+        <template #bodyCell="{ column, record }">
+          <a-tooltip v-if="column.key === 'warehouseId'" :title="warehouseName(record.warehouseId)"
+            ><span class="rr-text">{{ warehouseName(record.warehouseId) }}</span></a-tooltip
+          >
+          <div v-else-if="column.key === 'totalAmount'" class="rr-money">
+            <span :class="{ 'rr-money-emphasis': record.status === 'DRAFT' }"
+              >{{ fmt(record.totalAmount) }} ₫</span
+            >
+            <div v-if="record.status === 'DRAFT'">Dự kiến</div>
+          </div>
+          <template v-else-if="column.key === 'returnDate'">{{
+            formatDate(record.returnDate)
+          }}</template>
+          <template v-else-if="column.key === 'createdAt'">{{
+            formatDateTime(record.createdAt)
+          }}</template>
+          <a-tag
+            v-else-if="column.key === 'status'"
+            :color="
+              record.status === 'DRAFT' ? 'orange' : record.status === 'CONFIRMED' ? 'green' : 'red'
+            "
+            >{{ $t('sales.' + record.status) }}</a-tag
+          >
+          <div v-else-if="column.key === 'actions'" class="rr-actions">
+            <a-tooltip title="Chi tiết / xử lý" :trigger="['hover', 'focus']">
+              <a-button type="text" aria-label="Chi tiết / xử lý" @click="show(record.id)">
+                <template #icon><EyeOutlined aria-hidden="true" /></template>
+              </a-button>
+            </a-tooltip>
+          </div>
+          <a-tooltip
+            v-else
+            :title="record[column.dataIndex] ?? (column.key === 'customerId' ? 'Khách lẻ' : '—')"
+            ><span class="rr-text" :class="{ 'rr-code': column.key === 'code' }">{{
+              record[column.dataIndex] ?? (column.key === 'customerId' ? 'Khách lẻ' : '—')
+            }}</span></a-tooltip
+          >
+        </template>
+      </ReturnRefundList>
+      <ReturnDialog :id="id" v-model:open="open" @saved="load" />
+    </section>
+  </a-config-provider>
 </template>
+<style scoped src="./returnRefundPage.css"></style>
