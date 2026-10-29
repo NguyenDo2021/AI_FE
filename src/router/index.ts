@@ -74,8 +74,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'reports/inventory',
         name: 'reports-inventory',
-        component: () => import('@/views/reports/ReportsPage.vue'),
-        props: { kind: 'inventory' },
+        component: () => import('@/views/reports/InventoryReportPage.vue'),
         meta: {
           title: 'reports.inventory',
           requiresAuth: true,
@@ -86,8 +85,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'reports/sales',
         name: 'reports-sales',
-        component: () => import('@/views/reports/ReportsPage.vue'),
-        props: { kind: 'sales' },
+        component: () => import('@/views/reports/SalesReportPage.vue'),
         meta: {
           title: 'reports.sales',
           requiresAuth: true,
@@ -98,8 +96,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'reports/payments',
         name: 'reports-payments',
-        component: () => import('@/views/reports/ReportsPage.vue'),
-        props: { kind: 'payments' },
+        component: () => import('@/views/reports/PaymentsReportPage.vue'),
         meta: {
           title: 'reports.payments',
           requiresAuth: true,
@@ -110,8 +107,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'reports/receivables-summary',
         name: 'reports-receivables-summary',
-        component: () => import('@/views/reports/ReportsPage.vue'),
-        props: { kind: 'receivables-summary' },
+        component: () => import('@/views/reports/ReceivablesReportPage.vue'),
         meta: {
           title: 'reports.receivables-summary',
           requiresAuth: true,
@@ -122,8 +118,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'reports/low-stock',
         name: 'reports-low-stock',
-        component: () => import('@/views/reports/ReportsPage.vue'),
-        props: { kind: 'low-stock' },
+        component: () => import('@/views/reports/LowStockReportPage.vue'),
         meta: {
           title: 'reports.low-stock',
           requiresAuth: true,
@@ -135,6 +130,10 @@ const routes: RouteRecordRaw[] = [
         path: 'sales/receivables',
         name: 'sales-receivables',
         component: () => import('@/views/sales/ReceivablesPage.vue'),
+        props: (route) => ({
+          initialWarehouseId:
+            typeof route.query.warehouseId === 'string' ? route.query.warehouseId : undefined,
+        }),
         meta: {
           title: 'sales.receivables',
           requiresAuth: true,
