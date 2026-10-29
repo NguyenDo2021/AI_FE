@@ -1,305 +1,168 @@
-<script setup lang="ts">
-import UserWarehousesDrawer from '@/components/catalog/UserWarehousesDrawer.vue'
-import { useCatalogPermission } from '@/composables/useCatalogPermission'
-import { computed, onMounted, reactive, ref } from 'vue'
+﻿<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { message, Modal } from 'ant-design-vue'
-import type { TableColumnsType } from 'ant-design-vue'
-import { getRoles } from '@/api/role/role.api'
+import { message, Modal, type TableColumnsType } from 'ant-design-vue'
 import {
-  createUser,
-  deleteUser,
-  getUser,
-  getUserList,
-  getUserRoles,
-  removeUserRole,
-  updateUser,
-  updateUserRoles,
-} from '@/api/user/user.api'
+  PlusOutlined,
+  SearchOutlined,
+  ReloadOutlined,
+  FilterOutlined,
+  UpOutlined,
+  DownOutlined,
+  EyeOutlined,
+  EditOutlined,
+  HomeOutlined,
+  SafetyCertificateOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons-vue'
+import FittedListTable from '@/components/catalog/FittedListTable.vue'
+import UserWarehousesDrawer from '@/components/catalog/UserWarehousesDrawer.vue'
+import UserRolesDrawer from '@/components/catalog/UserRolesDrawer.vue'
+import UserFormModal from '@/components/catalog/UserFormModal.vue'
+import UserDetailDrawer from '@/components/catalog/UserDetailDrawer.vue'
+import { useCatalogPermission } from '@/composables/useCatalogPermission'
+import { deleteUser, getUser, getUserList } from '@/api/user/user.api'
 import { PERMISSIONS } from '@/constants/permissions'
-import { BasicForm, BasicModal, BasicTable, BasicDrawer, type FormSchema } from '@/components'
-import type { PageData } from '@/types/api'
-import type { Role } from '@/types/role'
-import type { User, UserListParams, UserPayload } from '@/types/user'
+import type { User } from '@/types/user'
 import { useAuthStore } from '@/stores/auth'
 import { formatDateTime, formatOrdinal } from '@/utils'
 import { hasPermission } from '@/utils/permission'
-import { type NormalizedApiError } from '@/utils/request'
-import { validationRules } from '@/utils/validate'
+import type { NormalizedApiError } from '@/utils/request'
 
 const { t } = useI18n()
-const authStore = useAuthStore()
+const auth = useAuthStore()
 const { can: canCatalog } = useCatalogPermission()
-const warehouseDrawerOpen = ref(false)
-const warehouseUser = ref<User | null>(null)
-const openAssignedWarehouses = (user: User): void => {
-  warehouseUser.value = user
-  warehouseDrawerOpen.value = true
-}
+const mobile = useMediaQuery('(max-width: 767px)')
+const filtersOpen = ref(false)
+const filters = reactive({ keyword: '', status: undefined as number | undefined })
+const applied = reactive({ keyword: '', status: undefined as number | undefined })
 const users = ref<User[]>([])
 const loading = ref(false)
-const saving = ref(false)
-const errorMessage = ref('')
-const modalOpen = ref(false)
-const drawerOpen = ref(false)
-const roleModalOpen = ref(false)
-const editingUserId = ref<string | null>(null)
-const selectedUser = ref<User | null>(null)
-const roleAssignUser = ref<User | null>(null)
-const roleOptions = ref<Role[]>([])
-const selectedRoleIds = ref<string[]>([])
-const loadingRoles = ref(false)
-const savingRoles = ref(false)
-const removingRoleId = ref<string | null>(null)
-const formRef = ref<InstanceType<typeof BasicForm>>()
+const error = ref('')
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
-const ROLE_PAGE_SIZE_LIMIT = 100
-const filters = reactive({ keyword: '', status: undefined as number | undefined })
-const form = ref<Record<string, unknown>>({})
-const canViewUserRoles = computed(() =>
-  hasPermission(PERMISSIONS.USER_VIEW, authStore.user?.permissions ?? []),
-)
-const canUpdateUserRoles = computed(() =>
-  hasPermission(PERMISSIONS.USER_UPDATE, authStore.user?.permissions ?? []),
-)
-
-const formRules = computed(() => ({
-  username: [validationRules.required(t('user.required'))],
-  fullName: [validationRules.required(t('user.required'))],
-  email: [
-    validationRules.required(t('user.required')),
-    validationRules.email(t('user.invalidEmail')),
-  ],
-}))
-const formSchema = computed<FormSchema[]>(() => [
-  { name: 'username', label: t('user.username'), rules: formRules.value.username },
-  { name: 'fullName', label: t('user.fullName'), rules: formRules.value.fullName },
-  { name: 'email', label: t('user.email'), type: 'email', rules: formRules.value.email },
-  { name: 'phone', label: t('user.phone'), placeholder: '+84901234567' },
-  {
-    name: 'status',
-    label: t('user.status'),
-    type: 'select',
-    options: [
-      { label: t('common.active'), value: 1 },
-      { label: t('common.inactive'), value: 0 },
-    ],
-  },
-])
-
+const revision = ref(0)
+const formOpen = ref(false)
+const editingUser = ref<User | null>(null)
+const warehouseOpen = ref(false)
+const warehouseUser = ref<User | null>(null)
+const rolesOpen = ref(false)
+const rolesUser = ref<User | null>(null)
+const detailOpen = ref(false)
+const selectedUser = ref<User | null>(null)
+const detailLoading = ref<string>()
+const detailTrigger = ref<HTMLElement | null>(null)
+const can = (permission: string): boolean => hasPermission(permission, auth.user?.permissions ?? [])
+const canAssignRoles = computed(() => can(PERMISSIONS.USER_VIEW) && can(PERMISSIONS.USER_UPDATE))
 const columns = computed<TableColumnsType<User>>(() => [
+  { title: 'STT', key: 'index', width: 64 },
+  { title: t('user.username'), dataIndex: 'username', key: 'username', width: 145 },
+  { title: t('user.fullName'), dataIndex: 'fullName', key: 'fullName', width: 170 },
+  { title: t('user.email'), dataIndex: 'email', key: 'email', width: 200 },
+  { title: t('user.phone'), dataIndex: 'phone', key: 'phone', width: 145 },
+  { title: t('user.status'), dataIndex: 'status', key: 'status', width: 160 },
+  { title: t('user.createdAt'), dataIndex: 'createdAt', key: 'createdAt', width: 145 },
+  { title: t('user.updatedAt'), dataIndex: 'updatedAt', key: 'updatedAt', width: 145 },
+  { title: t('user.updatedBy'), dataIndex: 'updatedByName', key: 'updatedByName', width: 160 },
   {
-    title: 'STT',
-    key: 'index',
-    width: 72,
-    customRender: ({ index }) => formatOrdinal(index, page.value, pageSize.value),
+    title: t('common.actions'),
+    key: 'actions',
+    fixed: mobile.value ? undefined : 'right',
+    width: mobile.value ? 248 : 216,
   },
-  { title: t('user.username'), dataIndex: 'username', key: 'username' },
-  { title: t('user.fullName'), dataIndex: 'fullName', key: 'fullName' },
-  { title: t('user.email'), dataIndex: 'email', key: 'email' },
-  { title: t('user.phone'), dataIndex: 'phone', key: 'phone' },
-  { title: t('user.status'), dataIndex: 'status', key: 'status' },
-  { title: t('user.createdAt'), dataIndex: 'createdAt', key: 'createdAt' },
-  { title: t('user.updatedAt'), dataIndex: 'updatedAt', key: 'updatedAt' },
-  { title: t('user.updatedBy'), dataIndex: 'updatedByName', key: 'updatedByName' },
-  { title: t('common.actions'), key: 'actions', fixed: 'right', width: 390 },
 ])
-
-const pagination = computed(() => ({
-  current: page.value,
-  pageSize: pageSize.value,
-  total: total.value,
-  showSizeChanger: true,
-  showTotal: (count: number) => `${count}`,
-}))
-
-const selectedRoles = computed(() =>
-  roleOptions.value.filter((role) => selectedRoleIds.value.includes(role.id)),
+const rangeLabel = computed(() =>
+  t('user.range', {
+    from: users.value.length ? (page.value - 1) * pageSize.value + 1 : 0,
+    to: users.value.length
+      ? Math.min((page.value - 1) * pageSize.value + users.value.length, total.value)
+      : 0,
+    total: total.value,
+  }),
 )
-
-const apiErrorMessage = (error: unknown, fallback = t('errors.unknown')): string => {
-  if (!(error instanceof Error)) return fallback
-  const apiError = error as NormalizedApiError
-  if (apiError.status === 403) return t('user.rolePermissionDenied')
-  return apiError.message || fallback
+const optionalText = (value: unknown): string =>
+  value === null || value === undefined || value === '' ? '—' : String(value)
+// Keep tooltip coordinates in the viewport's coordinate space when body is zoomed.
+const tooltipContainer = (): HTMLElement => document.documentElement
+const tooltipOverflow = { adjustX: 1, adjustY: 1, alwaysByViewport: true }
+const apiErrorMessage = (cause: unknown): string => {
+  if (!(cause instanceof Error)) return t('errors.unknown')
+  const apiError = cause as NormalizedApiError
+  return (
+    apiError.message ||
+    (apiError.status === 403 ? t('user.rolePermissionDenied') : t('errors.unknown'))
+  )
 }
-
+let version = 0
+let detailVersion = 0
 const loadUsers = async (): Promise<void> => {
-  if (loading.value) return
+  const current = ++version
   loading.value = true
+  error.value = ''
   try {
-    const response: PageData<User> = await getUserList({
+    const response = await getUserList({
       page: page.value,
       pageSize: pageSize.value,
-      keyword: filters.keyword || undefined,
-      status: filters.status,
-    } satisfies UserListParams)
+      keyword: applied.keyword || undefined,
+      status: applied.status,
+    })
+    if (current !== version) return
     users.value = response.items
     total.value = response.total
-    errorMessage.value = ''
-  } catch {
-    errorMessage.value = t('errors.unknown')
+  } catch (cause) {
+    if (current === version) error.value = apiErrorMessage(cause)
   } finally {
-    loading.value = false
+    if (current === version) loading.value = false
   }
 }
-
-const search = (keyword: string): void => {
-  filters.keyword = keyword
+const search = (): void => {
+  Object.assign(applied, filters)
   page.value = 1
+  revision.value++
   void loadUsers()
 }
-
 const resetFilters = (): void => {
-  filters.keyword = ''
-  filters.status = undefined
-  page.value = 1
+  Object.assign(filters, { keyword: '', status: undefined })
+  search()
+}
+const changePage = (nextPage: number, size: number): void => {
+  if (![10, 20, 50, 100].includes(size)) return
+  const next = size === pageSize.value ? nextPage : 1
+  if (page.value === next && pageSize.value === size) return
+  page.value = next
+  pageSize.value = size
   void loadUsers()
 }
-
-const changePage = (nextPage: number, nextPageSize: number): void => {
-  page.value = nextPage
-  pageSize.value = nextPageSize
-  void loadUsers()
+const openForm = (user: User | null): void => {
+  editingUser.value = user
+  formOpen.value = true
 }
-
-const openCreate = (): void => {
-  editingUserId.value = null
-  form.value = { status: 1 }
-  modalOpen.value = true
+const openWarehouses = (user: User): void => {
+  warehouseUser.value = user
+  warehouseOpen.value = true
 }
-
-const openEdit = (user: User): void => {
-  editingUserId.value = user.id
-  form.value = {
-    username: user.username,
-    fullName: user.fullName,
-    email: user.email,
-    phone: user.phone,
-    status: user.status,
-  }
-  modalOpen.value = true
+const openRoles = (user: User): void => {
+  rolesUser.value = user
+  rolesOpen.value = true
 }
-
-const openDetail = async (user: User): Promise<void> => {
+const openDetail = async (user: User, event: MouseEvent): Promise<void> => {
+  const current = ++detailVersion
+  const trigger = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
+  detailLoading.value = user.id
   try {
-    selectedUser.value = await getUser(user.id)
-    drawerOpen.value = true
-  } catch (error) {
-    errorMessage.value = apiErrorMessage(error)
-  }
-}
-
-const loadAllRolesForAssignment = async (): Promise<Role[]> => {
-  const allRoles: Role[] = []
-  let currentPage = 1
-
-  while (true) {
-    const response = await getRoles({
-      page: currentPage,
-      pageSize: ROLE_PAGE_SIZE_LIMIT,
-    })
-
-    allRoles.push(...response.items)
-
-    if (allRoles.length >= response.total || response.items.length < ROLE_PAGE_SIZE_LIMIT) {
-      break
-    }
-
-    currentPage += 1
-  }
-
-  return allRoles
-}
-
-const openAssignRoleModal = async (user: User): Promise<void> => {
-  if (!canViewUserRoles.value || !canUpdateUserRoles.value) return
-
-  roleAssignUser.value = user
-  roleModalOpen.value = true
-  loadingRoles.value = true
-  selectedRoleIds.value = []
-  roleOptions.value = []
-
-  try {
-    const [allRoles, currentRoles] = await Promise.all([
-      loadAllRolesForAssignment(),
-      getUserRoles(user.id),
-    ])
-    roleOptions.value = allRoles
-    selectedRoleIds.value = currentRoles.map((role) => role.id)
-    errorMessage.value = ''
-  } catch (error) {
-    errorMessage.value = apiErrorMessage(error)
-    roleModalOpen.value = false
+    const response = await getUser(user.id)
+    if (current !== detailVersion) return
+    detailTrigger.value = trigger
+    selectedUser.value = response
+    detailOpen.value = true
+  } catch (cause) {
+    if (current === detailVersion) error.value = apiErrorMessage(cause)
   } finally {
-    loadingRoles.value = false
+    if (current === detailVersion) detailLoading.value = undefined
   }
 }
-
-const removeSingleRole = async (roleId: string): Promise<void> => {
-  if (!roleAssignUser.value || removingRoleId.value) return
-  const targetRole = roleOptions.value.find((role) => role.id === roleId)
-  if (!targetRole || targetRole.code === 'ADMIN') return
-
-  removingRoleId.value = roleId
-  try {
-    await removeUserRole(roleAssignUser.value.id, roleId)
-    selectedRoleIds.value = selectedRoleIds.value.filter((id) => id !== roleId)
-    message.success(t('user.roleRemovedSuccess'))
-  } catch (error) {
-    errorMessage.value = apiErrorMessage(error)
-  } finally {
-    removingRoleId.value = null
-  }
-}
-
-const saveUserRoles = async (): Promise<void> => {
-  if (!roleAssignUser.value || savingRoles.value) return
-
-  savingRoles.value = true
-  try {
-    await updateUserRoles(roleAssignUser.value.id, selectedRoleIds.value)
-    message.success(t('user.assignRoleSuccess'))
-    roleModalOpen.value = false
-    errorMessage.value = ''
-    await loadUsers()
-  } catch (error) {
-    errorMessage.value = apiErrorMessage(error)
-  } finally {
-    savingRoles.value = false
-  }
-}
-
-const toPayload = (value: Record<string, unknown>): UserPayload => ({
-  username: String(value.username ?? ''),
-  fullName: String(value.fullName ?? ''),
-  email: String(value.email ?? ''),
-  phone: typeof value.phone === 'string' ? value.phone : undefined,
-  status: typeof value.status === 'number' ? value.status : 1,
-})
-
-const saveUser = async (): Promise<void> => {
-  if (saving.value) return
-  await formRef.value?.validate()
-  saving.value = true
-  try {
-    const payload = toPayload(formRef.value?.getValues() ?? form.value)
-    if (editingUserId.value) await updateUser(editingUserId.value, payload)
-    else await createUser(payload)
-    message.success(t('user.saveSuccess'))
-    modalOpen.value = false
-    errorMessage.value = ''
-    await loadUsers()
-  } catch (error) {
-    errorMessage.value = apiErrorMessage(error)
-  } finally {
-    saving.value = false
-  }
-}
-
 const confirmDelete = (user: User): void => {
   Modal.confirm({
     title: t('user.deleteConfirm'),
@@ -310,277 +173,462 @@ const confirmDelete = (user: User): void => {
       try {
         await deleteUser(user.id)
         message.success(t('user.deleteSuccess'))
-        errorMessage.value = ''
+        error.value = ''
         await loadUsers()
-      } catch (error) {
-        errorMessage.value = apiErrorMessage(error)
+      } catch (cause) {
+        error.value = apiErrorMessage(cause)
       }
     },
   })
 }
-
 onMounted(() => void loadUsers())
+onBeforeUnmount(() => {
+  ++version
+  ++detailVersion
+})
 </script>
 
 <template>
-  <section>
-    <a-alert
-      v-if="errorMessage"
-      :message="errorMessage"
-      type="error"
-      show-icon
-      class="user-page__error"
-    />
-    <div class="user-page__heading">
-      <div>
-        <h1>{{ $t('user.management') }}</h1>
+  <a-config-provider
+    :theme="{ token: { colorPrimary: '#7357cf', borderRadius: 8, colorText: '#252044' } }"
+  >
+    <section class="user-page">
+      <div class="user-page__heading">
+        <div>
+          <h1>
+            <span class="desktop-title">{{ $t('user.management') }}</span
+            ><span class="mobile-title">{{ $t('common.user') }}</span>
+          </h1>
+          <p>{{ $t('user.description') }}</p>
+        </div>
+        <a-button
+          v-if="can(PERMISSIONS.USER_CREATE)"
+          type="primary"
+          class="user-add"
+          :aria-label="$t('user.add')"
+          @click="openForm(null)"
+          ><template #icon><PlusOutlined aria-hidden="true" /></template
+          ><span class="desktop-title">{{ $t('user.add') }}</span
+          ><span class="mobile-title">{{ $t('common.add') }}</span></a-button
+        >
       </div>
-      <a-button v-permission="PERMISSIONS.USER_CREATE" type="primary" @click="openCreate">
-        {{ $t('user.add') }}
-      </a-button>
-    </div>
-    <div class="user-page__filters">
-      <a-input
-        :value="filters.keyword"
-        :placeholder="$t('user.keywordPlaceholder')"
-        allow-clear
-        @press-enter="search(filters.keyword)"
-        @update:value="filters.keyword = $event"
-      />
-      <a-select
-        v-model:value="filters.status"
-        allow-clear
-        :placeholder="$t('user.status')"
-        :options="[
-          { label: $t('common.active'), value: 1 },
-          { label: $t('common.inactive'), value: 0 },
-        ]"
-      />
-      <a-button type="primary" @click="search(filters.keyword)">{{ $t('common.search') }}</a-button>
-      <a-button @click="resetFilters">
-        {{ $t('common.reset') }}
-      </a-button>
-    </div>
-    <BasicTable
-      :columns="columns"
-      :data-source="users"
-      :loading="loading"
-      :pagination="pagination"
-      :searchable="false"
-      @reload="loadUsers"
-      @page-change="changePage"
-    >
-      <template #bodyCell="{ column, record }">
-        <a-tag v-if="column.key === 'status'" :color="record.status === 1 ? 'green' : 'default'">
-          {{ record.status === 1 ? $t('common.active') : $t('common.inactive') }}
-        </a-tag>
-        <span v-else-if="column.key === 'createdAt'">{{ formatDateTime(record.createdAt) }}</span>
-        <span v-else-if="column.key === 'updatedAt'">{{ formatDateTime(record.updatedAt) }}</span>
-        <div v-else-if="column.key === 'actions'" class="user-page__actions">
-          <a-button type="link" size="small" @click="openDetail(record)">
-            {{ $t('common.detail') }}
-          </a-button>
-          <a-button
-            v-permission="PERMISSIONS.USER_UPDATE"
-            type="link"
-            size="small"
-            @click="openEdit(record)"
-          >
-            {{ $t('common.edit') }}
-          </a-button>
-          <a-button
-            v-if="canCatalog('USER_WAREHOUSE_VIEW')"
-            type="link"
-            size="small"
-            @click="openAssignedWarehouses(record)"
-            >{{ $t('catalog.assignedWarehouses') }}</a-button
-          >
-          <a-button
-            v-if="canViewUserRoles && canUpdateUserRoles"
-            type="link"
-            size="small"
-            @click="openAssignRoleModal(record)"
-          >
-            {{ $t('user.assignRole') }}
-          </a-button>
-          <a-button
-            v-permission="PERMISSIONS.USER_DELETE"
-            type="link"
-            danger
-            size="small"
-            @click="confirmDelete(record)"
-          >
-            {{ $t('common.delete') }}
-          </a-button>
-        </div>
-      </template>
-    </BasicTable>
-
-    <UserWarehousesDrawer v-model:open="warehouseDrawerOpen" :user="warehouseUser" />
-    <BasicModal
-      v-model:open="modalOpen"
-      :title="editingUserId ? $t('user.edit') : $t('user.add')"
-      :confirm-loading="saving"
-      @confirm="saveUser"
-    >
-      <BasicForm
-        ref="formRef"
-        v-model="form"
-        :schema="formSchema"
-        :rules="formRules"
-        :loading="saving"
-        :label-col="7"
-        :wrapper-col="17"
-      />
-    </BasicModal>
-
-    <BasicModal
-      v-model:open="roleModalOpen"
-      :title="$t('user.assignRoleTitle')"
-      :confirm-loading="savingRoles"
-      width="560px"
-      @confirm="saveUserRoles"
-    >
-      <a-spin :spinning="loadingRoles">
-        <div v-if="roleAssignUser" class="user-role-modal__meta">
-          <div>
-            <strong>{{ $t('user.fullName') }}:</strong> {{ roleAssignUser.fullName }}
+      <div class="user-page__filter-panel">
+        <a-button
+          v-if="mobile"
+          class="user-page__filter-toggle"
+          :aria-label="$t('user.filters')"
+          :aria-expanded="filtersOpen"
+          aria-controls="user-filter-fields"
+          @click="filtersOpen = !filtersOpen"
+          ><FilterOutlined aria-hidden="true" />{{ $t('user.filters')
+          }}<UpOutlined v-if="filtersOpen" class="filter-chevron" /><DownOutlined
+            v-else
+            class="filter-chevron"
+        /></a-button>
+        <form
+          v-show="!mobile || filtersOpen"
+          id="user-filter-fields"
+          class="user-page__filters"
+          @submit.prevent="search"
+        >
+          <div class="user-filter">
+            <label for="user-keyword">{{ $t('user.keyword') }}</label
+            ><a-input
+              id="user-keyword"
+              v-model:value="filters.keyword"
+              :placeholder="$t('user.keywordPlaceholder')"
+              allow-clear
+              ><template #prefix><SearchOutlined aria-hidden="true" /></template
+            ></a-input>
           </div>
-          <div>
-            <strong>{{ $t('user.username') }}:</strong> {{ roleAssignUser.username }}
+          <div class="user-filter">
+            <label for="user-status">{{ $t('user.status') }}</label
+            ><a-select
+              id="user-status"
+              v-model:value="filters.status"
+              allow-clear
+              :placeholder="$t('user.allStatuses')"
+              :options="[
+                { label: $t('common.active'), value: 1 },
+                { label: $t('common.inactive'), value: 0 },
+              ]"
+            />
           </div>
-        </div>
-
-        <div class="user-role-modal__section">
-          <div class="user-role-modal__title">{{ $t('user.userRoles') }}</div>
-          <a-checkbox-group v-model:value="selectedRoleIds" class="user-role-modal__group">
-            <a-row :gutter="[8, 8]">
-              <a-col v-for="role in roleOptions" :key="role.id" :span="24">
-                <a-checkbox :value="role.id" :disabled="role.code === 'ADMIN'">
-                  {{ role.name }} <span class="user-role-modal__code">({{ role.code }})</span>
-                </a-checkbox>
-              </a-col>
-            </a-row>
-          </a-checkbox-group>
-        </div>
-
-        <div v-if="selectedRoles.length" class="user-role-modal__section">
-          <div class="user-role-modal__title">{{ $t('user.removeRole') }}</div>
-          <div class="user-role-modal__selected-list">
-            <div
-              v-for="role in selectedRoles"
-              :key="role.id"
-              class="user-role-modal__selected-item"
+          <div class="user-filter-actions">
+            <a-button type="primary" html-type="submit"
+              ><template #icon><SearchOutlined aria-hidden="true" /></template
+              >{{ $t('common.search') }}</a-button
+            ><a-button @click="resetFilters"
+              ><template #icon><ReloadOutlined aria-hidden="true" /></template
+              >{{ $t('common.reset') }}</a-button
             >
-              <span>{{ role.name }}</span>
-              <a-button
-                v-if="role.code !== 'ADMIN'"
-                v-permission="PERMISSIONS.USER_UPDATE"
-                size="small"
-                danger
-                :loading="removingRoleId === role.id"
-                @click="removeSingleRole(role.id)"
-              >
-                {{ $t('common.delete') }}
-              </a-button>
-            </div>
           </div>
-        </div>
-      </a-spin>
-    </BasicModal>
-
-    <BasicDrawer v-model:open="drawerOpen" :title="$t('user.detail')" :destroy-on-close="false">
-      <a-descriptions v-if="selectedUser" bordered :column="1">
-        <a-descriptions-item :label="$t('user.username')">{{
-          selectedUser.username
-        }}</a-descriptions-item>
-        <a-descriptions-item :label="$t('user.fullName')">{{
-          selectedUser.fullName
-        }}</a-descriptions-item>
-        <a-descriptions-item :label="$t('user.email')">{{
-          selectedUser.email
-        }}</a-descriptions-item>
-        <a-descriptions-item :label="$t('user.phone')">{{
-          selectedUser.phone || '-'
-        }}</a-descriptions-item>
-        <a-descriptions-item :label="$t('user.status')">
-          {{ selectedUser.status === 1 ? $t('common.active') : $t('common.inactive') }}
-        </a-descriptions-item>
-      </a-descriptions>
-      <template #footer><span /></template>
-    </BasicDrawer>
-  </section>
+        </form>
+      </div>
+      <a-alert v-if="error" :message="error" type="error" show-icon
+        ><template #action
+          ><a-button size="small" :loading="loading" @click="loadUsers">{{
+            $t('common.reload')
+          }}</a-button></template
+        ></a-alert
+      >
+      <FittedListTable
+        class="user-list"
+        :columns="columns"
+        :rows="users"
+        :loading="loading"
+        :error="error"
+        :page="page"
+        :page-size="pageSize"
+        :total="total"
+        :reset-key="revision"
+        :list-title="$t('user.listTitle')"
+        total-label=""
+        :range-label="rangeLabel"
+        :row-height="72"
+        :min-body-height="mobile ? 180 : 140"
+        preserve-action-columns
+        @reload="loadUsers"
+        @page-change="changePage"
+      >
+        <template #bodyCell="{ column, record, index }">
+          <span v-if="column.key === 'index'">{{ formatOrdinal(index, page, pageSize) }}</span>
+          <a-tag
+            v-else-if="column.key === 'status'"
+            :color="record.status === 1 ? 'success' : 'default'"
+            class="user-status"
+            ><span class="status-dot" />{{
+              record.status === 1 ? $t('common.active') : $t('common.inactive')
+            }}</a-tag
+          >
+          <span
+            v-else-if="column.key === 'createdAt' || column.key === 'updatedAt'"
+            class="user-date"
+            >{{ formatDateTime(record[column.key]) || '—' }}</span
+          >
+          <div v-else-if="column.key === 'actions'" class="user-page__actions">
+            <a-tooltip
+              :title="$t('common.detail')"
+              :get-popup-container="tooltipContainer"
+              :overlay-class-name="mobile ? 'user-page-tooltip-mobile' : undefined"
+              :auto-adjust-overflow="tooltipOverflow"
+              ><a-button
+                class="user-action"
+                :aria-label="$t('common.detail')"
+                :loading="detailLoading === record.id"
+                @click="openDetail(record, $event)"
+                ><template #icon><EyeOutlined aria-hidden="true" /></template></a-button
+            ></a-tooltip>
+            <a-tooltip
+              v-if="can(PERMISSIONS.USER_UPDATE)"
+              :title="$t('common.edit')"
+              :get-popup-container="tooltipContainer"
+              :overlay-class-name="mobile ? 'user-page-tooltip-mobile' : undefined"
+              :auto-adjust-overflow="tooltipOverflow"
+              ><a-button
+                class="user-action"
+                :aria-label="$t('common.edit')"
+                @click="openForm(record)"
+                ><template #icon><EditOutlined aria-hidden="true" /></template></a-button
+            ></a-tooltip>
+            <a-tooltip
+              v-if="canCatalog('USER_WAREHOUSE_VIEW')"
+              :title="$t('catalog.assignedWarehouses')"
+              :get-popup-container="tooltipContainer"
+              :overlay-class-name="mobile ? 'user-page-tooltip-mobile' : undefined"
+              :auto-adjust-overflow="tooltipOverflow"
+              ><a-button
+                class="user-action"
+                :aria-label="$t('catalog.assignedWarehouses')"
+                @click="openWarehouses(record)"
+                ><template #icon><HomeOutlined aria-hidden="true" /></template></a-button
+            ></a-tooltip>
+            <a-tooltip
+              v-if="canAssignRoles"
+              :title="$t('user.assignRole')"
+              :get-popup-container="tooltipContainer"
+              :overlay-class-name="mobile ? 'user-page-tooltip-mobile' : undefined"
+              :auto-adjust-overflow="tooltipOverflow"
+              ><a-button
+                class="user-action"
+                :aria-label="$t('user.assignRole')"
+                @click="openRoles(record)"
+                ><template #icon
+                  ><SafetyCertificateOutlined aria-hidden="true" /></template></a-button
+            ></a-tooltip>
+            <a-tooltip
+              v-if="can(PERMISSIONS.USER_DELETE)"
+              :title="$t('common.delete')"
+              :get-popup-container="tooltipContainer"
+              :overlay-class-name="mobile ? 'user-page-tooltip-mobile' : undefined"
+              :auto-adjust-overflow="tooltipOverflow"
+              ><a-button
+                class="user-action user-action--danger"
+                danger
+                :aria-label="$t('common.delete')"
+                @click="confirmDelete(record)"
+                ><template #icon><DeleteOutlined aria-hidden="true" /></template></a-button
+            ></a-tooltip>
+          </div>
+          <a-tooltip
+            v-else
+            :title="optionalText(record[column.key])"
+            :get-popup-container="tooltipContainer"
+            :overlay-class-name="mobile ? 'user-page-tooltip-mobile' : undefined"
+            :auto-adjust-overflow="tooltipOverflow"
+            :overlay-style="{ maxWidth: 'min(250px, 100%)' }"
+            ><span class="user-cell">{{ optionalText(record[column.key]) }}</span></a-tooltip
+          >
+        </template>
+      </FittedListTable>
+      <UserFormModal v-model:open="formOpen" :user="editingUser" @saved="loadUsers" />
+      <UserWarehousesDrawer v-model:open="warehouseOpen" :user="warehouseUser" />
+      <UserRolesDrawer v-model:open="rolesOpen" :user="rolesUser" @saved="loadUsers" />
+      <UserDetailDrawer
+        v-model:open="detailOpen"
+        :user="selectedUser"
+        :return-focus="detailTrigger"
+      />
+    </section>
+  </a-config-provider>
 </template>
 
 <style scoped>
+/* A cell may be partly outside the data scroller while its tooltip is open.
+   Keep the portaled mobile tooltip inside the viewport, independent of that anchor. */
+:global(.user-page-tooltip-mobile) {
+  inset-inline-start: 50% !important;
+  translate: -50% 0;
+}
+.user-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+  min-height: 0;
+  color: #252044;
+}
 .user-page__heading {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  align-items: center;
+  gap: 16px;
 }
-
-.user-page__error {
-  margin-bottom: 16px;
+.user-page__heading > div {
+  min-width: 0;
 }
-
 .user-page__heading h1 {
   margin: 0;
+  font-size: 26px;
+  font-weight: 750;
+  color: #17143d;
 }
-
+.user-page__heading p {
+  margin: 3px 0 0;
+  color: #77708d;
+}
+.user-add {
+  flex-shrink: 0;
+  height: 32px;
+}
+.mobile-title {
+  display: none;
+}
+.user-page__filter-panel {
+  border: 1px solid #eeeaf6;
+  border-radius: 12px;
+  background: #fff;
+}
 .user-page__filters {
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) 180px auto auto;
-  gap: 12px;
-  max-width: 900px;
-  margin-bottom: 20px;
+  grid-template-columns: minmax(180px, 1.8fr) minmax(160px, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+  padding: 18px;
 }
-
-.user-page__actions {
-  display: flex;
-  gap: 4px;
-}
-
-@media (max-width: 720px) {
-  .user-page__filters {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.user-role-modal__meta {
+.user-filter {
   display: grid;
   gap: 8px;
-  margin-bottom: 16px;
+  min-width: 0;
 }
-
-.user-role-modal__section {
-  margin-top: 16px;
-}
-
-.user-role-modal__title {
+.user-filter > label {
+  font-size: 13px;
   font-weight: 600;
-  margin-bottom: 12px;
 }
-
-.user-role-modal__group {
+.user-filter :deep(.ant-select),
+.user-filter :deep(.ant-input-affix-wrapper) {
   width: 100%;
+  height: 36px;
 }
-
-.user-role-modal__code {
-  color: rgba(0, 0, 0, 0.45);
+.user-filter :deep(.ant-select) {
+  display: block;
 }
-
-.user-role-modal__selected-list {
-  display: grid;
-  gap: 8px;
+.user-filter :deep(.ant-select-selector) {
+  height: 100%;
+  align-items: center;
 }
-
-.user-role-modal__selected-item {
+.user-filter :deep(.ant-select-selection-item),
+.user-filter :deep(.ant-select-selection-placeholder) {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 10px;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
+  line-height: normal;
+}
+.user-filter :deep(.ant-input-prefix) {
+  color: #928aa8;
+  margin-inline-end: 10px;
+}
+.user-filter-actions {
+  display: flex;
+  gap: 10px;
+}
+.user-filter-actions button {
+  height: 36px;
+}
+.user-page__filter-toggle {
+  width: 100%;
+  min-height: 44px;
+  border-color: #a38be8;
+  color: #7357cf;
+}
+.filter-chevron {
+  position: absolute;
+  inset-inline-end: 12px;
+  top: 15px;
+  font-size: 12px;
+}
+.user-cell {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  max-height: 40px;
+}
+.user-date {
+  display: block;
+  max-width: 120px;
+  font-variant-numeric: tabular-nums;
+}
+.user-status {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.user-page__actions {
+  display: flex;
+  gap: 6px;
+}
+.user-action {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #f1ecfc;
+  border-radius: 9px;
+  color: #7357cf;
+  background: #f7f4ff;
+  box-shadow: none;
+}
+.user-action--danger {
+  color: #f03662;
+  border-color: #fff0f3;
+  background: #fff5f7;
+}
+.user-action:focus-visible {
+  outline: 2px solid #7357cf;
+  outline-offset: 2px;
+}
+.user-list :deep(.products-toolbar h2) {
+  font-size: 17px;
+  font-weight: 700;
+  color: #17143d;
+}
+.user-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+.user-list :deep(.ant-table-thead > tr > th) {
+  color: #252044;
+  background: #f5f1ff;
+}
+@media (max-width: 1100px) and (min-width: 768px) {
+  .user-page__filters {
+    grid-template-columns: minmax(180px, 1fr) minmax(150px, 1fr);
+  }
+  .user-filter-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+@media (max-width: 767px) {
+  .user-page {
+    gap: 12px;
+  }
+  .user-page__heading {
+    gap: 8px;
+  }
+  .user-page__heading h1 {
+    font-size: 21px;
+  }
+  .user-page__heading p,
+  .desktop-title {
+    display: none;
+  }
+  .mobile-title {
+    display: inline;
+  }
+  .user-page__filters {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 14px 12px;
+    gap: 14px;
+  }
+  .user-filter-actions {
+    flex-direction: row-reverse;
+  }
+  .user-filter-actions button {
+    flex: 1;
+    height: 44px;
+  }
+  .user-add {
+    height: 44px;
+  }
+  .user-list :deep(.products-toolbar) {
+    display: none;
+  }
+  .user-list {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  .user-list :deep(.products-footer) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .user-list :deep(.list-range) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .user-list :deep(.list-pagination-controls) {
+    min-width: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .user-list :deep(.list-page-size) {
+    flex: 0 1 112px;
+    max-width: 100%;
+  }
+  .user-action {
+    width: 40px;
+    height: 44px;
+  }
+  .user-page__actions {
+    gap: 4px;
+  }
 }
 </style>

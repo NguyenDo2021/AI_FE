@@ -1,8 +1,14 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed, ref, watch, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Modal, message } from 'ant-design-vue'
-import { BasicDrawer } from '@/components'
+import UserAssignmentDrawer from './UserAssignmentDrawer.vue'
+import {
+  HomeOutlined,
+  ReloadOutlined,
+  LinkOutlined,
+  DisconnectOutlined,
+} from '@ant-design/icons-vue'
 import {
   getAssignedWarehouses,
   getMyWarehouses,
@@ -32,6 +38,7 @@ const unassigned = computed(() =>
   available.value.filter((item) => !assigned.value.some((existing) => existing.id === item.id)),
 )
 let version = 0
+let session = 0
 const load = async (): Promise<void> => {
   const id = props.user?.id
   const requestVersion = ++version
@@ -41,8 +48,6 @@ const load = async (): Promise<void> => {
   }
   loading.value = true
   error.value = ''
-  assigned.value = []
-  available.value = []
   try {
     const [current, options] = await Promise.all([getAssignedWarehouses(id), getMyWarehouses()])
     if (requestVersion !== version) return
@@ -60,6 +65,7 @@ const mutate = async (warehouse: Warehouse, remove: boolean): Promise<void> => {
   if (!remove && warehouse.status === 0) return
   if (remove && !assigned.value.some((item) => item.id === warehouse.id)) return
   const currentVersion = version
+  const currentSession = session
   busy.value = warehouse.id
   error.value = ''
   try {
@@ -74,13 +80,10 @@ const mutate = async (warehouse: Warehouse, remove: boolean): Promise<void> => {
   } catch (cause) {
     if (currentVersion !== version) return
     const text = catalogError(cause, t)
-    await Promise.all([
-      load(),
-      auth.user ? scope.load(auth.user.id).catch(() => undefined) : Promise.resolve(),
-    ])
-    error.value = text
+    if (auth.user) await scope.load(auth.user.id).catch(() => undefined)
+    if (currentSession === session) error.value = text
   } finally {
-    if (props.user?.id === id) busy.value = undefined
+    if (currentSession === session) busy.value = undefined
   }
 }
 const confirmRemove = (warehouse: Warehouse): void => {
@@ -94,6 +97,7 @@ const confirmRemove = (warehouse: Warehouse): void => {
 watch(
   [() => props.open, () => props.user?.id],
   () => {
+    ++session
     ++version
     busy.value = undefined
     assigned.value = []
@@ -105,7 +109,10 @@ watch(
 )
 watch(canView, (allowed) => {
   if (!allowed) {
+    ++session
     ++version
+    busy.value = undefined
+    loading.value = false
     assigned.value = []
     available.value = []
     error.value = t('catalog.forbidden')
@@ -116,32 +123,40 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
-  <BasicDrawer
+  <UserAssignmentDrawer
     :open="open"
-    :title="`${$t('catalog.assignedWarehouses')} — ${user?.fullName ?? user?.username ?? ''}`"
-    width="700px"
-    :confirm-loading="!!busy"
+    :user="user"
+    kind="warehouse"
+    :title="$t('catalog.assignedWarehouses')"
+    :description="$t('user.warehouseDescription')"
+    :note="$t('user.warehouseNote')"
+    :busy="!!busy"
     @update:open="emit('update:open', $event)"
   >
-    <a-alert
-      v-if="!auth.isCatalogAdmin"
-      type="info"
-      show-icon
-      :message="$t('catalog.partialScope')"
-    />
+    <a-alert v-if="!canView" type="warning" show-icon :message="$t('catalog.forbidden')" />
     <a-alert v-if="error" type="error" show-icon :message="error" />
-    <a-button :disabled="!!busy" :loading="loading" @click="load">{{
-      $t('common.reload')
-    }}</a-button>
+    <div class="warehouse-toolbar">
+      <a-button :disabled="!!busy || !canView" :loading="loading" @click="load"
+        ><template #icon><ReloadOutlined aria-hidden="true" /></template
+        >{{ $t('common.reload') }}</a-button
+      >
+    </div>
     <a-spin :spinning="loading">
-      <h3>{{ $t('catalog.assignedWarehouses') }}</h3>
-      <a-empty v-if="!assigned.length" :description="$t('catalog.emptyAssigned')" />
-      <div v-for="warehouse in assigned" :key="warehouse.id" class="warehouse-row">
-        <div>
-          <strong>{{ warehouse.code }}</strong> — {{ warehouse.name }}
-          <a-tag :color="warehouse.status === 1 ? 'green' : 'default'">{{
-            $t(warehouse.status === 1 ? 'common.active' : 'common.inactive')
-          }}</a-tag>
+      <h3 class="assignment-section-title">
+        {{ $t('catalog.assignedWarehouses') }}
+        <span class="assignment-count">{{ assigned.length }}</span>
+      </h3>
+      <a-empty v-if="!loading && !assigned.length" :description="$t('catalog.emptyAssigned')" />
+      <div v-for="warehouse in assigned" :key="warehouse.id" class="assignment-card">
+        <span class="assignment-card-icon"><HomeOutlined aria-hidden="true" /></span>
+        <div class="assignment-card-copy">
+          <strong>{{ warehouse.code || '—' }}</strong
+          ><span>{{ warehouse.name || '—' }}</span
+          ><a-tag
+            v-if="warehouse.status !== undefined && warehouse.status !== null"
+            :color="warehouse.status === 1 ? 'success' : 'default'"
+            >{{ $t(warehouse.status === 1 ? 'common.active' : 'common.inactive') }}</a-tag
+          >
         </div>
         <a-button
           v-if="canAssign"
@@ -149,43 +164,59 @@ onBeforeUnmount(() => {
           :loading="busy === warehouse.id"
           :disabled="!!busy || loading"
           @click="confirmRemove(warehouse)"
+          ><template #icon><DisconnectOutlined aria-hidden="true" /></template
           >{{ $t('catalog.unassign') }}</a-button
         >
       </div>
-      <h3>{{ $t('catalog.assignableWarehouses') }}</h3>
-      <a-empty v-if="!unassigned.length" :description="$t('common.noData')" />
-      <div v-for="warehouse in unassigned" :key="warehouse.id" class="warehouse-row">
-        <div>
-          <strong>{{ warehouse.code }}</strong> — {{ warehouse.name }}
-          <a-tag v-if="warehouse.status === 0">{{ $t('common.inactive') }}</a-tag>
+      <h3 class="assignment-section-title">
+        {{ $t('catalog.assignableWarehouses') }}
+        <span class="assignment-count">{{ unassigned.length }}</span>
+      </h3>
+      <a-empty v-if="!loading && !unassigned.length" :description="$t('common.noData')" />
+      <div v-for="warehouse in unassigned" :key="warehouse.id" class="assignment-card">
+        <span class="assignment-card-icon"><HomeOutlined aria-hidden="true" /></span>
+        <div class="assignment-card-copy">
+          <strong>{{ warehouse.code || '—' }}</strong
+          ><span>{{ warehouse.name || '—' }}</span
+          ><a-tag
+            v-if="warehouse.status !== undefined && warehouse.status !== null"
+            :color="warehouse.status === 1 ? 'success' : 'default'"
+            >{{ $t(warehouse.status === 1 ? 'common.active' : 'common.inactive') }}</a-tag
+          >
         </div>
         <a-button
           v-if="canAssign"
+          type="primary"
           :loading="busy === warehouse.id"
           :disabled="warehouse.status === 0 || !!busy || loading"
           @click="mutate(warehouse, false)"
+          ><template #icon><LinkOutlined aria-hidden="true" /></template
           >{{ $t('catalog.assign') }}</a-button
         >
       </div>
     </a-spin>
     <template #footer="{ close }"
-      ><a-button :disabled="!!busy" @click="close">{{ $t('common.cancel') }}</a-button></template
+      ><a-button :disabled="!!busy" @click="close">{{ $t('user.close') }}</a-button></template
     >
-  </BasicDrawer>
+  </UserAssignmentDrawer>
 </template>
 <style scoped>
 .ant-alert {
   margin-bottom: 16px;
 }
-h3 {
-  margin-top: 24px;
-}
-.warehouse-row {
+.warehouse-toolbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+.warehouse-toolbar button {
+  height: 32px;
+  color: #7357cf;
+  border-color: #d4c7f6;
+}
+@media (max-width: 599px) {
+  .warehouse-toolbar button {
+    height: 44px;
+  }
 }
 </style>

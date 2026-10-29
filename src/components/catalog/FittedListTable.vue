@@ -21,6 +21,7 @@ const props = defineProps<{
   bodyMaxHeight?: number
   flow?: boolean
   rowKey?: string | ((record: T) => string)
+  preserveActionColumns?: boolean
 }>()
 const emit = defineEmits<{
   pageChange: [page: number, size: number]
@@ -43,7 +44,7 @@ const panelMinHeight = ref<number>()
 const compact = computed(() => width.value < 600)
 const sizedColumns = computed<TableColumnsType<T>>(() =>
   props.columns.map((column) =>
-    column.key === 'actions'
+    column.key === 'actions' && !props.preserveActionColumns
       ? { ...column, width: compact.value ? 84 : column.width, fixed: 'right' }
       : column,
   ),
