@@ -1,312 +1,178 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { message, Modal } from 'ant-design-vue'
-import type { TableColumnsType } from 'ant-design-vue'
-import { createRole, deleteRole, getRole, getRoles, updateRole } from '@/api/role/role.api'
+import { message, Modal, type TableColumnsType } from 'ant-design-vue'
 import {
-  getPermissions,
-  getRolePermissions,
-  updateRolePermissions,
-} from '@/api/permission/permission.api'
+  PlusOutlined,
+  SearchOutlined,
+  FilterOutlined,
+  UpOutlined,
+  DownOutlined,
+  EyeOutlined,
+  EditOutlined,
+  SafetyCertificateOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons-vue'
+import { deleteRole, getRole, getRoles } from '@/api/role/role.api'
+import FittedListTable from '@/components/catalog/FittedListTable.vue'
+import RoleFormModal from '@/components/system/role/RoleFormModal.vue'
+import RoleDetailDrawer from '@/components/system/role/RoleDetailDrawer.vue'
+import RolePermissionsModal from '@/components/system/role/RolePermissionsModal.vue'
 import { PERMISSIONS } from '@/constants/permissions'
-import { BasicForm, BasicModal, BasicTable, BasicDrawer, type FormSchema } from '@/components'
-import type { PageData } from '@/types/api'
-import type { Permission } from '@/types/permission'
-import type { Role, RoleSearchParams, UpdateRoleRequest } from '@/types/role'
+import type { Role } from '@/types/role'
 import { formatDateTime, formatOrdinal } from '@/utils'
 import { hasPermission } from '@/utils/permission'
 import { useAuthStore } from '@/stores/auth'
-import { type NormalizedApiError } from '@/utils/request'
-import { validationRules } from '@/utils/validate'
-import type { Rule } from 'ant-design-vue/es/form'
+import type { NormalizedApiError } from '@/utils/request'
 
 const { t } = useI18n()
-const authStore = useAuthStore()
+const auth = useAuthStore()
+const mobile = useMediaQuery('(max-width: 767px)')
+const filtersOpen = ref(false)
+const filters = reactive({ keyword: '', status: undefined as number | undefined })
+const applied = reactive({ keyword: '', status: undefined as number | undefined })
 const roles = ref<Role[]>([])
 const loading = ref(false)
-const saving = ref(false)
 const recordLoading = ref(false)
-const errorMessage = ref('')
+const loadingRecordId = ref<string>()
+const error = ref('')
 const modalOpen = ref(false)
 const drawerOpen = ref(false)
-const permissionModalOpen = ref(false)
-const editingRoleId = ref<string | null>(null)
+const permissionOpen = ref(false)
+const activeTooltip = ref('')
+const overlayOpen = computed(() => modalOpen.value || drawerOpen.value || permissionOpen.value)
+const changeTooltip = (key: string, open: boolean): void => {
+  if (open && !overlayOpen.value) activeTooltip.value = key
+  else if (activeTooltip.value === key) activeTooltip.value = ''
+}
+const editingRole = ref<Role | null>(null)
 const selectedRole = ref<Role | null>(null)
 const permissionRole = ref<Role | null>(null)
-const permissionOptions = ref<Permission[]>([])
-const selectedPermissionIds = ref<string[]>([])
-const loadingPermissions = ref(false)
-const savingPermissions = ref(false)
-const formRef = ref<InstanceType<typeof BasicForm>>()
+const detailTrigger = ref<HTMLElement | null>(null)
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
-const PERMISSION_PAGE_SIZE_LIMIT = 100
-const filters = reactive({ keyword: '', status: undefined as number | undefined })
-const form = ref<Record<string, unknown>>({})
-let latestListRequest = 0
-
-const requiredTextRule = (maxLength: number): Rule => ({
-  validator: (_rule, value) => {
-    if (typeof value !== 'string' || !value.trim()) {
-      return Promise.reject(new Error(t('role.required')))
-    }
-    if (value.trim().length > maxLength) {
-      return Promise.reject(new Error(t('role.maxLength', { count: maxLength })))
-    }
-    return Promise.resolve()
-  },
-  trigger: 'blur',
-})
-
-const formRules = computed(() => ({
-  name: [requiredTextRule(100)],
-  code: [
-    requiredTextRule(50),
-    {
-      pattern: /^\s*[A-Za-z][A-Za-z0-9_]*\s*$/,
-      message: t('role.invalidCode'),
-      trigger: 'blur',
-    },
-  ],
-  description: [validationRules.max(500, t('role.descriptionMaxLength'))],
-  status: [validationRules.required(t('role.required'))],
-}))
-
-const formSchema = computed<FormSchema[]>(() => [
-  { name: 'name', label: t('role.name'), rules: formRules.value.name },
-  { name: 'code', label: t('role.code'), rules: formRules.value.code },
-  { name: 'description', label: t('role.description'), rules: formRules.value.description },
-  {
-    name: 'status',
-    label: t('role.status'),
-    type: 'select',
-    options: [
-      { label: t('common.active'), value: 1 },
-      { label: t('common.inactive'), value: 0 },
-    ],
-    rules: formRules.value.status,
-  },
-])
-
+const revision = ref(0)
+let listVersion = 0
+let recordVersion = 0
+const can = (permission: string): boolean => hasPermission(permission, auth.user?.permissions ?? [])
 const columns = computed<TableColumnsType<Role>>(() => [
+  { title: 'STT', key: 'index', width: 64 },
+  { title: t('role.name'), dataIndex: 'name', key: 'name', width: 190 },
+  { title: t('role.code'), dataIndex: 'code', key: 'code', width: 165 },
+  { title: t('role.description'), dataIndex: 'description', key: 'description', width: 230 },
+  { title: t('role.status'), dataIndex: 'status', key: 'status', width: 160 },
+  { title: t('role.createdAt'), dataIndex: 'createdAt', key: 'createdAt', width: 175 },
+  { title: t('role.updatedAt'), dataIndex: 'updatedAt', key: 'updatedAt', width: 175 },
   {
-    title: 'STT',
-    key: 'index',
-    width: 72,
-    customRender: ({ index }) => formatOrdinal(index, page.value, pageSize.value),
+    title: t('common.actions'),
+    key: 'actions',
+    fixed: mobile.value ? undefined : 'right',
+    width: mobile.value ? 210 : 180,
   },
-  { title: t('role.name'), dataIndex: 'name', key: 'name' },
-  { title: t('role.code'), dataIndex: 'code', key: 'code' },
-  { title: t('role.description'), dataIndex: 'description', key: 'description' },
-  { title: t('role.status'), dataIndex: 'status', key: 'status' },
-  { title: t('role.createdAt'), dataIndex: 'createdAt', key: 'createdAt' },
-  { title: t('role.updatedAt'), dataIndex: 'updatedAt', key: 'updatedAt' },
-  { title: t('common.actions'), key: 'actions', fixed: 'right', width: 220 },
 ])
-
-const pagination = computed(() => ({
-  current: page.value,
-  pageSize: pageSize.value,
-  total: total.value,
-  showSizeChanger: true,
-  showTotal: (count: number) => `${count}`,
-}))
-
-const selectedPermissions = computed(() =>
-  permissionOptions.value.filter((permission) =>
-    selectedPermissionIds.value.includes(permission.id),
-  ),
+const rangeLabel = computed(() =>
+  t('role.range', {
+    from: roles.value.length ? (page.value - 1) * pageSize.value + 1 : 0,
+    to: roles.value.length
+      ? Math.min((page.value - 1) * pageSize.value + roles.value.length, total.value)
+      : 0,
+    total: total.value,
+  }),
 )
-
-const apiErrorMessage = (error: unknown, fallback = t('errors.unknown')): string => {
-  if (!(error instanceof Error)) return fallback
-  const apiError = error as NormalizedApiError
-  if (apiError.status === 403) return t('role.actionForbidden')
-  return apiError.message || fallback
+const optionalText = (value: unknown): string =>
+  value == null || value === '' ? '—' : String(value)
+const tooltipContainer = (): HTMLElement => document.documentElement
+const tooltipOverflow = { adjustX: 1, adjustY: 1, alwaysByViewport: true }
+const apiErrorMessage = (cause: unknown): string => {
+  if (!(cause instanceof Error)) return t('errors.unknown')
+  return (cause as NormalizedApiError).status === 403
+    ? t('role.actionForbidden')
+    : cause.message || t('errors.unknown')
 }
-
 const loadRoles = async (): Promise<void> => {
-  const requestId = ++latestListRequest
+  const current = ++listVersion
   loading.value = true
   try {
-    const response: PageData<Role> = await getRoles({
+    const response = await getRoles({
       page: page.value,
       pageSize: pageSize.value,
-      keyword: filters.keyword || undefined,
-      status: filters.status,
-    } satisfies RoleSearchParams)
-    if (requestId !== latestListRequest) return
+      keyword: applied.keyword || undefined,
+      status: applied.status,
+    })
+    if (current !== listVersion) return
     roles.value = response.items
     total.value = response.total
-    errorMessage.value = ''
-  } catch (error) {
-    if (requestId === latestListRequest) errorMessage.value = apiErrorMessage(error)
+    error.value = ''
+  } catch (cause) {
+    if (current === listVersion) error.value = apiErrorMessage(cause)
   } finally {
-    if (requestId === latestListRequest) loading.value = false
+    if (current === listVersion) loading.value = false
   }
 }
-
 const search = (): void => {
+  Object.assign(applied, filters)
   page.value = 1
+  revision.value++
   void loadRoles()
 }
-
 const resetFilters = (): void => {
-  filters.keyword = ''
-  filters.status = undefined
-  page.value = 1
+  Object.assign(filters, { keyword: '', status: undefined })
+  search()
+}
+const changePage = (nextPage: number, size: number): void => {
+  if (![10, 20, 50, 100].includes(size)) return
+  const next = size === pageSize.value ? nextPage : 1
+  if (next === page.value && size === pageSize.value) return
+  page.value = next
+  pageSize.value = size
   void loadRoles()
 }
-
-const changePage = (nextPage: number, nextPageSize: number): void => {
-  page.value = nextPage
-  pageSize.value = nextPageSize
-  void loadRoles()
-}
-
 const openCreate = (): void => {
-  editingRoleId.value = null
-  form.value = { status: 1 }
+  if (recordLoading.value) return
+  activeTooltip.value = ''
+  editingRole.value = null
   modalOpen.value = true
 }
-
-const openEdit = async (role: Role): Promise<void> => {
+const openRecord = async (
+  role: Role,
+  mode: 'edit' | 'detail',
+  event: MouseEvent,
+): Promise<void> => {
   if (recordLoading.value) return
+  const current = ++recordVersion
+  const trigger = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
   recordLoading.value = true
+  loadingRecordId.value = role.id
   try {
-    const currentRole = await getRole(role.id)
-    editingRoleId.value = currentRole.id
-    form.value = {
-      name: currentRole.name,
-      code: currentRole.code,
-      description: currentRole.description ?? '',
-      status: currentRole.status,
+    const response = await getRole(role.id)
+    if (current !== recordVersion) return
+    activeTooltip.value = ''
+    if (mode === 'edit') {
+      editingRole.value = response
+      modalOpen.value = true
+    } else {
+      selectedRole.value = response
+      detailTrigger.value = trigger
+      drawerOpen.value = true
     }
-    errorMessage.value = ''
-    modalOpen.value = true
-  } catch (error) {
-    errorMessage.value = apiErrorMessage(error)
+    error.value = ''
+  } catch (cause) {
+    if (current === recordVersion) error.value = apiErrorMessage(cause)
   } finally {
-    recordLoading.value = false
-  }
-}
-
-const openDetail = async (role: Role): Promise<void> => {
-  if (recordLoading.value) return
-  recordLoading.value = true
-  try {
-    selectedRole.value = await getRole(role.id)
-    errorMessage.value = ''
-    drawerOpen.value = true
-  } catch (error) {
-    errorMessage.value = apiErrorMessage(error)
-  } finally {
-    recordLoading.value = false
-  }
-}
-
-const loadAllPermissionsForAssignment = async (): Promise<Permission[]> => {
-  const allPermissions: Permission[] = []
-  let currentPage = 1
-
-  while (true) {
-    const response = await getPermissions({
-      page: currentPage,
-      pageSize: PERMISSION_PAGE_SIZE_LIMIT,
-    })
-
-    allPermissions.push(...response.items)
-
-    if (
-      allPermissions.length >= response.total ||
-      response.items.length < PERMISSION_PAGE_SIZE_LIMIT
-    ) {
-      break
+    if (current === recordVersion) {
+      recordLoading.value = false
+      loadingRecordId.value = undefined
     }
-
-    currentPage += 1
   }
-
-  return allPermissions
 }
-
-const openAssignPermissions = async (role: Role): Promise<void> => {
-  if (!hasPermission(PERMISSIONS.ROLE_UPDATE, useAuthStore().user?.permissions ?? [])) return
-
+const openPermissions = (role: Role): void => {
+  if (!can(PERMISSIONS.ROLE_UPDATE)) return
+  activeTooltip.value = ''
   permissionRole.value = role
-  permissionModalOpen.value = true
-  loadingPermissions.value = true
-  selectedPermissionIds.value = []
-  permissionOptions.value = []
-
-  try {
-    const [allPermissions, currentPermissions] = await Promise.all([
-      loadAllPermissionsForAssignment(),
-      getRolePermissions(role.id),
-    ])
-    permissionOptions.value = allPermissions
-    selectedPermissionIds.value = currentPermissions.map((permission) => permission.id)
-    errorMessage.value = ''
-  } catch (error) {
-    errorMessage.value = apiErrorMessage(error)
-    permissionModalOpen.value = false
-  } finally {
-    loadingPermissions.value = false
-  }
+  permissionOpen.value = true
 }
-
-const saveRolePermissions = async (): Promise<void> => {
-  if (!permissionRole.value || savingPermissions.value) return
-  if (!hasPermission(PERMISSIONS.ROLE_UPDATE, authStore.user?.permissions ?? [])) return
-
-  savingPermissions.value = true
-  try {
-    await updateRolePermissions(permissionRole.value.id, selectedPermissionIds.value)
-    message.success(t('role.assignPermissionSuccess'))
-    permissionModalOpen.value = false
-    errorMessage.value = ''
-    await loadRoles()
-  } catch (error) {
-    errorMessage.value = apiErrorMessage(error)
-  } finally {
-    savingPermissions.value = false
-  }
-}
-
-const toPayload = (value: Record<string, unknown>): UpdateRoleRequest => ({
-  name: String(value.name ?? '').trim(),
-  code: String(value.code ?? '').trim(),
-  description: typeof value.description === 'string' ? value.description.trim() : '',
-  status: typeof value.status === 'number' ? value.status : 1,
-})
-
-const saveRole = async (): Promise<void> => {
-  if (saving.value || !formRef.value) return
-  try {
-    await formRef.value.validate()
-  } catch {
-    return
-  }
-
-  saving.value = true
-  try {
-    const payload = toPayload(formRef.value.getValues())
-    if (editingRoleId.value) await updateRole(editingRoleId.value, payload)
-    else await createRole(payload)
-    message.success(t('role.saveSuccess'))
-    modalOpen.value = false
-    errorMessage.value = ''
-    await loadRoles()
-  } catch (error) {
-    const apiError = error as NormalizedApiError
-    errorMessage.value = apiError.status === 409 ? t('role.codeExists') : apiErrorMessage(error)
-  } finally {
-    saving.value = false
-  }
-}
-
 const confirmDelete = (role: Role): void => {
   Modal.confirm({
     title: t('role.deleteConfirm'),
@@ -317,273 +183,395 @@ const confirmDelete = (role: Role): void => {
       try {
         await deleteRole(role.id)
         message.success(t('role.deleteSuccess'))
-        errorMessage.value = ''
+        error.value = ''
         await loadRoles()
-      } catch (error) {
-        errorMessage.value = apiErrorMessage(error)
+      } catch (cause) {
+        error.value = apiErrorMessage(cause)
       }
     },
   })
 }
-
 onMounted(() => void loadRoles())
+onBeforeUnmount(() => {
+  ++listVersion
+  ++recordVersion
+})
 </script>
 
 <template>
-  <section>
-    <a-alert
-      v-if="errorMessage"
-      :message="errorMessage"
-      type="error"
-      show-icon
-      class="role-page__error"
-    />
-    <div class="role-page__heading">
-      <h1>{{ $t('role.management') }}</h1>
-      <a-button v-permission="PERMISSIONS.ROLE_CREATE" type="primary" @click="openCreate">
-        {{ $t('role.add') }}
-      </a-button>
-    </div>
-    <div class="role-page__filters">
-      <a-input
-        v-model:value="filters.keyword"
-        :placeholder="$t('role.keywordPlaceholder')"
-        allow-clear
-        @press-enter="search"
-      />
-      <a-select
-        v-model:value="filters.status"
-        allow-clear
-        :placeholder="$t('role.status')"
-        :options="[
-          { label: $t('common.active'), value: 1 },
-          { label: $t('common.inactive'), value: 0 },
-        ]"
-      />
-      <a-button type="primary" @click="search">{{ $t('common.search') }}</a-button>
-      <a-button @click="resetFilters">{{ $t('common.reset') }}</a-button>
-    </div>
-    <BasicTable
-      :columns="columns"
-      :data-source="roles"
-      :loading="loading"
-      :pagination="pagination"
-      :searchable="false"
-      @reload="loadRoles"
-      @page-change="changePage"
-    >
-      <template #bodyCell="{ column, record }">
-        <a-tag v-if="column.key === 'status'" :color="record.status === 1 ? 'green' : 'default'">
-          {{ record.status === 1 ? $t('common.active') : $t('common.inactive') }}
-        </a-tag>
-        <span v-else-if="column.key === 'createdAt'">{{ formatDateTime(record.createdAt) }}</span>
-        <span v-else-if="column.key === 'updatedAt'">{{ formatDateTime(record.updatedAt) }}</span>
-        <div v-else-if="column.key === 'actions'" class="role-page__actions">
-          <a-button type="link" size="small" :loading="recordLoading" @click="openDetail(record)">
-            {{ $t('common.detail') }}
-          </a-button>
-          <a-button
-            v-permission="PERMISSIONS.ROLE_UPDATE"
-            type="link"
-            size="small"
-            :loading="recordLoading"
-            @click="openEdit(record)"
-          >
-            {{ $t('common.edit') }}
-          </a-button>
-          <a-button
-            v-permission="PERMISSIONS.ROLE_UPDATE"
-            type="link"
-            size="small"
-            @click="openAssignPermissions(record)"
-          >
-            {{ $t('role.assignPermission') }}
-          </a-button>
-          <a-button
-            v-permission="PERMISSIONS.ROLE_DELETE"
-            type="link"
-            danger
-            size="small"
-            @click="confirmDelete(record)"
-          >
-            {{ $t('common.delete') }}
-          </a-button>
+  <a-config-provider
+    :theme="{ token: { colorPrimary: '#7357cf', borderRadius: 8, colorText: '#252044' } }"
+  >
+    <section class="role-page" @scroll.capture="activeTooltip = ''">
+      <div class="role-page__heading">
+        <div>
+          <h1>{{ $t('role.management') }}</h1>
+          <p>{{ $t('role.managementDescription') }}</p>
         </div>
-      </template>
-    </BasicTable>
-
-    <BasicModal
-      v-model:open="modalOpen"
-      :title="editingRoleId ? $t('role.edit') : $t('role.add')"
-      :confirm-loading="saving"
-      @confirm="saveRole"
-    >
-      <BasicForm
-        ref="formRef"
-        v-model="form"
-        :schema="formSchema"
-        :rules="formRules"
-        :loading="saving"
-        :label-col="7"
-        :wrapper-col="17"
-      />
-    </BasicModal>
-
-    <BasicModal
-      v-model:open="permissionModalOpen"
-      :title="$t('role.assignPermissionTitle')"
-      :confirm-loading="savingPermissions"
-      width="760px"
-      @confirm="saveRolePermissions"
-    >
-      <a-spin :spinning="loadingPermissions">
-        <div v-if="permissionRole" class="role-permission-modal__meta">
-          <div>
-            <strong>{{ $t('role.name') }}:</strong> {{ permissionRole.name }}
+        <a-button
+          v-if="can(PERMISSIONS.ROLE_CREATE)"
+          type="primary"
+          :disabled="recordLoading"
+          @click="openCreate"
+          ><template #icon><PlusOutlined aria-hidden="true" /></template
+          >{{ $t('role.add') }}</a-button
+        >
+      </div>
+      <div class="role-page__filter-panel">
+        <a-button
+          v-if="mobile"
+          class="role-page__filter-toggle"
+          :aria-expanded="filtersOpen"
+          aria-controls="role-filter-fields"
+          @click="filtersOpen = !filtersOpen"
+          ><FilterOutlined aria-hidden="true" />{{ $t('role.filters')
+          }}<UpOutlined v-if="filtersOpen" class="filter-chevron" aria-hidden="true" /><DownOutlined
+            v-else
+            class="filter-chevron"
+            aria-hidden="true"
+        /></a-button>
+        <form
+          v-show="!mobile || filtersOpen"
+          id="role-filter-fields"
+          class="role-page__filters"
+          @submit.prevent="search"
+        >
+          <div class="role-filter">
+            <label for="role-keyword">{{ $t('role.keyword') }}</label
+            ><a-input
+              id="role-keyword"
+              v-model:value="filters.keyword"
+              :placeholder="$t('role.keywordPlaceholder')"
+              allow-clear
+              ><template #prefix><SearchOutlined aria-hidden="true" /></template
+            ></a-input>
           </div>
-          <div>
-            <strong>{{ $t('role.code') }}:</strong> {{ permissionRole.code }}
+          <div class="role-filter">
+            <label for="role-status">{{ $t('role.status') }}</label
+            ><a-select
+              id="role-status"
+              v-model:value="filters.status"
+              allow-clear
+              :placeholder="$t('role.allStatuses')"
+              :options="[
+                { label: $t('common.active'), value: 1 },
+                { label: $t('common.inactive'), value: 0 },
+              ]"
+            />
           </div>
-        </div>
-
-        <div v-if="permissionRole?.code === 'ADMIN'" class="role-permission-modal__notice">
-          {{ $t('role.adminRestrictedNotice') }}
-        </div>
-
-        <div class="role-permission-modal__section">
-          <div class="role-permission-modal__title">{{ $t('role.rolePermissions') }}</div>
-          <a-checkbox-group
-            v-model:value="selectedPermissionIds"
-            class="role-permission-modal__group"
+          <div class="role-filter-actions">
+            <a-button type="primary" html-type="submit">{{ $t('common.search') }}</a-button
+            ><a-button @click="resetFilters">{{ $t('common.reset') }}</a-button>
+          </div>
+        </form>
+      </div>
+      <a-alert v-if="error" :message="error" type="error" show-icon />
+      <FittedListTable
+        :columns="columns"
+        :rows="roles"
+        :loading="loading"
+        :error="error"
+        :page="page"
+        :page-size="pageSize"
+        :total="total"
+        :reset-key="revision"
+        :list-title="$t('role.listTitle')"
+        total-label=""
+        :range-label="rangeLabel"
+        :row-height="58"
+        :min-body-height="mobile ? 180 : 140"
+        preserve-action-columns
+        @reload="loadRoles"
+        @page-change="changePage"
+      >
+        <template #bodyCell="{ column, record, index }">
+          <span v-if="column.key === 'index'">{{ formatOrdinal(index, page, pageSize) }}</span>
+          <template v-else-if="column.key === 'status'"
+            ><a-tag
+              v-if="record.status != null"
+              :color="record.status === 1 ? 'success' : 'default'"
+              >{{ $t(record.status === 1 ? 'common.active' : 'common.inactive') }}</a-tag
+            ><span v-else>—</span></template
           >
-            <a-row :gutter="[8, 8]">
-              <a-col v-for="permission in permissionOptions" :key="permission.id" :span="24">
-                <a-checkbox :value="permission.id" :disabled="permissionRole?.code === 'ADMIN'">
-                  {{ permission.name }}
-                  <span class="role-permission-modal__code">({{ permission.code }})</span>
-                </a-checkbox>
-              </a-col>
-            </a-row>
-          </a-checkbox-group>
-        </div>
-
-        <div v-if="selectedPermissions.length" class="role-permission-modal__section">
-          <div class="role-permission-modal__title">{{ $t('role.rolePermissions') }}</div>
-          <div class="role-permission-modal__selected-list">
-            <span
-              v-for="permission in selectedPermissions"
-              :key="permission.id"
-              class="role-permission-modal__selected-item"
-            >
-              {{ permission.name }} ({{ permission.code }})
-            </span>
+          <span
+            v-else-if="column.key === 'createdAt' || column.key === 'updatedAt'"
+            class="role-date"
+            >{{ formatDateTime(record[column.key]) || '—' }}</span
+          >
+          <div v-else-if="column.key === 'actions'" class="role-page__actions">
+            <a-tooltip
+              :open="!overlayOpen && activeTooltip === `detail-${record.id}`"
+              :title="$t('common.detail')"
+              :get-popup-container="tooltipContainer"
+              :auto-adjust-overflow="tooltipOverflow"
+              :overlay-class-name="
+                mobile ? 'role-page-tooltip role-tooltip-mobile' : 'role-page-tooltip'
+              "
+              @open-change="changeTooltip(`detail-${record.id}`, $event)"
+              ><a-button
+                class="role-action"
+                :aria-label="$t('common.detail')"
+                :loading="recordLoading && loadingRecordId === record.id"
+                :disabled="recordLoading"
+                @click="openRecord(record, 'detail', $event)"
+                ><template #icon><EyeOutlined aria-hidden="true" /></template></a-button
+            ></a-tooltip>
+            <a-tooltip
+              v-if="can(PERMISSIONS.ROLE_UPDATE)"
+              :open="!overlayOpen && activeTooltip === `edit-${record.id}`"
+              :title="$t('common.edit')"
+              :get-popup-container="tooltipContainer"
+              :auto-adjust-overflow="tooltipOverflow"
+              :overlay-class-name="
+                mobile ? 'role-page-tooltip role-tooltip-mobile' : 'role-page-tooltip'
+              "
+              @open-change="changeTooltip(`edit-${record.id}`, $event)"
+              ><a-button
+                class="role-action"
+                :aria-label="$t('common.edit')"
+                :loading="recordLoading && loadingRecordId === record.id"
+                :disabled="recordLoading"
+                @click="openRecord(record, 'edit', $event)"
+                ><template #icon><EditOutlined aria-hidden="true" /></template></a-button
+            ></a-tooltip>
+            <a-tooltip
+              v-if="can(PERMISSIONS.ROLE_UPDATE)"
+              :open="!overlayOpen && activeTooltip === `permissions-${record.id}`"
+              :title="$t('role.assignPermission')"
+              :get-popup-container="tooltipContainer"
+              :auto-adjust-overflow="tooltipOverflow"
+              :overlay-class-name="
+                mobile ? 'role-page-tooltip role-tooltip-mobile' : 'role-page-tooltip'
+              "
+              @open-change="changeTooltip(`permissions-${record.id}`, $event)"
+              ><a-button
+                class="role-action"
+                :aria-label="$t('role.assignPermission')"
+                @click="openPermissions(record)"
+                ><template #icon
+                  ><SafetyCertificateOutlined aria-hidden="true" /></template></a-button
+            ></a-tooltip>
+            <a-tooltip
+              v-if="can(PERMISSIONS.ROLE_DELETE)"
+              :open="!overlayOpen && activeTooltip === `delete-${record.id}`"
+              :title="$t('common.delete')"
+              :get-popup-container="tooltipContainer"
+              :auto-adjust-overflow="tooltipOverflow"
+              :overlay-class-name="
+                mobile ? 'role-page-tooltip role-tooltip-mobile' : 'role-page-tooltip'
+              "
+              @open-change="changeTooltip(`delete-${record.id}`, $event)"
+              ><a-button
+                class="role-action role-action--danger"
+                danger
+                :aria-label="$t('common.delete')"
+                @click="confirmDelete(record)"
+                ><template #icon><DeleteOutlined aria-hidden="true" /></template></a-button
+            ></a-tooltip>
           </div>
-        </div>
-      </a-spin>
-    </BasicModal>
-
-    <BasicDrawer v-model:open="drawerOpen" :title="$t('role.detail')" :destroy-on-close="false">
-      <a-descriptions v-if="selectedRole" bordered :column="1">
-        <a-descriptions-item :label="$t('role.name')">{{ selectedRole.name }}</a-descriptions-item>
-        <a-descriptions-item :label="$t('role.code')">{{ selectedRole.code }}</a-descriptions-item>
-        <a-descriptions-item :label="$t('role.description')">
-          {{ selectedRole.description || '-' }}
-        </a-descriptions-item>
-        <a-descriptions-item :label="$t('role.status')">
-          {{ selectedRole.status === 1 ? $t('common.active') : $t('common.inactive') }}
-        </a-descriptions-item>
-        <a-descriptions-item :label="$t('role.createdAt')">
-          {{ formatDateTime(selectedRole.createdAt) }}
-        </a-descriptions-item>
-        <a-descriptions-item :label="$t('role.updatedAt')">
-          {{ formatDateTime(selectedRole.updatedAt) }}
-        </a-descriptions-item>
-      </a-descriptions>
-      <template #footer><span /></template>
-    </BasicDrawer>
-  </section>
+          <a-tooltip
+            v-else
+            :open="!overlayOpen && activeTooltip === `${column.key}-${record.id}`"
+            :title="optionalText(record[column.key])"
+            :get-popup-container="tooltipContainer"
+            :auto-adjust-overflow="tooltipOverflow"
+            :overlay-class-name="
+              mobile ? 'role-page-tooltip role-tooltip-mobile' : 'role-page-tooltip'
+            "
+            :overlay-style="{ maxWidth: 'min(250px, 100%)' }"
+            @open-change="changeTooltip(`${column.key}-${record.id}`, $event)"
+            ><span class="role-cell">{{ optionalText(record[column.key]) }}</span></a-tooltip
+          >
+        </template>
+      </FittedListTable>
+      <RoleFormModal v-model:open="modalOpen" :role="editingRole" @saved="loadRoles" />
+      <RolePermissionsModal
+        v-model:open="permissionOpen"
+        :role="permissionRole"
+        @saved="loadRoles"
+      />
+      <RoleDetailDrawer
+        v-model:open="drawerOpen"
+        :role="selectedRole"
+        :return-focus="detailTrigger"
+      />
+    </section>
+  </a-config-provider>
 </template>
 
 <style scoped>
+:global(.role-page-tooltip) {
+  max-width: min(250px, calc(100vw - 24px));
+  pointer-events: none;
+}
+:global(.role-page-tooltip .ant-tooltip-inner) {
+  max-height: min(240px, 50dvh);
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+:global(.role-tooltip-mobile) {
+  inset-inline-start: 50% !important;
+  translate: -50% 0;
+}
+.role-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+  color: #252044;
+}
 .role-page__heading {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  align-items: center;
+  gap: 14px;
 }
-
+.role-page__heading > div {
+  min-width: 0;
+}
 .role-page__heading h1 {
   margin: 0;
+  font-size: 26px;
+  font-weight: 750;
+  color: #17143d;
 }
-
-.role-page__error {
-  margin-bottom: 16px;
+.role-page__heading p {
+  margin: 3px 0 0;
+  color: #77708d;
 }
-
+.role-page__heading > button {
+  flex-shrink: 0;
+}
+.role-page__filter-panel {
+  border: 1px solid #eeeaf6;
+  border-radius: 12px;
+  background: #fff;
+}
 .role-page__filters {
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) 180px auto auto;
-  gap: 12px;
-  max-width: 900px;
-  margin-bottom: 20px;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+  padding: 18px;
 }
-
-.role-page__actions {
-  display: flex;
-  gap: 4px;
+.role-filter {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
 }
-
-.role-permission-modal__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 16px;
-}
-
-.role-permission-modal__notice {
-  margin-bottom: 12px;
-  padding: 8px 12px;
-  color: #d48806;
-  background: #fffbe6;
-  border: 1px solid #ffe58f;
-  border-radius: 6px;
-}
-
-.role-permission-modal__section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.role-permission-modal__title {
+.role-filter label {
+  font-size: 13px;
   font-weight: 600;
 }
-
-.role-permission-modal__group {
+.role-filter :deep(.ant-select),
+.role-filter :deep(.ant-input-affix-wrapper) {
+  width: 100%;
+  height: 36px;
+}
+.role-filter :deep(.ant-select) {
   display: block;
 }
-
-.role-permission-modal__code {
-  color: #8c8c8c;
-}
-
-.role-permission-modal__selected-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.role-permission-modal__selected-item {
-  display: inline-flex;
+.role-filter :deep(.ant-select-selector) {
+  height: 100%;
   align-items: center;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: #f5f5f5;
 }
-
-@media (max-width: 720px) {
+.role-filter :deep(.ant-select-selection-item),
+.role-filter :deep(.ant-select-selection-placeholder) {
+  display: flex;
+  align-items: center;
+  line-height: normal;
+}
+.role-filter :deep(.ant-input-prefix) {
+  color: #928aa8;
+  margin-inline-end: 8px;
+}
+.role-filter-actions {
+  display: flex;
+  gap: 10px;
+}
+.role-filter-actions button {
+  height: 36px;
+}
+.role-page__filter-toggle {
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  color: #7357cf;
+}
+.filter-chevron {
+  position: absolute;
+  inset-inline-end: 12px;
+  top: 15px;
+  font-size: 12px;
+}
+.role-cell {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  max-height: 40px;
+}
+.role-date {
+  font-variant-numeric: tabular-nums;
+}
+.role-page__actions {
+  display: flex;
+  gap: 6px;
+}
+.role-action {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #f1ecfc;
+  border-radius: 9px;
+  color: #7357cf;
+  background: #f7f4ff;
+  box-shadow: none;
+}
+.role-action--danger {
+  color: #df4b5b;
+  background: #fff2f4;
+  border-color: #ffe5e9;
+}
+.role-action:focus-visible {
+  outline: 2px solid #7357cf;
+  outline-offset: 2px;
+}
+@media (max-width: 767px) {
+  .role-page {
+    gap: 12px;
+  }
+  .role-page__heading {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .role-page__heading h1 {
+    font-size: 20px;
+  }
+  .role-page__heading p {
+    font-size: 13px;
+  }
+  .role-page__heading > button {
+    height: 40px;
+  }
   .role-page__filters {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 14px 12px;
+  }
+  .role-filter-actions button {
+    flex: 1;
+    height: 44px;
+  }
+  .role-action {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
   }
 }
 </style>

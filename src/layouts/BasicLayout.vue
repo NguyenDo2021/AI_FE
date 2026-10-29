@@ -16,6 +16,7 @@ const { can } = usePermission()
     :class="{
       'admin-layout--products':
         route.name === 'system-user' ||
+        route.name === 'system-role' ||
         route.name === 'products' ||
         route.name === 'product-groups' ||
         route.name === 'warehouses' ||
@@ -37,6 +38,7 @@ const { can } = usePermission()
           'admin-layout__content--payments-report': route.name === 'reports-payments',
           'admin-layout__content--products':
             route.name === 'system-user' ||
+            route.name === 'system-role' ||
             route.name === 'products' ||
             route.name === 'product-groups' ||
             route.name === 'warehouses' ||
