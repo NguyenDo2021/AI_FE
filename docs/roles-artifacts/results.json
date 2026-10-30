@@ -1,0 +1,2257 @@
+{
+  "checks": [
+    "Initial list uses page 1 / 10 and eight independent columns",
+    "Draft filters do not affect reload or paging; Enter applies exactly once",
+    "Status and all page sizes use applied filters; stale list responses are ignored",
+    "Permission pagination, filtering and hidden assignments survive toggles and payload",
+    "Cancel drops drafts; save errors preserve drafts; ADMIN selection stays disabled",
+    "Both load failures block saving; retry restores editing",
+    "Late responses from a cancelled role cannot overwrite another role",
+    "Create/edit retain validation, payload conversion and API errors",
+    "Responsive list, form, permissions, detail and tooltips at all requested widths",
+    "Short screens and sidebar states keep controls reachable",
+    "Delete confirmation and view-only permissions retain access behavior"
+  ],
+  "measurements": [
+    {
+      "label": "list-320",
+      "viewport": 320,
+      "height": 900,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "form-320",
+      "viewport": 320,
+      "height": 900,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "panels": [
+        {
+          "left": 12,
+          "right": 308,
+          "top": 12,
+          "bottom": 619.5,
+          "width": 296
+        },
+        {
+          "left": 12,
+          "right": 308,
+          "top": 12,
+          "bottom": 619.5,
+          "width": 296
+        },
+        {
+          "left": 256,
+          "right": 300,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 292,
+          "top": 544.5,
+          "bottom": 603.5,
+          "width": 264
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 264,
+          "scroll": 264
+        }
+      ]
+    },
+    {
+      "label": "permissions-320",
+      "viewport": 320,
+      "height": 900,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "panels": [
+        {
+          "left": 12,
+          "right": 308,
+          "top": 12,
+          "bottom": 723.265625,
+          "width": 296
+        },
+        {
+          "left": 12,
+          "right": 308,
+          "top": 12,
+          "bottom": 723.265625,
+          "width": 296
+        },
+        {
+          "left": 256,
+          "right": 300,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 292,
+          "top": 648.265625,
+          "bottom": 707.265625,
+          "width": 264
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 264,
+          "scroll": 264
+        }
+      ]
+    },
+    {
+      "label": "permissions-filtered-320",
+      "viewport": 320,
+      "height": 900,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "panels": [
+        {
+          "left": 12,
+          "right": 308,
+          "top": 12,
+          "bottom": 443.265625,
+          "width": 296
+        },
+        {
+          "left": 12,
+          "right": 308,
+          "top": 12,
+          "bottom": 443.265625,
+          "width": 296
+        },
+        {
+          "left": 256,
+          "right": 300,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 292,
+          "top": 368.265625,
+          "bottom": 427.265625,
+          "width": 264
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 264,
+          "scroll": 264
+        }
+      ]
+    },
+    {
+      "label": "detail-320",
+      "viewport": 320,
+      "height": 900,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "panels": [
+        {
+          "left": 0,
+          "right": 320,
+          "top": 0,
+          "bottom": 900,
+          "width": 320
+        },
+        {
+          "left": 0,
+          "right": 320,
+          "top": 831,
+          "bottom": 900,
+          "width": 320
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 305,
+          "scroll": 305
+        }
+      ]
+    },
+    {
+      "label": "tooltip-320",
+      "viewport": 320,
+      "height": 900,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "list-375",
+      "viewport": 375,
+      "height": 900,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "form-375",
+      "viewport": 375,
+      "height": 900,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "panels": [
+        {
+          "left": 12,
+          "right": 363,
+          "top": 12,
+          "bottom": 619.5,
+          "width": 351
+        },
+        {
+          "left": 12,
+          "right": 363,
+          "top": 12,
+          "bottom": 619.5,
+          "width": 351
+        },
+        {
+          "left": 311,
+          "right": 355,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 347,
+          "top": 544.5,
+          "bottom": 603.5,
+          "width": 319
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 319,
+          "scroll": 319
+        }
+      ]
+    },
+    {
+      "label": "permissions-375",
+      "viewport": 375,
+      "height": 900,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "panels": [
+        {
+          "left": 12,
+          "right": 363,
+          "top": 12,
+          "bottom": 715.265625,
+          "width": 351
+        },
+        {
+          "left": 12,
+          "right": 363,
+          "top": 12,
+          "bottom": 715.265625,
+          "width": 351
+        },
+        {
+          "left": 311,
+          "right": 355,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 347,
+          "top": 640.265625,
+          "bottom": 699.265625,
+          "width": 319
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 319,
+          "scroll": 319
+        }
+      ]
+    },
+    {
+      "label": "permissions-filtered-375",
+      "viewport": 375,
+      "height": 900,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "panels": [
+        {
+          "left": 12,
+          "right": 363,
+          "top": 12,
+          "bottom": 435.265625,
+          "width": 351
+        },
+        {
+          "left": 12,
+          "right": 363,
+          "top": 12,
+          "bottom": 435.265625,
+          "width": 351
+        },
+        {
+          "left": 311,
+          "right": 355,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 347,
+          "top": 360.265625,
+          "bottom": 419.265625,
+          "width": 319
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 319,
+          "scroll": 319
+        }
+      ]
+    },
+    {
+      "label": "detail-375",
+      "viewport": 375,
+      "height": 900,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "panels": [
+        {
+          "left": 0,
+          "right": 375,
+          "top": 0,
+          "bottom": 900,
+          "width": 375
+        },
+        {
+          "left": 0,
+          "right": 375,
+          "top": 831,
+          "bottom": 900,
+          "width": 375
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 360,
+          "scroll": 360
+        }
+      ]
+    },
+    {
+      "label": "tooltip-375",
+      "viewport": 375,
+      "height": 900,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "list-390",
+      "viewport": 390,
+      "height": 900,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "form-390",
+      "viewport": 390,
+      "height": 900,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "panels": [
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 619.5,
+          "width": 366
+        },
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 619.5,
+          "width": 366
+        },
+        {
+          "left": 326,
+          "right": 370,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 362,
+          "top": 544.5,
+          "bottom": 603.5,
+          "width": 334
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 334,
+          "scroll": 334
+        }
+      ]
+    },
+    {
+      "label": "permissions-390",
+      "viewport": 390,
+      "height": 900,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "panels": [
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 715.265625,
+          "width": 366
+        },
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 715.265625,
+          "width": 366
+        },
+        {
+          "left": 326,
+          "right": 370,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 362,
+          "top": 640.265625,
+          "bottom": 699.265625,
+          "width": 334
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 334,
+          "scroll": 334
+        }
+      ]
+    },
+    {
+      "label": "permissions-filtered-390",
+      "viewport": 390,
+      "height": 900,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "panels": [
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 435.265625,
+          "width": 366
+        },
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 435.265625,
+          "width": 366
+        },
+        {
+          "left": 326,
+          "right": 370,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 362,
+          "top": 360.265625,
+          "bottom": 419.265625,
+          "width": 334
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 334,
+          "scroll": 334
+        }
+      ]
+    },
+    {
+      "label": "detail-390",
+      "viewport": 390,
+      "height": 900,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "panels": [
+        {
+          "left": 0,
+          "right": 390,
+          "top": 0,
+          "bottom": 900,
+          "width": 390
+        },
+        {
+          "left": 0,
+          "right": 390,
+          "top": 831,
+          "bottom": 900,
+          "width": 390
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 375,
+          "scroll": 375
+        }
+      ]
+    },
+    {
+      "label": "tooltip-390",
+      "viewport": 390,
+      "height": 900,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "list-414",
+      "viewport": 414,
+      "height": 900,
+      "documentWidth": 414,
+      "bodyWidth": 414,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "form-414",
+      "viewport": 414,
+      "height": 900,
+      "documentWidth": 414,
+      "bodyWidth": 414,
+      "panels": [
+        {
+          "left": 12,
+          "right": 402,
+          "top": 12,
+          "bottom": 619.5,
+          "width": 390
+        },
+        {
+          "left": 12,
+          "right": 402,
+          "top": 12,
+          "bottom": 619.5,
+          "width": 390
+        },
+        {
+          "left": 350,
+          "right": 394,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 386,
+          "top": 544.5,
+          "bottom": 603.5,
+          "width": 358
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 358,
+          "scroll": 358
+        }
+      ]
+    },
+    {
+      "label": "permissions-414",
+      "viewport": 414,
+      "height": 900,
+      "documentWidth": 414,
+      "bodyWidth": 414,
+      "panels": [
+        {
+          "left": 12,
+          "right": 402,
+          "top": 12,
+          "bottom": 715.265625,
+          "width": 390
+        },
+        {
+          "left": 12,
+          "right": 402,
+          "top": 12,
+          "bottom": 715.265625,
+          "width": 390
+        },
+        {
+          "left": 350,
+          "right": 394,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 386,
+          "top": 640.265625,
+          "bottom": 699.265625,
+          "width": 358
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 358,
+          "scroll": 358
+        }
+      ]
+    },
+    {
+      "label": "permissions-filtered-414",
+      "viewport": 414,
+      "height": 900,
+      "documentWidth": 414,
+      "bodyWidth": 414,
+      "panels": [
+        {
+          "left": 12,
+          "right": 402,
+          "top": 12,
+          "bottom": 435.265625,
+          "width": 390
+        },
+        {
+          "left": 12,
+          "right": 402,
+          "top": 12,
+          "bottom": 435.265625,
+          "width": 390
+        },
+        {
+          "left": 350,
+          "right": 394,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 386,
+          "top": 360.265625,
+          "bottom": 419.265625,
+          "width": 358
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 358,
+          "scroll": 358
+        }
+      ]
+    },
+    {
+      "label": "detail-414",
+      "viewport": 414,
+      "height": 900,
+      "documentWidth": 414,
+      "bodyWidth": 414,
+      "panels": [
+        {
+          "left": 0,
+          "right": 414,
+          "top": 0,
+          "bottom": 900,
+          "width": 414
+        },
+        {
+          "left": 0,
+          "right": 414,
+          "top": 831,
+          "bottom": 900,
+          "width": 414
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 399,
+          "scroll": 399
+        }
+      ]
+    },
+    {
+      "label": "tooltip-414",
+      "viewport": 414,
+      "height": 900,
+      "documentWidth": 414,
+      "bodyWidth": 414,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "list-768",
+      "viewport": 768,
+      "height": 900,
+      "documentWidth": 768,
+      "bodyWidth": 768,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "form-768",
+      "viewport": 768,
+      "height": 900,
+      "documentWidth": 768,
+      "bodyWidth": 768,
+      "panels": [
+        {
+          "left": 64,
+          "right": 704,
+          "top": 187,
+          "bottom": 713,
+          "width": 640
+        },
+        {
+          "left": 64,
+          "right": 704,
+          "top": 187,
+          "bottom": 713,
+          "width": 640
+        },
+        {
+          "left": 652,
+          "right": 696,
+          "top": 195,
+          "bottom": 239,
+          "width": 44
+        },
+        {
+          "left": 88,
+          "right": 680,
+          "top": 646,
+          "bottom": 693,
+          "width": 592
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 592,
+          "scroll": 592
+        }
+      ]
+    },
+    {
+      "label": "permissions-768",
+      "viewport": 768,
+      "height": 900,
+      "documentWidth": 768,
+      "bodyWidth": 768,
+      "panels": [
+        {
+          "left": 12,
+          "right": 756,
+          "top": 114.578125,
+          "bottom": 785.421875,
+          "width": 744
+        },
+        {
+          "left": 12,
+          "right": 756,
+          "top": 114.578125,
+          "bottom": 785.421875,
+          "width": 744
+        },
+        {
+          "left": 704,
+          "right": 748,
+          "top": 122.578125,
+          "bottom": 166.578125,
+          "width": 44
+        },
+        {
+          "left": 36,
+          "right": 732,
+          "top": 718.421875,
+          "bottom": 765.421875,
+          "width": 696
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 696,
+          "scroll": 696
+        }
+      ]
+    },
+    {
+      "label": "permissions-filtered-768",
+      "viewport": 768,
+      "height": 900,
+      "documentWidth": 768,
+      "bodyWidth": 768,
+      "panels": [
+        {
+          "left": 12,
+          "right": 756,
+          "top": 254.578125,
+          "bottom": 645.421875,
+          "width": 744
+        },
+        {
+          "left": 12,
+          "right": 756,
+          "top": 254.578125,
+          "bottom": 645.421875,
+          "width": 744
+        },
+        {
+          "left": 704,
+          "right": 748,
+          "top": 262.578125,
+          "bottom": 306.578125,
+          "width": 44
+        },
+        {
+          "left": 36,
+          "right": 732,
+          "top": 578.421875,
+          "bottom": 625.421875,
+          "width": 696
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 696,
+          "scroll": 696
+        }
+      ]
+    },
+    {
+      "label": "detail-768",
+      "viewport": 768,
+      "height": 900,
+      "documentWidth": 768,
+      "bodyWidth": 768,
+      "panels": [
+        {
+          "left": 248,
+          "right": 768,
+          "top": 0,
+          "bottom": 900,
+          "width": 520
+        },
+        {
+          "left": 248,
+          "right": 768,
+          "top": 843,
+          "bottom": 900,
+          "width": 520
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 505,
+          "scroll": 505
+        }
+      ]
+    },
+    {
+      "label": "tooltip-768",
+      "viewport": 768,
+      "height": 900,
+      "documentWidth": 768,
+      "bodyWidth": 768,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "list-1024",
+      "viewport": 1024,
+      "height": 900,
+      "documentWidth": 1024,
+      "bodyWidth": 1024,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "form-1024",
+      "viewport": 1024,
+      "height": 900,
+      "documentWidth": 1024,
+      "bodyWidth": 1024,
+      "panels": [
+        {
+          "left": 192,
+          "right": 832,
+          "top": 187,
+          "bottom": 713,
+          "width": 640
+        },
+        {
+          "left": 192,
+          "right": 832,
+          "top": 187,
+          "bottom": 713,
+          "width": 640
+        },
+        {
+          "left": 780,
+          "right": 824,
+          "top": 195,
+          "bottom": 239,
+          "width": 44
+        },
+        {
+          "left": 216,
+          "right": 808,
+          "top": 646,
+          "bottom": 693,
+          "width": 592
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 592,
+          "scroll": 592
+        }
+      ]
+    },
+    {
+      "label": "permissions-1024",
+      "viewport": 1024,
+      "height": 900,
+      "documentWidth": 1024,
+      "bodyWidth": 1024,
+      "panels": [
+        {
+          "left": 122,
+          "right": 902,
+          "top": 114.578125,
+          "bottom": 785.421875,
+          "width": 780
+        },
+        {
+          "left": 122,
+          "right": 902,
+          "top": 114.578125,
+          "bottom": 785.421875,
+          "width": 780
+        },
+        {
+          "left": 850,
+          "right": 894,
+          "top": 122.578125,
+          "bottom": 166.578125,
+          "width": 44
+        },
+        {
+          "left": 146,
+          "right": 878,
+          "top": 718.421875,
+          "bottom": 765.421875,
+          "width": 732
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 732,
+          "scroll": 732
+        }
+      ]
+    },
+    {
+      "label": "permissions-filtered-1024",
+      "viewport": 1024,
+      "height": 900,
+      "documentWidth": 1024,
+      "bodyWidth": 1024,
+      "panels": [
+        {
+          "left": 122,
+          "right": 902,
+          "top": 254.578125,
+          "bottom": 645.421875,
+          "width": 780
+        },
+        {
+          "left": 122,
+          "right": 902,
+          "top": 254.578125,
+          "bottom": 645.421875,
+          "width": 780
+        },
+        {
+          "left": 850,
+          "right": 894,
+          "top": 262.578125,
+          "bottom": 306.578125,
+          "width": 44
+        },
+        {
+          "left": 146,
+          "right": 878,
+          "top": 578.421875,
+          "bottom": 625.421875,
+          "width": 732
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 732,
+          "scroll": 732
+        }
+      ]
+    },
+    {
+      "label": "detail-1024",
+      "viewport": 1024,
+      "height": 900,
+      "documentWidth": 1024,
+      "bodyWidth": 1024,
+      "panels": [
+        {
+          "left": 504,
+          "right": 1024,
+          "top": 0,
+          "bottom": 900,
+          "width": 520
+        },
+        {
+          "left": 504,
+          "right": 1024,
+          "top": 843,
+          "bottom": 900,
+          "width": 520
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 505,
+          "scroll": 505
+        }
+      ]
+    },
+    {
+      "label": "tooltip-1024",
+      "viewport": 1024,
+      "height": 900,
+      "documentWidth": 1024,
+      "bodyWidth": 1024,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "list-1440",
+      "viewport": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "form-1440",
+      "viewport": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "panels": [
+        {
+          "left": 400,
+          "right": 1040,
+          "top": 187,
+          "bottom": 713,
+          "width": 640
+        },
+        {
+          "left": 400,
+          "right": 1040,
+          "top": 187,
+          "bottom": 713,
+          "width": 640
+        },
+        {
+          "left": 988,
+          "right": 1032,
+          "top": 195,
+          "bottom": 239,
+          "width": 44
+        },
+        {
+          "left": 424,
+          "right": 1016,
+          "top": 646,
+          "bottom": 693,
+          "width": 592
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 592,
+          "scroll": 592
+        }
+      ]
+    },
+    {
+      "label": "permissions-1440",
+      "viewport": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "panels": [
+        {
+          "left": 330,
+          "right": 1110,
+          "top": 114.578125,
+          "bottom": 785.421875,
+          "width": 780
+        },
+        {
+          "left": 330,
+          "right": 1110,
+          "top": 114.578125,
+          "bottom": 785.421875,
+          "width": 780
+        },
+        {
+          "left": 1058,
+          "right": 1102,
+          "top": 122.578125,
+          "bottom": 166.578125,
+          "width": 44
+        },
+        {
+          "left": 354,
+          "right": 1086,
+          "top": 718.421875,
+          "bottom": 765.421875,
+          "width": 732
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 732,
+          "scroll": 732
+        }
+      ]
+    },
+    {
+      "label": "permissions-filtered-1440",
+      "viewport": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "panels": [
+        {
+          "left": 330,
+          "right": 1110,
+          "top": 254.578125,
+          "bottom": 645.421875,
+          "width": 780
+        },
+        {
+          "left": 330,
+          "right": 1110,
+          "top": 254.578125,
+          "bottom": 645.421875,
+          "width": 780
+        },
+        {
+          "left": 1058,
+          "right": 1102,
+          "top": 262.578125,
+          "bottom": 306.578125,
+          "width": 44
+        },
+        {
+          "left": 354,
+          "right": 1086,
+          "top": 578.421875,
+          "bottom": 625.421875,
+          "width": 732
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 732,
+          "scroll": 732
+        }
+      ]
+    },
+    {
+      "label": "detail-1440",
+      "viewport": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "panels": [
+        {
+          "left": 920,
+          "right": 1440,
+          "top": 0,
+          "bottom": 900,
+          "width": 520
+        },
+        {
+          "left": 920,
+          "right": 1440,
+          "top": 843,
+          "bottom": 900,
+          "width": 520
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 505,
+          "scroll": 505
+        }
+      ]
+    },
+    {
+      "label": "tooltip-1440",
+      "viewport": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "short-form-390",
+      "viewport": 390,
+      "height": 360,
+      "documentWidth": 390,
+      "bodyWidth": 375,
+      "panels": [
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 348,
+          "width": 366
+        },
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 348,
+          "width": 366
+        },
+        {
+          "left": 326,
+          "right": 370,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 362,
+          "top": 273,
+          "bottom": 332,
+          "width": 334
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 319,
+          "scroll": 319
+        }
+      ]
+    },
+    {
+      "label": "short-permissions-390",
+      "viewport": 390,
+      "height": 360,
+      "documentWidth": 390,
+      "bodyWidth": 375,
+      "panels": [
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 348,
+          "width": 366
+        },
+        {
+          "left": 12,
+          "right": 378,
+          "top": 12,
+          "bottom": 348,
+          "width": 366
+        },
+        {
+          "left": 326,
+          "right": 370,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 28,
+          "right": 362,
+          "top": 273,
+          "bottom": 332,
+          "width": 334
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 319,
+          "scroll": 319
+        }
+      ]
+    },
+    {
+      "label": "sidebar-toggled-390",
+      "viewport": 390,
+      "height": 360,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "sidebar-restored-390",
+      "viewport": 390,
+      "height": 360,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "short-form-1024",
+      "viewport": 1024,
+      "height": 360,
+      "documentWidth": 1024,
+      "bodyWidth": 1009,
+      "panels": [
+        {
+          "left": 192,
+          "right": 832,
+          "top": 12,
+          "bottom": 348,
+          "width": 640
+        },
+        {
+          "left": 192,
+          "right": 832,
+          "top": 12,
+          "bottom": 348,
+          "width": 640
+        },
+        {
+          "left": 780,
+          "right": 824,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 216,
+          "right": 808,
+          "top": 281,
+          "bottom": 328,
+          "width": 592
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 577,
+          "scroll": 577
+        }
+      ]
+    },
+    {
+      "label": "short-permissions-1024",
+      "viewport": 1024,
+      "height": 360,
+      "documentWidth": 1024,
+      "bodyWidth": 1009,
+      "panels": [
+        {
+          "left": 122,
+          "right": 902,
+          "top": 12,
+          "bottom": 348,
+          "width": 780
+        },
+        {
+          "left": 122,
+          "right": 902,
+          "top": 12,
+          "bottom": 348,
+          "width": 780
+        },
+        {
+          "left": 850,
+          "right": 894,
+          "top": 20,
+          "bottom": 64,
+          "width": 44
+        },
+        {
+          "left": 146,
+          "right": 878,
+          "top": 281,
+          "bottom": 328,
+          "width": 732
+        }
+      ],
+      "overflowing": [
+        {
+          "client": 717,
+          "scroll": 717
+        }
+      ]
+    },
+    {
+      "label": "sidebar-toggled-1024",
+      "viewport": 1024,
+      "height": 360,
+      "documentWidth": 1009,
+      "bodyWidth": 1009,
+      "panels": [],
+      "overflowing": []
+    },
+    {
+      "label": "sidebar-restored-1024",
+      "viewport": 1024,
+      "height": 360,
+      "documentWidth": 1009,
+      "bodyWidth": 1009,
+      "panels": [],
+      "overflowing": []
+    }
+  ],
+  "errors": [],
+  "calls": [
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "draft"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "draft"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "20"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "status": "0"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "status": "0"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "status": "0"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "status": "0"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "slow",
+        "status": "0"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "fast",
+        "status": "0"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "permissionIds": [
+          "p-0",
+          "outside",
+          "p-102",
+          "p-1"
+        ]
+      }
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "permissionIds": [
+          "p-0",
+          "outside",
+          "p-102"
+        ]
+      }
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-0/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-3/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "POST",
+      "params": {},
+      "body": {
+        "name": "Vai trò mới",
+        "code": "Mixed_case1",
+        "description": "Mô tả",
+        "status": 1
+      }
+    },
+    {
+      "path": "/roles",
+      "method": "POST",
+      "params": {},
+      "body": {
+        "name": "Vai trò mới",
+        "code": "Mixed_case1",
+        "description": "Mô tả",
+        "status": 1
+      }
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles/role-1",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "name": "Đã sửa",
+        "code": "ROLE_1",
+        "description": "Mô tả vai trò",
+        "status": 1
+      }
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-2",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-2",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-2",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-2",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-2",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-2",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-2",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1/permissions",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/permissions",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles/role-1",
+      "method": "DELETE",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    }
+  ]
+}

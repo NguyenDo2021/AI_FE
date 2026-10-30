@@ -1,0 +1,7012 @@
+{
+  "results": [
+    {
+      "kind": "products",
+      "checks": [
+        "Default pageSize 10",
+        "One initial list request",
+        "Approved columns retained",
+        "Size 20: one request, page 1, server rows",
+        "Size 20: exact server row count",
+        "Size 50: one request, page 1, server rows",
+        "Size 50: exact server row count",
+        "Size 100: one request, page 1, server rows",
+        "Size 100: exact server row count",
+        "Size 10: one request, page 1, server rows",
+        "Size 10: exact server row count",
+        "Size 100: one request, page 1, server rows",
+        "Size 100: exact server row count",
+        "Last page range 101–137 / 137",
+        "Last page has 37 records",
+        "Few rows: no vertical scrollbar",
+        "Empty range is 0–0 / 0",
+        "Empty has no records",
+        "Page size preserves keyword filter",
+        "Page change resets body scroll",
+        "Page size resets body scroll",
+        "Filter resets body scroll",
+        "Resize: no request and pageSize remains 50",
+        "Resize: same body and scroll position",
+        "Header stays fixed vertically",
+        "Actions stay fixed horizontally",
+        "Horizontal scrollbar reachable without scrolling all rows",
+        "Sidebar: no request or pageSize change",
+        "Status 0: one request and page 1",
+        "Reset: one request, filters cleared, size preserved",
+        "Reload: one request",
+        "Stale response ignored",
+        "Resize 1920x1080: no request, same size, all columns",
+        "Resize 1366x768: no request, same size, all columns",
+        "Resize 1093x614: no request, same size, all columns",
+        "125% zoom equivalent viewport and pixel ratio",
+        "Resize 768x900: no request, same size, all columns",
+        "Resize 390x844: no request, same size, all columns",
+        "Mobile size 10: one request and correct rows",
+        "Mobile size 20: one request and correct rows",
+        "Mobile size 50: one request and correct rows",
+        "Mobile size 100: one request and correct rows",
+        "Mobile size 50: one request and correct rows",
+        "Wrapped mobile filters only resize table",
+        "Mobile action dropdown is portaled and visible",
+        "Resize 360x740: no request, same size, all columns",
+        "Resize 390x400: no request, same size, all columns",
+        "Short viewport keeps pagination accessible",
+        "Resize 1366x420: no request, same size, all columns",
+        "Short viewport keeps pagination accessible"
+      ],
+      "measurements": [
+        {
+          "size": 20,
+          "viewport": [
+            1366,
+            768
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 768,
+          "pageWidth": 1366,
+          "body": {
+            "left": 281,
+            "right": 1341,
+            "top": 340,
+            "bottom": 687
+          },
+          "region": {
+            "top": 287,
+            "bottom": 687
+          },
+          "footer": {
+            "top": 687,
+            "bottom": 747
+          },
+          "scrollHeight": 1680,
+          "clientHeight": 337,
+          "scrollWidth": 1230,
+          "clientWidth": 1050,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 287,
+              "bottom": 340
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 340,
+              "bottom": 424
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 20
+        },
+        {
+          "size": 50,
+          "viewport": [
+            1366,
+            768
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 768,
+          "pageWidth": 1366,
+          "body": {
+            "left": 281,
+            "right": 1341,
+            "top": 340,
+            "bottom": 687
+          },
+          "region": {
+            "top": 287,
+            "bottom": 687
+          },
+          "footer": {
+            "top": 687,
+            "bottom": 747
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 337,
+          "scrollWidth": 1230,
+          "clientWidth": 1050,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 287,
+              "bottom": 340
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 340,
+              "bottom": 424
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "size": 100,
+          "viewport": [
+            1366,
+            768
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 768,
+          "pageWidth": 1366,
+          "body": {
+            "left": 281,
+            "right": 1341,
+            "top": 340,
+            "bottom": 687
+          },
+          "region": {
+            "top": 287,
+            "bottom": 687
+          },
+          "footer": {
+            "top": 687,
+            "bottom": 747
+          },
+          "scrollHeight": 8400,
+          "clientHeight": 337,
+          "scrollWidth": 1230,
+          "clientWidth": 1050,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 287,
+              "bottom": 340
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 340,
+              "bottom": 424
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 100
+        },
+        {
+          "size": 10,
+          "viewport": [
+            1366,
+            768
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 768,
+          "pageWidth": 1366,
+          "body": {
+            "left": 281,
+            "right": 1341,
+            "top": 340,
+            "bottom": 687
+          },
+          "region": {
+            "top": 287,
+            "bottom": 687
+          },
+          "footer": {
+            "top": 687,
+            "bottom": 747
+          },
+          "scrollHeight": 840,
+          "clientHeight": 337,
+          "scrollWidth": 1230,
+          "clientWidth": 1050,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 287,
+              "bottom": 340
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 340,
+              "bottom": 424
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 10
+        },
+        {
+          "size": 100,
+          "viewport": [
+            1366,
+            768
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 768,
+          "pageWidth": 1366,
+          "body": {
+            "left": 281,
+            "right": 1341,
+            "top": 340,
+            "bottom": 687
+          },
+          "region": {
+            "top": 287,
+            "bottom": 687
+          },
+          "footer": {
+            "top": 687,
+            "bottom": 747
+          },
+          "scrollHeight": 8400,
+          "clientHeight": 337,
+          "scrollWidth": 1230,
+          "clientWidth": 1050,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 287,
+              "bottom": 340
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 340,
+              "bottom": 424
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 100
+        },
+        {
+          "label": "1920x1080",
+          "viewport": [
+            1920,
+            1080
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 0,
+          "yScrollers": 1,
+          "pageHeight": 1080,
+          "pageWidth": 1920,
+          "body": {
+            "left": 281,
+            "right": 1895,
+            "top": 340,
+            "bottom": 999
+          },
+          "region": {
+            "top": 287,
+            "bottom": 999
+          },
+          "footer": {
+            "top": 999,
+            "bottom": 1059
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 659,
+          "scrollWidth": 1604,
+          "clientWidth": 1604,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 935,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 935,
+              "right": 1165,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1165,
+              "right": 1315,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1315,
+              "right": 1485,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1485,
+              "right": 1605,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1605,
+              "right": 1755,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1755,
+              "right": 1885,
+              "top": 287,
+              "bottom": 340
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 935,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 935,
+              "right": 1165,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1165,
+              "right": 1315,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1315,
+              "right": 1485,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1485,
+              "right": 1605,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1605,
+              "right": 1755,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1755,
+              "right": 1885,
+              "top": 340,
+              "bottom": 424
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1366x768",
+          "viewport": [
+            1366,
+            768
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 768,
+          "pageWidth": 1366,
+          "body": {
+            "left": 281,
+            "right": 1341,
+            "top": 340,
+            "bottom": 687
+          },
+          "region": {
+            "top": 287,
+            "bottom": 687
+          },
+          "footer": {
+            "top": 687,
+            "bottom": 747
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 337,
+          "scrollWidth": 1230,
+          "clientWidth": 1050,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 287,
+              "bottom": 340
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 287,
+              "bottom": 340
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 340,
+              "bottom": 424
+            },
+            {
+              "left": 1201,
+              "right": 1331,
+              "top": 340,
+              "bottom": 424
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1093x614",
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1.25,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 276,
+            "bottom": 553
+          },
+          "region": {
+            "top": 223,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 267,
+          "scrollWidth": 1230,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 549,
+              "right": 779,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 779,
+              "right": 929,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 929,
+              "right": 1099,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 1099,
+              "right": 1219,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 1219,
+              "right": 1369,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 940,
+              "right": 1070,
+              "top": 223,
+              "bottom": 276
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 549,
+              "right": 779,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 779,
+              "right": 929,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 929,
+              "right": 1099,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 1099,
+              "right": 1219,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 1219,
+              "right": 1369,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 940,
+              "right": 1070,
+              "top": 276,
+              "bottom": 360
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "768x900",
+          "viewport": [
+            768,
+            900
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 900,
+          "pageWidth": 768,
+          "body": {
+            "left": 281,
+            "right": 743,
+            "top": 383,
+            "bottom": 794
+          },
+          "region": {
+            "top": 330,
+            "bottom": 794.0625
+          },
+          "footer": {
+            "top": 794.0625,
+            "bottom": 879
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 401,
+          "scrollWidth": 1184,
+          "clientWidth": 452,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 330,
+              "bottom": 383
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 330,
+              "bottom": 383
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 330,
+              "bottom": 383
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 330,
+              "bottom": 383
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 330,
+              "bottom": 383
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 330,
+              "bottom": 383
+            },
+            {
+              "left": 649,
+              "right": 733,
+              "top": 330,
+              "bottom": 383
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 383,
+              "bottom": 467
+            },
+            {
+              "left": 561,
+              "right": 791,
+              "top": 383,
+              "bottom": 467
+            },
+            {
+              "left": 791,
+              "right": 941,
+              "top": 383,
+              "bottom": 467
+            },
+            {
+              "left": 941,
+              "right": 1111,
+              "top": 383,
+              "bottom": 467
+            },
+            {
+              "left": 1111,
+              "right": 1231,
+              "top": 383,
+              "bottom": 467
+            },
+            {
+              "left": 1231,
+              "right": 1381,
+              "top": 383,
+              "bottom": 467
+            },
+            {
+              "left": 649,
+              "right": 733,
+              "top": 383,
+              "bottom": 467
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "390x844",
+          "viewport": [
+            390,
+            844
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 844,
+          "pageWidth": 390,
+          "body": {
+            "left": 13,
+            "right": 377,
+            "top": 323,
+            "bottom": 750
+          },
+          "region": {
+            "top": 270,
+            "bottom": 750.0625
+          },
+          "footer": {
+            "top": 750.0625,
+            "bottom": 831
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 417,
+          "scrollWidth": 1184,
+          "clientWidth": 354,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 293,
+              "right": 523,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 523,
+              "right": 673,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 673,
+              "right": 843,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 843,
+              "right": 963,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 963,
+              "right": 1113,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 283,
+              "right": 367,
+              "top": 270,
+              "bottom": 323
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 293,
+              "right": 523,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 523,
+              "right": 673,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 673,
+              "right": 843,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 843,
+              "right": 963,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 963,
+              "right": 1113,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 283,
+              "right": 367,
+              "top": 323,
+              "bottom": 407
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "360x740",
+          "viewport": [
+            360,
+            740
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 740,
+          "pageWidth": 360,
+          "body": {
+            "left": 13,
+            "right": 347,
+            "top": 323,
+            "bottom": 646
+          },
+          "region": {
+            "top": 270,
+            "bottom": 646.0625
+          },
+          "footer": {
+            "top": 646.0625,
+            "bottom": 727
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 313,
+          "scrollWidth": 1184,
+          "clientWidth": 324,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 293,
+              "right": 523,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 523,
+              "right": 673,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 673,
+              "right": 843,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 843,
+              "right": 963,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 963,
+              "right": 1113,
+              "top": 270,
+              "bottom": 323
+            },
+            {
+              "left": 253,
+              "right": 337,
+              "top": 270,
+              "bottom": 323
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 293,
+              "right": 523,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 523,
+              "right": 673,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 673,
+              "right": 843,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 843,
+              "right": 963,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 963,
+              "right": 1113,
+              "top": 323,
+              "bottom": 407
+            },
+            {
+              "left": 253,
+              "right": 337,
+              "top": 323,
+              "bottom": 407
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "390x400",
+          "viewport": [
+            390,
+            400
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 489,
+          "pageWidth": 375,
+          "body": {
+            "left": 13,
+            "right": 362,
+            "top": 311,
+            "bottom": 415
+          },
+          "region": {
+            "top": 258,
+            "bottom": 415.0625
+          },
+          "footer": {
+            "top": 415.0625,
+            "bottom": 488
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 94,
+          "scrollWidth": 1184,
+          "clientWidth": 339,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 258,
+              "bottom": 311
+            },
+            {
+              "left": 293,
+              "right": 523,
+              "top": 258,
+              "bottom": 311
+            },
+            {
+              "left": 523,
+              "right": 673,
+              "top": 258,
+              "bottom": 311
+            },
+            {
+              "left": 673,
+              "right": 843,
+              "top": 258,
+              "bottom": 311
+            },
+            {
+              "left": 843,
+              "right": 963,
+              "top": 258,
+              "bottom": 311
+            },
+            {
+              "left": 963,
+              "right": 1113,
+              "top": 258,
+              "bottom": 311
+            },
+            {
+              "left": 268,
+              "right": 352,
+              "top": 258,
+              "bottom": 311
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 311,
+              "bottom": 395
+            },
+            {
+              "left": 293,
+              "right": 523,
+              "top": 311,
+              "bottom": 395
+            },
+            {
+              "left": 523,
+              "right": 673,
+              "top": 311,
+              "bottom": 395
+            },
+            {
+              "left": 673,
+              "right": 843,
+              "top": 311,
+              "bottom": 395
+            },
+            {
+              "left": 843,
+              "right": 963,
+              "top": 311,
+              "bottom": 395
+            },
+            {
+              "left": 963,
+              "right": 1113,
+              "top": 311,
+              "bottom": 395
+            },
+            {
+              "left": 268,
+              "right": 352,
+              "top": 311,
+              "bottom": 395
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1366x420",
+          "viewport": [
+            1366,
+            420
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 454,
+          "pageWidth": 1351,
+          "body": {
+            "left": 269,
+            "right": 1338,
+            "top": 276,
+            "bottom": 405
+          },
+          "region": {
+            "top": 223,
+            "bottom": 405
+          },
+          "footer": {
+            "top": 405,
+            "bottom": 453
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 119,
+          "scrollWidth": 1230,
+          "clientWidth": 1059,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 549,
+              "right": 779,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 779,
+              "right": 929,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 929,
+              "right": 1099,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 1099,
+              "right": 1219,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 1219,
+              "right": 1369,
+              "top": 223,
+              "bottom": 276
+            },
+            {
+              "left": 1198,
+              "right": 1328,
+              "top": 223,
+              "bottom": 276
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 549,
+              "right": 779,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 779,
+              "right": 929,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 929,
+              "right": 1099,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 1099,
+              "right": 1219,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 1219,
+              "right": 1369,
+              "top": 276,
+              "bottom": 360
+            },
+            {
+              "left": 1198,
+              "right": 1328,
+              "top": 276,
+              "bottom": 360
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        }
+      ]
+    },
+    {
+      "kind": "product-groups",
+      "checks": [
+        "Default pageSize 10",
+        "One initial list request",
+        "Approved columns retained",
+        "Size 20: one request, page 1, server rows",
+        "Size 20: exact server row count",
+        "Size 50: one request, page 1, server rows",
+        "Size 50: exact server row count",
+        "Size 100: one request, page 1, server rows",
+        "Size 100: exact server row count",
+        "Size 10: one request, page 1, server rows",
+        "Size 10: exact server row count",
+        "Size 100: one request, page 1, server rows",
+        "Size 100: exact server row count",
+        "Last page range 101–137 / 137",
+        "Last page has 37 records",
+        "Few rows: no vertical scrollbar",
+        "Empty range is 0–0 / 0",
+        "Empty has no records",
+        "Page size preserves keyword filter",
+        "Page change resets body scroll",
+        "Page size resets body scroll",
+        "Filter resets body scroll",
+        "Resize: no request and pageSize remains 50",
+        "Resize: same body and scroll position",
+        "Header stays fixed vertically",
+        "Actions stay fixed horizontally",
+        "Horizontal scrollbar reachable without scrolling all rows",
+        "Sidebar: no request or pageSize change",
+        "Status 0: one request and page 1",
+        "Reset: one request, filters cleared, size preserved",
+        "Reload: one request",
+        "Stale response ignored",
+        "Resize 1920x1080: no request, same size, all columns",
+        "Resize 1366x768: no request, same size, all columns",
+        "Resize 1093x614: no request, same size, all columns",
+        "125% zoom equivalent viewport and pixel ratio",
+        "Resize 768x900: no request, same size, all columns",
+        "Resize 390x844: no request, same size, all columns",
+        "Mobile size 10: one request and correct rows",
+        "Mobile size 20: one request and correct rows",
+        "Mobile size 50: one request and correct rows",
+        "Mobile size 100: one request and correct rows",
+        "Mobile size 50: one request and correct rows",
+        "Wrapped mobile filters only resize table",
+        "Mobile action dropdown is portaled and visible",
+        "Resize 360x740: no request, same size, all columns",
+        "Resize 390x400: no request, same size, all columns",
+        "Short viewport keeps pagination accessible",
+        "Resize 1366x420: no request, same size, all columns",
+        "Short viewport keeps pagination accessible"
+      ],
+      "measurements": [
+        {
+          "size": 20,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 271,
+            "bottom": 553
+          },
+          "region": {
+            "top": 223,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 1680,
+          "clientHeight": 272,
+          "scrollWidth": 912,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 223,
+              "bottom": 271
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 271,
+              "bottom": 355
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 20
+        },
+        {
+          "size": 50,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 271,
+            "bottom": 553
+          },
+          "region": {
+            "top": 223,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 272,
+          "scrollWidth": 912,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 223,
+              "bottom": 271
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 271,
+              "bottom": 355
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "size": 100,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 271,
+            "bottom": 553
+          },
+          "region": {
+            "top": 223,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 8400,
+          "clientHeight": 272,
+          "scrollWidth": 912,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 223,
+              "bottom": 271
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 271,
+              "bottom": 355
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 100
+        },
+        {
+          "size": 10,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 271,
+            "bottom": 553
+          },
+          "region": {
+            "top": 223,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 840,
+          "clientHeight": 272,
+          "scrollWidth": 912,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 223,
+              "bottom": 271
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 271,
+              "bottom": 355
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 10
+        },
+        {
+          "size": 100,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 271,
+            "bottom": 553
+          },
+          "region": {
+            "top": 223,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 8400,
+          "clientHeight": 272,
+          "scrollWidth": 912,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 223,
+              "bottom": 271
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 271,
+              "bottom": 355
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 100
+        },
+        {
+          "label": "1920x1080",
+          "viewport": [
+            1920,
+            1080
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 0,
+          "yScrollers": 1,
+          "pageHeight": 1080,
+          "pageWidth": 1920,
+          "body": {
+            "left": 281,
+            "right": 1895,
+            "top": 335,
+            "bottom": 999
+          },
+          "region": {
+            "top": 287,
+            "bottom": 999
+          },
+          "footer": {
+            "top": 999,
+            "bottom": 1059
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 664,
+          "scrollWidth": 1604,
+          "clientWidth": 1604,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 1253,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1253,
+              "right": 1633,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1633,
+              "right": 1781,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1781,
+              "right": 1885,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 1253,
+              "top": 335,
+              "bottom": 419
+            },
+            {
+              "left": 1253,
+              "right": 1633,
+              "top": 335,
+              "bottom": 419
+            },
+            {
+              "left": 1633,
+              "right": 1781,
+              "top": 335,
+              "bottom": 419
+            },
+            {
+              "left": 1781,
+              "right": 1885,
+              "top": 335,
+              "bottom": 419
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1366x768",
+          "viewport": [
+            1366,
+            768
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 0,
+          "yScrollers": 1,
+          "pageHeight": 768,
+          "pageWidth": 1366,
+          "body": {
+            "left": 281,
+            "right": 1341,
+            "top": 335,
+            "bottom": 687
+          },
+          "region": {
+            "top": 287,
+            "bottom": 687
+          },
+          "footer": {
+            "top": 687,
+            "bottom": 747
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 352,
+          "scrollWidth": 1050,
+          "clientWidth": 1050,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 699,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 699,
+              "right": 1079,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1079,
+              "right": 1227,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1227,
+              "right": 1331,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 699,
+              "top": 335,
+              "bottom": 419
+            },
+            {
+              "left": 699,
+              "right": 1079,
+              "top": 335,
+              "bottom": 419
+            },
+            {
+              "left": 1079,
+              "right": 1227,
+              "top": 335,
+              "bottom": 419
+            },
+            {
+              "left": 1227,
+              "right": 1331,
+              "top": 335,
+              "bottom": 419
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1093x614",
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1.25,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 271,
+            "bottom": 553
+          },
+          "region": {
+            "top": 223,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 272,
+          "scrollWidth": 912,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 223,
+              "bottom": 271
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 549,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 549,
+              "right": 929,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 929,
+              "right": 1077,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 966,
+              "right": 1070,
+              "top": 271,
+              "bottom": 355
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "768x900",
+          "viewport": [
+            768,
+            900
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 900,
+          "pageWidth": 768,
+          "body": {
+            "left": 281,
+            "right": 743,
+            "top": 378,
+            "bottom": 794
+          },
+          "region": {
+            "top": 330,
+            "bottom": 794.0625
+          },
+          "footer": {
+            "top": 794.0625,
+            "bottom": 879
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 406,
+          "scrollWidth": 892,
+          "clientWidth": 452,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 330,
+              "bottom": 378
+            },
+            {
+              "left": 561,
+              "right": 941,
+              "top": 330,
+              "bottom": 378
+            },
+            {
+              "left": 941,
+              "right": 1089,
+              "top": 330,
+              "bottom": 378
+            },
+            {
+              "left": 649,
+              "right": 733,
+              "top": 330,
+              "bottom": 378
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 561,
+              "top": 378,
+              "bottom": 462
+            },
+            {
+              "left": 561,
+              "right": 941,
+              "top": 378,
+              "bottom": 462
+            },
+            {
+              "left": 941,
+              "right": 1089,
+              "top": 378,
+              "bottom": 462
+            },
+            {
+              "left": 649,
+              "right": 733,
+              "top": 378,
+              "bottom": 462
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "390x844",
+          "viewport": [
+            390,
+            844
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 844,
+          "pageWidth": 390,
+          "body": {
+            "left": 13,
+            "right": 377,
+            "top": 369.328125,
+            "bottom": 750.328125
+          },
+          "region": {
+            "top": 321.328125,
+            "bottom": 750.0625
+          },
+          "footer": {
+            "top": 750.0625,
+            "bottom": 831
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 371,
+          "scrollWidth": 892,
+          "clientWidth": 354,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 321.328125,
+              "bottom": 369.328125
+            },
+            {
+              "left": 293,
+              "right": 673,
+              "top": 321.328125,
+              "bottom": 369.328125
+            },
+            {
+              "left": 673,
+              "right": 821,
+              "top": 321.328125,
+              "bottom": 369.328125
+            },
+            {
+              "left": 283,
+              "right": 367,
+              "top": 321.328125,
+              "bottom": 369.328125
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 369.328125,
+              "bottom": 453.328125
+            },
+            {
+              "left": 293,
+              "right": 673,
+              "top": 369.328125,
+              "bottom": 453.328125
+            },
+            {
+              "left": 673,
+              "right": 821,
+              "top": 369.328125,
+              "bottom": 453.328125
+            },
+            {
+              "left": 283,
+              "right": 367,
+              "top": 369.328125,
+              "bottom": 453.328125
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "360x740",
+          "viewport": [
+            360,
+            740
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 740,
+          "pageWidth": 360,
+          "body": {
+            "left": 13,
+            "right": 347,
+            "top": 369.328125,
+            "bottom": 646.328125
+          },
+          "region": {
+            "top": 321.328125,
+            "bottom": 646.0625
+          },
+          "footer": {
+            "top": 646.0625,
+            "bottom": 727
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 267,
+          "scrollWidth": 892,
+          "clientWidth": 324,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 321.328125,
+              "bottom": 369.328125
+            },
+            {
+              "left": 293,
+              "right": 673,
+              "top": 321.328125,
+              "bottom": 369.328125
+            },
+            {
+              "left": 673,
+              "right": 821,
+              "top": 321.328125,
+              "bottom": 369.328125
+            },
+            {
+              "left": 253,
+              "right": 337,
+              "top": 321.328125,
+              "bottom": 369.328125
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 369.328125,
+              "bottom": 453.328125
+            },
+            {
+              "left": 293,
+              "right": 673,
+              "top": 369.328125,
+              "bottom": 453.328125
+            },
+            {
+              "left": 673,
+              "right": 821,
+              "top": 369.328125,
+              "bottom": 453.328125
+            },
+            {
+              "left": 253,
+              "right": 337,
+              "top": 369.328125,
+              "bottom": 453.328125
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "390x400",
+          "viewport": [
+            390,
+            400
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 529,
+          "pageWidth": 375,
+          "body": {
+            "left": 13,
+            "right": 362,
+            "top": 357.328125,
+            "bottom": 455.328125
+          },
+          "region": {
+            "top": 309.328125,
+            "bottom": 455.0625
+          },
+          "footer": {
+            "top": 455.0625,
+            "bottom": 528
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 88,
+          "scrollWidth": 892,
+          "clientWidth": 339,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 309.328125,
+              "bottom": 357.328125
+            },
+            {
+              "left": 293,
+              "right": 673,
+              "top": 309.328125,
+              "bottom": 357.328125
+            },
+            {
+              "left": 673,
+              "right": 821,
+              "top": 309.328125,
+              "bottom": 357.328125
+            },
+            {
+              "left": 268,
+              "right": 352,
+              "top": 309.328125,
+              "bottom": 357.328125
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 293,
+              "top": 357.328125,
+              "bottom": 441.328125
+            },
+            {
+              "left": 293,
+              "right": 673,
+              "top": 357.328125,
+              "bottom": 441.328125
+            },
+            {
+              "left": 673,
+              "right": 821,
+              "top": 357.328125,
+              "bottom": 441.328125
+            },
+            {
+              "left": 268,
+              "right": 352,
+              "top": 357.328125,
+              "bottom": 441.328125
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1366x420",
+          "viewport": [
+            1366,
+            420
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 0,
+          "yScrollers": 1,
+          "pageHeight": 454,
+          "pageWidth": 1351,
+          "body": {
+            "left": 269,
+            "right": 1338,
+            "top": 271,
+            "bottom": 405
+          },
+          "region": {
+            "top": 223,
+            "bottom": 405
+          },
+          "footer": {
+            "top": 405,
+            "bottom": 453
+          },
+          "scrollHeight": 4200,
+          "clientHeight": 134,
+          "scrollWidth": 1059,
+          "clientWidth": 1059,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 696,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 696,
+              "right": 1076,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 1076,
+              "right": 1224,
+              "top": 223,
+              "bottom": 271
+            },
+            {
+              "left": 1224,
+              "right": 1328,
+              "top": 223,
+              "bottom": 271
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 696,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 696,
+              "right": 1076,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 1076,
+              "right": 1224,
+              "top": 271,
+              "bottom": 355
+            },
+            {
+              "left": 1224,
+              "right": 1328,
+              "top": 271,
+              "bottom": 355
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        }
+      ]
+    },
+    {
+      "kind": "warehouses",
+      "checks": [
+        "Default pageSize 10",
+        "One initial list request",
+        "Approved columns retained",
+        "Size 20: one request, page 1, server rows",
+        "Size 20: exact server row count",
+        "Size 50: one request, page 1, server rows",
+        "Size 50: exact server row count",
+        "Size 100: one request, page 1, server rows",
+        "Size 100: exact server row count",
+        "Size 10: one request, page 1, server rows",
+        "Size 10: exact server row count",
+        "Size 100: one request, page 1, server rows",
+        "Size 100: exact server row count",
+        "Last page range 101–137 / 137",
+        "Last page has 37 records",
+        "Few rows: no vertical scrollbar",
+        "Empty range is 0–0 / 0",
+        "Empty has no records",
+        "Page size preserves keyword filter",
+        "Page change resets body scroll",
+        "Page size resets body scroll",
+        "Filter resets body scroll",
+        "Resize: no request and pageSize remains 50",
+        "Resize: same body and scroll position",
+        "Header stays fixed vertically",
+        "Actions stay fixed horizontally",
+        "Horizontal scrollbar reachable without scrolling all rows",
+        "Sidebar: no request or pageSize change",
+        "Status 0: one request and page 1",
+        "Reset: one request, filters cleared, size preserved",
+        "Reload: one request",
+        "Stale response ignored",
+        "Resize 1920x1080: no request, same size, all columns",
+        "Resize 1366x768: no request, same size, all columns",
+        "Resize 1093x614: no request, same size, all columns",
+        "125% zoom equivalent viewport and pixel ratio",
+        "Resize 768x900: no request, same size, all columns",
+        "Resize 390x844: no request, same size, all columns",
+        "Mobile size 10: one request and correct rows",
+        "Mobile size 20: one request and correct rows",
+        "Mobile size 50: one request and correct rows",
+        "Mobile size 100: one request and correct rows",
+        "Mobile size 50: one request and correct rows",
+        "Mobile action dropdown is portaled and visible",
+        "Resize 360x740: no request, same size, all columns",
+        "Resize 390x400: no request, same size, all columns",
+        "Short viewport keeps pagination accessible",
+        "Resize 1366x420: no request, same size, all columns",
+        "Short viewport keeps pagination accessible"
+      ],
+      "measurements": [
+        {
+          "size": 20,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 335,
+            "bottom": 553
+          },
+          "region": {
+            "top": 287,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 1520,
+          "clientHeight": 208,
+          "scrollWidth": 1132,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 335,
+              "bottom": 411
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 20
+        },
+        {
+          "size": 50,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 335,
+            "bottom": 553
+          },
+          "region": {
+            "top": 287,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 208,
+          "scrollWidth": 1132,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 335,
+              "bottom": 411
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "size": 100,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 335,
+            "bottom": 553
+          },
+          "region": {
+            "top": 287,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 7600,
+          "clientHeight": 208,
+          "scrollWidth": 1132,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 335,
+              "bottom": 411
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 100
+        },
+        {
+          "size": 10,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 335,
+            "bottom": 553
+          },
+          "region": {
+            "top": 287,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 760,
+          "clientHeight": 208,
+          "scrollWidth": 1132,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 335,
+              "bottom": 411
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 10
+        },
+        {
+          "size": 100,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 335,
+            "bottom": 553
+          },
+          "region": {
+            "top": 287,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 7600,
+          "clientHeight": 208,
+          "scrollWidth": 1132,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 335,
+              "bottom": 411
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 100
+        },
+        {
+          "label": "1920x1080",
+          "viewport": [
+            1920,
+            1080
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 0,
+          "yScrollers": 1,
+          "pageHeight": 1080,
+          "pageWidth": 1920,
+          "body": {
+            "left": 281,
+            "right": 1895,
+            "top": 335,
+            "bottom": 999
+          },
+          "region": {
+            "top": 287,
+            "bottom": 999
+          },
+          "footer": {
+            "top": 999,
+            "bottom": 1059
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 664,
+          "scrollWidth": 1604,
+          "clientWidth": 1604,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 901,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 901,
+              "right": 1121,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1121,
+              "right": 1421,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1421,
+              "right": 1577,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1577,
+              "right": 1741,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1741,
+              "right": 1885,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 901,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 901,
+              "right": 1121,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1121,
+              "right": 1421,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1421,
+              "right": 1577,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1577,
+              "right": 1741,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1741,
+              "right": 1885,
+              "top": 335,
+              "bottom": 411
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1366x768",
+          "viewport": [
+            1366,
+            768
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 768,
+          "pageWidth": 1366,
+          "body": {
+            "left": 281,
+            "right": 1341,
+            "top": 335,
+            "bottom": 687
+          },
+          "region": {
+            "top": 287,
+            "bottom": 687
+          },
+          "footer": {
+            "top": 687,
+            "bottom": 747
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 342,
+          "scrollWidth": 1132,
+          "clientWidth": 1050,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 429,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 429,
+              "right": 649,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 649,
+              "right": 949,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 949,
+              "right": 1105,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1105,
+              "right": 1269,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1187,
+              "right": 1331,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 429,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 429,
+              "right": 649,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 649,
+              "right": 949,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 949,
+              "right": 1105,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1105,
+              "right": 1269,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1187,
+              "right": 1331,
+              "top": 335,
+              "bottom": 411
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1093x614",
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1.25,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 335,
+            "bottom": 553
+          },
+          "region": {
+            "top": 287,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 208,
+          "scrollWidth": 1132,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 287,
+              "bottom": 335
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 287,
+              "bottom": 335
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 335,
+              "bottom": 411
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 335,
+              "bottom": 411
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "768x900",
+          "viewport": [
+            768,
+            900
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 900,
+          "pageWidth": 768,
+          "body": {
+            "left": 281,
+            "right": 743,
+            "top": 420,
+            "bottom": 794
+          },
+          "region": {
+            "top": 372,
+            "bottom": 794.0625
+          },
+          "footer": {
+            "top": 794.0625,
+            "bottom": 879
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 364,
+          "scrollWidth": 1072,
+          "clientWidth": 452,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 429,
+              "top": 372,
+              "bottom": 420
+            },
+            {
+              "left": 429,
+              "right": 649,
+              "top": 372,
+              "bottom": 420
+            },
+            {
+              "left": 649,
+              "right": 949,
+              "top": 372,
+              "bottom": 420
+            },
+            {
+              "left": 949,
+              "right": 1105,
+              "top": 372,
+              "bottom": 420
+            },
+            {
+              "left": 1105,
+              "right": 1269,
+              "top": 372,
+              "bottom": 420
+            },
+            {
+              "left": 649,
+              "right": 733,
+              "top": 372,
+              "bottom": 420
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 429,
+              "top": 420,
+              "bottom": 496
+            },
+            {
+              "left": 429,
+              "right": 649,
+              "top": 420,
+              "bottom": 496
+            },
+            {
+              "left": 649,
+              "right": 949,
+              "top": 420,
+              "bottom": 496
+            },
+            {
+              "left": 949,
+              "right": 1105,
+              "top": 420,
+              "bottom": 496
+            },
+            {
+              "left": 1105,
+              "right": 1269,
+              "top": 420,
+              "bottom": 496
+            },
+            {
+              "left": 649,
+              "right": 733,
+              "top": 420,
+              "bottom": 496
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "390x844",
+          "viewport": [
+            390,
+            844
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 844,
+          "pageWidth": 390,
+          "body": {
+            "left": 13,
+            "right": 377,
+            "top": 488,
+            "bottom": 750
+          },
+          "region": {
+            "top": 440,
+            "bottom": 750.0625
+          },
+          "footer": {
+            "top": 750.0625,
+            "bottom": 831
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 252,
+          "scrollWidth": 1072,
+          "clientWidth": 354,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 161,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 161,
+              "right": 381,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 381,
+              "right": 681,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 681,
+              "right": 837,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 837,
+              "right": 1001,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 283,
+              "right": 367,
+              "top": 440,
+              "bottom": 488
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 161,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 161,
+              "right": 381,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 381,
+              "right": 681,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 681,
+              "right": 837,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 837,
+              "right": 1001,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 283,
+              "right": 367,
+              "top": 488,
+              "bottom": 564
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "360x740",
+          "viewport": [
+            360,
+            740
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 740,
+          "pageWidth": 360,
+          "body": {
+            "left": 13,
+            "right": 347,
+            "top": 488,
+            "bottom": 646
+          },
+          "region": {
+            "top": 440,
+            "bottom": 646.0625
+          },
+          "footer": {
+            "top": 646.0625,
+            "bottom": 727
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 148,
+          "scrollWidth": 1072,
+          "clientWidth": 324,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 161,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 161,
+              "right": 381,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 381,
+              "right": 681,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 681,
+              "right": 837,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 837,
+              "right": 1001,
+              "top": 440,
+              "bottom": 488
+            },
+            {
+              "left": 253,
+              "right": 337,
+              "top": 440,
+              "bottom": 488
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 161,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 161,
+              "right": 381,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 381,
+              "right": 681,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 681,
+              "right": 837,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 837,
+              "right": 1001,
+              "top": 488,
+              "bottom": 564
+            },
+            {
+              "left": 253,
+              "right": 337,
+              "top": 488,
+              "bottom": 564
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "390x400",
+          "viewport": [
+            390,
+            400
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 655,
+          "pageWidth": 375,
+          "body": {
+            "left": 13,
+            "right": 362,
+            "top": 472,
+            "bottom": 581
+          },
+          "region": {
+            "top": 424,
+            "bottom": 581.0625
+          },
+          "footer": {
+            "top": 581.0625,
+            "bottom": 654
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 99,
+          "scrollWidth": 1072,
+          "clientWidth": 339,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 161,
+              "top": 424,
+              "bottom": 472
+            },
+            {
+              "left": 161,
+              "right": 381,
+              "top": 424,
+              "bottom": 472
+            },
+            {
+              "left": 381,
+              "right": 681,
+              "top": 424,
+              "bottom": 472
+            },
+            {
+              "left": 681,
+              "right": 837,
+              "top": 424,
+              "bottom": 472
+            },
+            {
+              "left": 837,
+              "right": 1001,
+              "top": 424,
+              "bottom": 472
+            },
+            {
+              "left": 268,
+              "right": 352,
+              "top": 424,
+              "bottom": 472
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 161,
+              "top": 472,
+              "bottom": 548
+            },
+            {
+              "left": 161,
+              "right": 381,
+              "top": 472,
+              "bottom": 548
+            },
+            {
+              "left": 381,
+              "right": 681,
+              "top": 472,
+              "bottom": 548
+            },
+            {
+              "left": 681,
+              "right": 837,
+              "top": 472,
+              "bottom": 548
+            },
+            {
+              "left": 837,
+              "right": 1001,
+              "top": 472,
+              "bottom": 548
+            },
+            {
+              "left": 268,
+              "right": 352,
+              "top": 472,
+              "bottom": 548
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1366x420",
+          "viewport": [
+            1366,
+            420
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 478,
+          "pageWidth": 1351,
+          "body": {
+            "left": 269,
+            "right": 1338,
+            "top": 295,
+            "bottom": 429
+          },
+          "region": {
+            "top": 247,
+            "bottom": 429
+          },
+          "footer": {
+            "top": 429,
+            "bottom": 477
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 124,
+          "scrollWidth": 1132,
+          "clientWidth": 1059,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 247,
+              "bottom": 295
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 247,
+              "bottom": 295
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 247,
+              "bottom": 295
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 247,
+              "bottom": 295
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 247,
+              "bottom": 295
+            },
+            {
+              "left": 1184,
+              "right": 1328,
+              "top": 247,
+              "bottom": 295
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 417,
+              "top": 295,
+              "bottom": 371
+            },
+            {
+              "left": 417,
+              "right": 637,
+              "top": 295,
+              "bottom": 371
+            },
+            {
+              "left": 637,
+              "right": 937,
+              "top": 295,
+              "bottom": 371
+            },
+            {
+              "left": 937,
+              "right": 1093,
+              "top": 295,
+              "bottom": 371
+            },
+            {
+              "left": 1093,
+              "right": 1257,
+              "top": 295,
+              "bottom": 371
+            },
+            {
+              "left": 1184,
+              "right": 1328,
+              "top": 295,
+              "bottom": 371
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        }
+      ]
+    },
+    {
+      "kind": "customers",
+      "checks": [
+        "Default pageSize 10",
+        "One initial list request",
+        "Approved columns retained",
+        "Size 20: one request, page 1, server rows",
+        "Size 20: exact server row count",
+        "Size 50: one request, page 1, server rows",
+        "Size 50: exact server row count",
+        "Size 100: one request, page 1, server rows",
+        "Size 100: exact server row count",
+        "Size 10: one request, page 1, server rows",
+        "Size 10: exact server row count",
+        "Size 100: one request, page 1, server rows",
+        "Size 100: exact server row count",
+        "Last page range 101–137 / 137",
+        "Last page has 37 records",
+        "Few rows: no vertical scrollbar",
+        "Empty range is 0–0 / 0",
+        "Empty has no records",
+        "Page size preserves keyword filter",
+        "Page change resets body scroll",
+        "Page size resets body scroll",
+        "Filter resets body scroll",
+        "Resize: no request and pageSize remains 50",
+        "Resize: same body and scroll position",
+        "Header stays fixed vertically",
+        "Actions stay fixed horizontally",
+        "Horizontal scrollbar reachable without scrolling all rows",
+        "Sidebar: no request or pageSize change",
+        "Status 0: one request and page 1",
+        "Reset: one request, filters cleared, size preserved",
+        "Reload: one request",
+        "Stale response ignored",
+        "Resize 1920x1080: no request, same size, all columns",
+        "Resize 1366x768: no request, same size, all columns",
+        "Resize 1093x614: no request, same size, all columns",
+        "125% zoom equivalent viewport and pixel ratio",
+        "Resize 768x900: no request, same size, all columns",
+        "Resize 390x844: no request, same size, all columns",
+        "Mobile size 10: one request and correct rows",
+        "Mobile size 20: one request and correct rows",
+        "Mobile size 50: one request and correct rows",
+        "Mobile size 100: one request and correct rows",
+        "Mobile size 50: one request and correct rows",
+        "Mobile action dropdown is portaled and visible",
+        "Resize 360x740: no request, same size, all columns",
+        "Resize 390x400: no request, same size, all columns",
+        "Short viewport keeps pagination accessible",
+        "Resize 1366x420: no request, same size, all columns",
+        "Short viewport keeps pagination accessible"
+      ],
+      "measurements": [
+        {
+          "size": 20,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 394.875,
+            "bottom": 552.875
+          },
+          "region": {
+            "top": 346.875,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 1520,
+          "clientHeight": 148,
+          "scrollWidth": 1354,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 346.875,
+              "bottom": 394.875
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 394.875,
+              "bottom": 470.875
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 20
+        },
+        {
+          "size": 50,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 394.875,
+            "bottom": 552.875
+          },
+          "region": {
+            "top": 346.875,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 148,
+          "scrollWidth": 1354,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 346.875,
+              "bottom": 394.875
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 394.875,
+              "bottom": 470.875
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "size": 100,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 394.875,
+            "bottom": 552.875
+          },
+          "region": {
+            "top": 346.875,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 7600,
+          "clientHeight": 148,
+          "scrollWidth": 1354,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 346.875,
+              "bottom": 394.875
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 394.875,
+              "bottom": 470.875
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 100
+        },
+        {
+          "size": 10,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 394.875,
+            "bottom": 552.875
+          },
+          "region": {
+            "top": 346.875,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 760,
+          "clientHeight": 148,
+          "scrollWidth": 1354,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 346.875,
+              "bottom": 394.875
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 394.875,
+              "bottom": 470.875
+            }
+          ],
+          "fixedBackground": "rgb(246, 240, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 10
+        },
+        {
+          "size": 100,
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 394.875,
+            "bottom": 552.875
+          },
+          "region": {
+            "top": 346.875,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 7600,
+          "clientHeight": 148,
+          "scrollWidth": 1354,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 346.875,
+              "bottom": 394.875
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 394.875,
+              "bottom": 470.875
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 100
+        },
+        {
+          "label": "1920x1080",
+          "viewport": [
+            1920,
+            1080
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 0,
+          "yScrollers": 1,
+          "pageHeight": 1080,
+          "pageWidth": 1920,
+          "body": {
+            "left": 281,
+            "right": 1895,
+            "top": 355.9375,
+            "bottom": 998.9375
+          },
+          "region": {
+            "top": 307.9375,
+            "bottom": 999
+          },
+          "footer": {
+            "top": 999,
+            "bottom": 1059
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 643,
+          "scrollWidth": 1604,
+          "clientWidth": 1604,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 721,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 721,
+              "right": 941,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 941,
+              "right": 1141,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 1141,
+              "right": 1297,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 1297,
+              "right": 1577,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 1577,
+              "right": 1741,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 1741,
+              "right": 1885,
+              "top": 307.9375,
+              "bottom": 355.9375
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 721,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 721,
+              "right": 941,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 941,
+              "right": 1141,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 1141,
+              "right": 1297,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 1297,
+              "right": 1577,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 1577,
+              "right": 1741,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 1741,
+              "right": 1885,
+              "top": 355.9375,
+              "bottom": 431.9375
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1366x768",
+          "viewport": [
+            1366,
+            768
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 768,
+          "pageWidth": 1366,
+          "body": {
+            "left": 281,
+            "right": 1341,
+            "top": 355.9375,
+            "bottom": 686.9375
+          },
+          "region": {
+            "top": 307.9375,
+            "bottom": 687
+          },
+          "footer": {
+            "top": 687,
+            "bottom": 747
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 321,
+          "scrollWidth": 1354,
+          "clientWidth": 1050,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 471,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 471,
+              "right": 691,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 691,
+              "right": 891,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 891,
+              "right": 1047,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 1047,
+              "right": 1327,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 1327,
+              "right": 1491,
+              "top": 307.9375,
+              "bottom": 355.9375
+            },
+            {
+              "left": 1187,
+              "right": 1331,
+              "top": 307.9375,
+              "bottom": 355.9375
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 471,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 471,
+              "right": 691,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 691,
+              "right": 891,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 891,
+              "right": 1047,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 1047,
+              "right": 1327,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 1327,
+              "right": 1491,
+              "top": 355.9375,
+              "bottom": 431.9375
+            },
+            {
+              "left": 1187,
+              "right": 1331,
+              "top": 355.9375,
+              "bottom": 431.9375
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1093x614",
+          "viewport": [
+            1093,
+            614
+          ],
+          "pixelRatio": 1.25,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 614,
+          "pageWidth": 1093,
+          "body": {
+            "left": 269,
+            "right": 1080,
+            "top": 394.875,
+            "bottom": 552.875
+          },
+          "region": {
+            "top": 346.875,
+            "bottom": 553
+          },
+          "footer": {
+            "top": 553,
+            "bottom": 601
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 148,
+          "scrollWidth": 1354,
+          "clientWidth": 801,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 346.875,
+              "bottom": 394.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 346.875,
+              "bottom": 394.875
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 394.875,
+              "bottom": 470.875
+            },
+            {
+              "left": 926,
+              "right": 1070,
+              "top": 394.875,
+              "bottom": 470.875
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "768x900",
+          "viewport": [
+            768,
+            900
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 900,
+          "pageWidth": 768,
+          "body": {
+            "left": 281,
+            "right": 743,
+            "top": 467.875,
+            "bottom": 793.875
+          },
+          "region": {
+            "top": 419.875,
+            "bottom": 794.0625
+          },
+          "footer": {
+            "top": 794.0625,
+            "bottom": 879
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 316,
+          "scrollWidth": 1294,
+          "clientWidth": 452,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 281,
+              "right": 471,
+              "top": 419.875,
+              "bottom": 467.875
+            },
+            {
+              "left": 471,
+              "right": 691,
+              "top": 419.875,
+              "bottom": 467.875
+            },
+            {
+              "left": 691,
+              "right": 891,
+              "top": 419.875,
+              "bottom": 467.875
+            },
+            {
+              "left": 891,
+              "right": 1047,
+              "top": 419.875,
+              "bottom": 467.875
+            },
+            {
+              "left": 1047,
+              "right": 1327,
+              "top": 419.875,
+              "bottom": 467.875
+            },
+            {
+              "left": 1327,
+              "right": 1491,
+              "top": 419.875,
+              "bottom": 467.875
+            },
+            {
+              "left": 649,
+              "right": 733,
+              "top": 419.875,
+              "bottom": 467.875
+            }
+          ],
+          "cells": [
+            {
+              "left": 281,
+              "right": 471,
+              "top": 467.875,
+              "bottom": 543.875
+            },
+            {
+              "left": 471,
+              "right": 691,
+              "top": 467.875,
+              "bottom": 543.875
+            },
+            {
+              "left": 691,
+              "right": 891,
+              "top": 467.875,
+              "bottom": 543.875
+            },
+            {
+              "left": 891,
+              "right": 1047,
+              "top": 467.875,
+              "bottom": 543.875
+            },
+            {
+              "left": 1047,
+              "right": 1327,
+              "top": 467.875,
+              "bottom": 543.875
+            },
+            {
+              "left": 1327,
+              "right": 1491,
+              "top": 467.875,
+              "bottom": 543.875
+            },
+            {
+              "left": 649,
+              "right": 733,
+              "top": 467.875,
+              "bottom": 543.875
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "390x844",
+          "viewport": [
+            390,
+            844
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 844,
+          "pageWidth": 390,
+          "body": {
+            "left": 13,
+            "right": 377,
+            "top": 604.8125,
+            "bottom": 749.8125
+          },
+          "region": {
+            "top": 556.8125,
+            "bottom": 750.0625
+          },
+          "footer": {
+            "top": 750.0625,
+            "bottom": 831
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 135,
+          "scrollWidth": 1294,
+          "clientWidth": 354,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 203,
+              "top": 556.8125,
+              "bottom": 604.8125
+            },
+            {
+              "left": 203,
+              "right": 423,
+              "top": 556.8125,
+              "bottom": 604.8125
+            },
+            {
+              "left": 423,
+              "right": 623,
+              "top": 556.8125,
+              "bottom": 604.8125
+            },
+            {
+              "left": 623,
+              "right": 779,
+              "top": 556.8125,
+              "bottom": 604.8125
+            },
+            {
+              "left": 779,
+              "right": 1059,
+              "top": 556.8125,
+              "bottom": 604.8125
+            },
+            {
+              "left": 1059,
+              "right": 1223,
+              "top": 556.8125,
+              "bottom": 604.8125
+            },
+            {
+              "left": 283,
+              "right": 367,
+              "top": 556.8125,
+              "bottom": 604.8125
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 203,
+              "top": 604.8125,
+              "bottom": 680.8125
+            },
+            {
+              "left": 203,
+              "right": 423,
+              "top": 604.8125,
+              "bottom": 680.8125
+            },
+            {
+              "left": 423,
+              "right": 623,
+              "top": 604.8125,
+              "bottom": 680.8125
+            },
+            {
+              "left": 623,
+              "right": 779,
+              "top": 604.8125,
+              "bottom": 680.8125
+            },
+            {
+              "left": 779,
+              "right": 1059,
+              "top": 604.8125,
+              "bottom": 680.8125
+            },
+            {
+              "left": 1059,
+              "right": 1223,
+              "top": 604.8125,
+              "bottom": 680.8125
+            },
+            {
+              "left": 283,
+              "right": 367,
+              "top": 604.8125,
+              "bottom": 680.8125
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "360x740",
+          "viewport": [
+            360,
+            740
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 780,
+          "pageWidth": 345,
+          "body": {
+            "left": 13,
+            "right": 332,
+            "top": 616.140625,
+            "bottom": 698.140625
+          },
+          "region": {
+            "top": 568.140625,
+            "bottom": 697.875
+          },
+          "footer": {
+            "top": 697.875,
+            "bottom": 778.8125
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 72,
+          "scrollWidth": 1294,
+          "clientWidth": 309,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 203,
+              "top": 568.140625,
+              "bottom": 616.140625
+            },
+            {
+              "left": 203,
+              "right": 423,
+              "top": 568.140625,
+              "bottom": 616.140625
+            },
+            {
+              "left": 423,
+              "right": 623,
+              "top": 568.140625,
+              "bottom": 616.140625
+            },
+            {
+              "left": 623,
+              "right": 779,
+              "top": 568.140625,
+              "bottom": 616.140625
+            },
+            {
+              "left": 779,
+              "right": 1059,
+              "top": 568.140625,
+              "bottom": 616.140625
+            },
+            {
+              "left": 1059,
+              "right": 1223,
+              "top": 568.140625,
+              "bottom": 616.140625
+            },
+            {
+              "left": 238,
+              "right": 322,
+              "top": 568.140625,
+              "bottom": 616.140625
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 203,
+              "top": 616.140625,
+              "bottom": 692.140625
+            },
+            {
+              "left": 203,
+              "right": 423,
+              "top": 616.140625,
+              "bottom": 692.140625
+            },
+            {
+              "left": 423,
+              "right": 623,
+              "top": 616.140625,
+              "bottom": 692.140625
+            },
+            {
+              "left": 623,
+              "right": 779,
+              "top": 616.140625,
+              "bottom": 692.140625
+            },
+            {
+              "left": 779,
+              "right": 1059,
+              "top": 616.140625,
+              "bottom": 692.140625
+            },
+            {
+              "left": 1059,
+              "right": 1223,
+              "top": 616.140625,
+              "bottom": 692.140625
+            },
+            {
+              "left": 238,
+              "right": 322,
+              "top": 616.140625,
+              "bottom": 692.140625
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "390x400",
+          "viewport": [
+            390,
+            400
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 780,
+          "pageWidth": 375,
+          "body": {
+            "left": 13,
+            "right": 362,
+            "top": 596.8125,
+            "bottom": 705.8125
+          },
+          "region": {
+            "top": 548.8125,
+            "bottom": 705.875
+          },
+          "footer": {
+            "top": 705.875,
+            "bottom": 778.8125
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 99,
+          "scrollWidth": 1294,
+          "clientWidth": 339,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 13,
+              "right": 203,
+              "top": 548.8125,
+              "bottom": 596.8125
+            },
+            {
+              "left": 203,
+              "right": 423,
+              "top": 548.8125,
+              "bottom": 596.8125
+            },
+            {
+              "left": 423,
+              "right": 623,
+              "top": 548.8125,
+              "bottom": 596.8125
+            },
+            {
+              "left": 623,
+              "right": 779,
+              "top": 548.8125,
+              "bottom": 596.8125
+            },
+            {
+              "left": 779,
+              "right": 1059,
+              "top": 548.8125,
+              "bottom": 596.8125
+            },
+            {
+              "left": 1059,
+              "right": 1223,
+              "top": 548.8125,
+              "bottom": 596.8125
+            },
+            {
+              "left": 268,
+              "right": 352,
+              "top": 548.8125,
+              "bottom": 596.8125
+            }
+          ],
+          "cells": [
+            {
+              "left": 13,
+              "right": 203,
+              "top": 596.8125,
+              "bottom": 672.8125
+            },
+            {
+              "left": 203,
+              "right": 423,
+              "top": 596.8125,
+              "bottom": 672.8125
+            },
+            {
+              "left": 423,
+              "right": 623,
+              "top": 596.8125,
+              "bottom": 672.8125
+            },
+            {
+              "left": 623,
+              "right": 779,
+              "top": 596.8125,
+              "bottom": 672.8125
+            },
+            {
+              "left": 779,
+              "right": 1059,
+              "top": 596.8125,
+              "bottom": 672.8125
+            },
+            {
+              "left": 1059,
+              "right": 1223,
+              "top": 596.8125,
+              "bottom": 672.8125
+            },
+            {
+              "left": 268,
+              "right": 352,
+              "top": 596.8125,
+              "bottom": 672.8125
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        },
+        {
+          "label": "1366x420",
+          "viewport": [
+            1366,
+            420
+          ],
+          "pixelRatio": 1,
+          "xScrollers": 1,
+          "yScrollers": 1,
+          "pageHeight": 519,
+          "pageWidth": 1351,
+          "body": {
+            "left": 269,
+            "right": 1338,
+            "top": 335.9375,
+            "bottom": 469.9375
+          },
+          "region": {
+            "top": 287.9375,
+            "bottom": 469.9375
+          },
+          "footer": {
+            "top": 469.9375,
+            "bottom": 517.9375
+          },
+          "scrollHeight": 3800,
+          "clientHeight": 124,
+          "scrollWidth": 1354,
+          "clientWidth": 1059,
+          "overflowY": "auto",
+          "scrollTop": 0,
+          "header": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 287.9375,
+              "bottom": 335.9375
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 287.9375,
+              "bottom": 335.9375
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 287.9375,
+              "bottom": 335.9375
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 287.9375,
+              "bottom": 335.9375
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 287.9375,
+              "bottom": 335.9375
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 287.9375,
+              "bottom": 335.9375
+            },
+            {
+              "left": 1184,
+              "right": 1328,
+              "top": 287.9375,
+              "bottom": 335.9375
+            }
+          ],
+          "cells": [
+            {
+              "left": 269,
+              "right": 459,
+              "top": 335.9375,
+              "bottom": 411.9375
+            },
+            {
+              "left": 459,
+              "right": 679,
+              "top": 335.9375,
+              "bottom": 411.9375
+            },
+            {
+              "left": 679,
+              "right": 879,
+              "top": 335.9375,
+              "bottom": 411.9375
+            },
+            {
+              "left": 879,
+              "right": 1035,
+              "top": 335.9375,
+              "bottom": 411.9375
+            },
+            {
+              "left": 1035,
+              "right": 1315,
+              "top": 335.9375,
+              "bottom": 411.9375
+            },
+            {
+              "left": 1315,
+              "right": 1479,
+              "top": 335.9375,
+              "bottom": 411.9375
+            },
+            {
+              "left": 1184,
+              "right": 1328,
+              "top": 335.9375,
+              "bottom": 411.9375
+            }
+          ],
+          "fixedBackground": "rgb(255, 255, 255)",
+          "headerBackground": "rgb(248, 246, 252)",
+          "rowCount": 50
+        }
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "path": "/auth/me",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user/roles",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/me/warehouses",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "20"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "few"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "empty"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "2",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "few"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh",
+        "status": "0"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "slow"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/products",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/auth/me",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user/roles",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/me/warehouses",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "20"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "few"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "empty"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "2",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "few"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh",
+        "status": "0"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "slow"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/product-groups",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/auth/me",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user/roles",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/me/warehouses",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "20"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "few"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "empty"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "2",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "few"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh",
+        "status": "0"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "slow"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/warehouses",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/auth/me",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user/roles",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/me/warehouses",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "20"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "2",
+        "pageSize": "100"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "few"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "empty"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "2",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "few"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh",
+        "status": "0"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "slow"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "20",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "100",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "50",
+        "keyword": "fresh"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/auth/me",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user/roles",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/me/warehouses",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/customers",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "method": "GET"
+    },
+    {
+      "path": "/auth/me",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user",
+      "params": {},
+      "method": "GET"
+    },
+    {
+      "path": "/users/table-user/roles",
+      "params": {},
+      "method": "GET"
+    }
+  ],
+  "errors": []
+}

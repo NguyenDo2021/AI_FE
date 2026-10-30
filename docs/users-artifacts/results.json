@@ -1,0 +1,1997 @@
+{
+  "checks": [
+    "one initial user list request",
+    "default server pagination is 10",
+    "desktop 1440: page has no horizontal overflow",
+    "desktop 1440: ten separate columns",
+    "desktop 1440: action column fixed only on desktop",
+    "desktop pagination fits screen",
+    "typing does not request data",
+    "reload uses applied filters rather than draft",
+    "Enter submits exactly once at page one",
+    "reset requests exactly once and clears keyword",
+    "server page size 20 requests once",
+    "server page size 50 requests once",
+    "server page size 100 requests once",
+    "server page size 10 requests once",
+    "required fields validated before write",
+    "existing email validation retained",
+    "form API error preserves entered data",
+    "form duplicate submit blocked and original payload retained",
+    "modal success retains page and applied filters",
+    "edit loads selected user fields",
+    "assigned roles outside option list preserved",
+    "ADMIN checked and protected according to existing rule",
+    "draft checkbox does not change saved assignments",
+    "role save blocked while DELETE is pending",
+    "direct removal updates saved assignments and draft",
+    "other draft selection survives direct removal",
+    "role PUT uses UUIDs, preserves ADMIN and outside role, excludes removed role",
+    "cancel discards unsaved selection",
+    "inactive warehouse cannot be newly assigned",
+    "warehouse PUT changes one link without body",
+    "warehouse removal preserves other assignment",
+    "warehouse error keeps both lists visible",
+    "drawer close returns focus to trigger",
+    "width 320: page has no horizontal overflow",
+    "width 320: ten separate columns",
+    "width 320: action column fixed only on desktop",
+    "320: mobile fields initially hidden",
+    "320: expanded filter retains draft",
+    "320: toggle does not fetch and has aria attributes",
+    "form 320: overlay fits viewport and content wraps",
+    "form 320: footer accessible",
+    "320: Hoạt động select matches input height and centers text/dot",
+    "320: Ngừng hoạt động select matches input height and centers text/dot",
+    "320: form buttons compact on desktop and touchable on mobile",
+    "warehouse 320: overlay fits viewport and content wraps",
+    "warehouse 320: footer accessible",
+    "role 320: overlay fits viewport and content wraps",
+    "role 320: footer accessible",
+    "width 375: page has no horizontal overflow",
+    "width 375: ten separate columns",
+    "width 375: action column fixed only on desktop",
+    "375: mobile fields initially hidden",
+    "375: expanded filter retains draft",
+    "375: toggle does not fetch and has aria attributes",
+    "form 375: overlay fits viewport and content wraps",
+    "form 375: footer accessible",
+    "375: Hoạt động select matches input height and centers text/dot",
+    "375: Ngừng hoạt động select matches input height and centers text/dot",
+    "375: form buttons compact on desktop and touchable on mobile",
+    "warehouse 375: overlay fits viewport and content wraps",
+    "warehouse 375: footer accessible",
+    "role 375: overlay fits viewport and content wraps",
+    "role 375: footer accessible",
+    "width 390: page has no horizontal overflow",
+    "width 390: ten separate columns",
+    "width 390: action column fixed only on desktop",
+    "390: mobile fields initially hidden",
+    "390: expanded filter retains draft",
+    "390: toggle does not fetch and has aria attributes",
+    "form 390: overlay fits viewport and content wraps",
+    "form 390: footer accessible",
+    "390: Hoạt động select matches input height and centers text/dot",
+    "390: Ngừng hoạt động select matches input height and centers text/dot",
+    "390: form buttons compact on desktop and touchable on mobile",
+    "warehouse 390: overlay fits viewport and content wraps",
+    "warehouse 390: footer accessible",
+    "role 390: overlay fits viewport and content wraps",
+    "role 390: footer accessible",
+    "width 414: page has no horizontal overflow",
+    "width 414: ten separate columns",
+    "width 414: action column fixed only on desktop",
+    "414: mobile fields initially hidden",
+    "414: expanded filter retains draft",
+    "414: toggle does not fetch and has aria attributes",
+    "form 414: overlay fits viewport and content wraps",
+    "form 414: footer accessible",
+    "414: Hoạt động select matches input height and centers text/dot",
+    "414: Ngừng hoạt động select matches input height and centers text/dot",
+    "414: form buttons compact on desktop and touchable on mobile",
+    "warehouse 414: overlay fits viewport and content wraps",
+    "warehouse 414: footer accessible",
+    "role 414: overlay fits viewport and content wraps",
+    "role 414: footer accessible",
+    "width 768: page has no horizontal overflow",
+    "width 768: ten separate columns",
+    "width 768: action column fixed only on desktop",
+    "form 768: overlay fits viewport and content wraps",
+    "form 768: footer accessible",
+    "768: Hoạt động select matches input height and centers text/dot",
+    "768: Ngừng hoạt động select matches input height and centers text/dot",
+    "768: form buttons compact on desktop and touchable on mobile",
+    "warehouse 768: overlay fits viewport and content wraps",
+    "warehouse 768: footer accessible",
+    "role 768: overlay fits viewport and content wraps",
+    "role 768: footer accessible",
+    "width 1024: page has no horizontal overflow",
+    "width 1024: ten separate columns",
+    "width 1024: action column fixed only on desktop",
+    "form 1024: overlay fits viewport and content wraps",
+    "form 1024: footer accessible",
+    "1024: Hoạt động select matches input height and centers text/dot",
+    "1024: Ngừng hoạt động select matches input height and centers text/dot",
+    "1024: form buttons compact on desktop and touchable on mobile",
+    "warehouse 1024: overlay fits viewport and content wraps",
+    "warehouse 1024: footer accessible",
+    "role 1024: overlay fits viewport and content wraps",
+    "role 1024: footer accessible",
+    "width 1440: page has no horizontal overflow",
+    "width 1440: ten separate columns",
+    "width 1440: action column fixed only on desktop",
+    "form 1440: overlay fits viewport and content wraps",
+    "form 1440: footer accessible",
+    "1440: Hoạt động select matches input height and centers text/dot",
+    "1440: Ngừng hoạt động select matches input height and centers text/dot",
+    "1440: form buttons compact on desktop and touchable on mobile",
+    "warehouse 1440: overlay fits viewport and content wraps",
+    "warehouse 1440: footer accessible",
+    "role 1440: overlay fits viewport and content wraps",
+    "role 1440: footer accessible",
+    "short mobile form: overlay fits viewport and content wraps",
+    "short mobile form: footer accessible",
+    "old role response cannot overwrite newly opened user",
+    "old warehouse response cannot overwrite newly opened user",
+    "role load failure has retry and blocks empty save",
+    "role PUT failure preserves draft and saved assignments",
+    "role DELETE failure retains assignment",
+    "changing status alone does not fetch",
+    "status zero is sent with applied keyword",
+    "empty list renders no data and zero server total",
+    "list error displays backend message with retry",
+    "collapsed sidebar 1440: page has no horizontal overflow",
+    "collapsed sidebar 1440: ten separate columns",
+    "collapsed sidebar 1440: action column fixed only on desktop",
+    "table body scrolls with stationary header and opaque fixed actions",
+    "existing detail flow still fetches selected user",
+    "user deletion still requires confirmation",
+    "mobile search submits once and leaves filters expanded",
+    "filter state survives breakpoint change",
+    "warehouse drawer never reads global warehouse catalog",
+    "view-only user keeps warehouse action and hides write actions",
+    "view-only warehouse drawer has no assignment/removal buttons",
+    "verified catalog ADMIN retains warehouse permission exception",
+    "no uncaught browser errors"
+  ],
+  "measurements": [
+    {
+      "label": "desktop 1440",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "footerBottom": 879,
+      "columns": [
+        "STT",
+        "Tên đăng nhập",
+        "Họ và tên",
+        "Email",
+        "Số điện thoại",
+        "Trạng thái",
+        "Ngày tạo",
+        "Ngày cập nhật",
+        "Cập nhật bởi",
+        "Thao tác"
+      ],
+      "table": {
+        "x": 281,
+        "y": 374.921875,
+        "width": 1134,
+        "height": 444,
+        "top": 374.921875,
+        "right": 1415,
+        "bottom": 818.921875,
+        "left": 281
+      },
+      "fixed": true
+    },
+    {
+      "label": "width 320",
+      "width": 320,
+      "height": 900,
+      "scrollWidth": 320,
+      "footerBottom": 887,
+      "columns": [
+        "STT",
+        "Tên đăng nhập",
+        "Họ và tên",
+        "Email",
+        "Số điện thoại",
+        "Trạng thái",
+        "Ngày tạo",
+        "Ngày cập nhật",
+        "Cập nhật bởi",
+        "Thao tác"
+      ],
+      "table": {
+        "x": 13,
+        "y": 280,
+        "width": 294,
+        "height": 494,
+        "top": 280,
+        "right": 307,
+        "bottom": 774,
+        "left": 13
+      },
+      "fixed": false
+    },
+    {
+      "label": "form 320",
+      "overlay": {
+        "left": 12,
+        "right": 308,
+        "width": 320,
+        "overflow": []
+      }
+    },
+    {
+      "label": "status Hoạt động 320",
+      "alignment": {
+        "phone": {
+          "x": 30,
+          "y": 432,
+          "width": 260,
+          "height": 36,
+          "top": 432,
+          "right": 290,
+          "bottom": 468,
+          "left": 30
+        },
+        "select": {
+          "x": 30,
+          "y": 520,
+          "width": 260,
+          "height": 36,
+          "top": 520,
+          "right": 290,
+          "bottom": 556,
+          "left": 30
+        },
+        "label": {
+          "x": 42,
+          "y": 528,
+          "width": 92.46875,
+          "height": 20,
+          "top": 528,
+          "right": 134.46875,
+          "bottom": 548,
+          "left": 42
+        },
+        "dot": {
+          "x": 47,
+          "y": 534,
+          "width": 8,
+          "height": 8,
+          "top": 534,
+          "right": 55,
+          "bottom": 542,
+          "left": 47
+        }
+      }
+    },
+    {
+      "label": "status Ngừng hoạt động 320",
+      "alignment": {
+        "phone": {
+          "x": 30,
+          "y": 432,
+          "width": 260,
+          "height": 36,
+          "top": 432,
+          "right": 290,
+          "bottom": 468,
+          "left": 30
+        },
+        "select": {
+          "x": 30,
+          "y": 520,
+          "width": 260,
+          "height": 36,
+          "top": 520,
+          "right": 290,
+          "bottom": 556,
+          "left": 30
+        },
+        "label": {
+          "x": 42,
+          "y": 528,
+          "width": 137.40625,
+          "height": 20,
+          "top": 528,
+          "right": 179.40625,
+          "bottom": 548,
+          "left": 42
+        },
+        "dot": {
+          "x": 47,
+          "y": 534,
+          "width": 8,
+          "height": 8,
+          "top": 534,
+          "right": 55,
+          "bottom": 542,
+          "left": 47
+        }
+      }
+    },
+    {
+      "label": "warehouse 320",
+      "overlay": {
+        "left": 0,
+        "right": 320,
+        "width": 320,
+        "overflow": []
+      }
+    },
+    {
+      "label": "role 320",
+      "overlay": {
+        "left": 0,
+        "right": 320,
+        "width": 320,
+        "overflow": []
+      }
+    },
+    {
+      "label": "width 375",
+      "width": 375,
+      "height": 900,
+      "scrollWidth": 375,
+      "footerBottom": 887,
+      "columns": [
+        "STT",
+        "Tên đăng nhập",
+        "Họ và tên",
+        "Email",
+        "Số điện thoại",
+        "Trạng thái",
+        "Ngày tạo",
+        "Ngày cập nhật",
+        "Cập nhật bởi",
+        "Thao tác"
+      ],
+      "table": {
+        "x": 13,
+        "y": 292,
+        "width": 349,
+        "height": 514,
+        "top": 292,
+        "right": 362,
+        "bottom": 806,
+        "left": 13
+      },
+      "fixed": false
+    },
+    {
+      "label": "form 375",
+      "overlay": {
+        "left": 12,
+        "right": 363,
+        "width": 375,
+        "overflow": []
+      }
+    },
+    {
+      "label": "status Hoạt động 375",
+      "alignment": {
+        "phone": {
+          "x": 30,
+          "y": 432,
+          "width": 315,
+          "height": 36,
+          "top": 432,
+          "right": 345,
+          "bottom": 468,
+          "left": 30
+        },
+        "select": {
+          "x": 30,
+          "y": 520,
+          "width": 315,
+          "height": 36,
+          "top": 520,
+          "right": 345,
+          "bottom": 556,
+          "left": 30
+        },
+        "label": {
+          "x": 42,
+          "y": 528,
+          "width": 92.46875,
+          "height": 20,
+          "top": 528,
+          "right": 134.46875,
+          "bottom": 548,
+          "left": 42
+        },
+        "dot": {
+          "x": 47,
+          "y": 534,
+          "width": 8,
+          "height": 8,
+          "top": 534,
+          "right": 55,
+          "bottom": 542,
+          "left": 47
+        }
+      }
+    },
+    {
+      "label": "status Ngừng hoạt động 375",
+      "alignment": {
+        "phone": {
+          "x": 30,
+          "y": 432,
+          "width": 315,
+          "height": 36,
+          "top": 432,
+          "right": 345,
+          "bottom": 468,
+          "left": 30
+        },
+        "select": {
+          "x": 30,
+          "y": 520,
+          "width": 315,
+          "height": 36,
+          "top": 520,
+          "right": 345,
+          "bottom": 556,
+          "left": 30
+        },
+        "label": {
+          "x": 42,
+          "y": 528,
+          "width": 137.40625,
+          "height": 20,
+          "top": 528,
+          "right": 179.40625,
+          "bottom": 548,
+          "left": 42
+        },
+        "dot": {
+          "x": 47,
+          "y": 534,
+          "width": 8,
+          "height": 8,
+          "top": 534,
+          "right": 55,
+          "bottom": 542,
+          "left": 47
+        }
+      }
+    },
+    {
+      "label": "warehouse 375",
+      "overlay": {
+        "left": 0,
+        "right": 375,
+        "width": 375,
+        "overflow": []
+      }
+    },
+    {
+      "label": "role 375",
+      "overlay": {
+        "left": 0,
+        "right": 375,
+        "width": 375,
+        "overflow": []
+      }
+    },
+    {
+      "label": "width 390",
+      "width": 390,
+      "height": 900,
+      "scrollWidth": 390,
+      "footerBottom": 887,
+      "columns": [
+        "STT",
+        "Tên đăng nhập",
+        "Họ và tên",
+        "Email",
+        "Số điện thoại",
+        "Trạng thái",
+        "Ngày tạo",
+        "Ngày cập nhật",
+        "Cập nhật bởi",
+        "Thao tác"
+      ],
+      "table": {
+        "x": 13,
+        "y": 292,
+        "width": 364,
+        "height": 514,
+        "top": 292,
+        "right": 377,
+        "bottom": 806,
+        "left": 13
+      },
+      "fixed": false
+    },
+    {
+      "label": "form 390",
+      "overlay": {
+        "left": 12,
+        "right": 378,
+        "width": 390,
+        "overflow": []
+      }
+    },
+    {
+      "label": "status Hoạt động 390",
+      "alignment": {
+        "phone": {
+          "x": 30,
+          "y": 412.5,
+          "width": 330,
+          "height": 36,
+          "top": 412.5,
+          "right": 360,
+          "bottom": 448.5,
+          "left": 30
+        },
+        "select": {
+          "x": 30,
+          "y": 500.5,
+          "width": 330,
+          "height": 36,
+          "top": 500.5,
+          "right": 360,
+          "bottom": 536.5,
+          "left": 30
+        },
+        "label": {
+          "x": 42,
+          "y": 508.5,
+          "width": 92.46875,
+          "height": 20,
+          "top": 508.5,
+          "right": 134.46875,
+          "bottom": 528.5,
+          "left": 42
+        },
+        "dot": {
+          "x": 47,
+          "y": 514.5,
+          "width": 8,
+          "height": 8,
+          "top": 514.5,
+          "right": 55,
+          "bottom": 522.5,
+          "left": 47
+        }
+      }
+    },
+    {
+      "label": "status Ngừng hoạt động 390",
+      "alignment": {
+        "phone": {
+          "x": 30,
+          "y": 412.5,
+          "width": 330,
+          "height": 36,
+          "top": 412.5,
+          "right": 360,
+          "bottom": 448.5,
+          "left": 30
+        },
+        "select": {
+          "x": 30,
+          "y": 500.5,
+          "width": 330,
+          "height": 36,
+          "top": 500.5,
+          "right": 360,
+          "bottom": 536.5,
+          "left": 30
+        },
+        "label": {
+          "x": 42,
+          "y": 508.5,
+          "width": 137.40625,
+          "height": 20,
+          "top": 508.5,
+          "right": 179.40625,
+          "bottom": 528.5,
+          "left": 42
+        },
+        "dot": {
+          "x": 47,
+          "y": 514.5,
+          "width": 8,
+          "height": 8,
+          "top": 514.5,
+          "right": 55,
+          "bottom": 522.5,
+          "left": 47
+        }
+      }
+    },
+    {
+      "label": "warehouse 390",
+      "overlay": {
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "overflow": []
+      }
+    },
+    {
+      "label": "role 390",
+      "overlay": {
+        "left": 0,
+        "right": 390,
+        "width": 390,
+        "overflow": []
+      }
+    },
+    {
+      "label": "width 414",
+      "width": 414,
+      "height": 900,
+      "scrollWidth": 414,
+      "footerBottom": 887,
+      "columns": [
+        "STT",
+        "Tên đăng nhập",
+        "Họ và tên",
+        "Email",
+        "Số điện thoại",
+        "Trạng thái",
+        "Ngày tạo",
+        "Ngày cập nhật",
+        "Cập nhật bởi",
+        "Thao tác"
+      ],
+      "table": {
+        "x": 13,
+        "y": 292,
+        "width": 388,
+        "height": 514,
+        "top": 292,
+        "right": 401,
+        "bottom": 806,
+        "left": 13
+      },
+      "fixed": false
+    },
+    {
+      "label": "form 414",
+      "overlay": {
+        "left": 12,
+        "right": 402,
+        "width": 414,
+        "overflow": []
+      }
+    },
+    {
+      "label": "status Hoạt động 414",
+      "alignment": {
+        "phone": {
+          "x": 30,
+          "y": 412.5,
+          "width": 354,
+          "height": 36,
+          "top": 412.5,
+          "right": 384,
+          "bottom": 448.5,
+          "left": 30
+        },
+        "select": {
+          "x": 30,
+          "y": 500.5,
+          "width": 354,
+          "height": 36,
+          "top": 500.5,
+          "right": 384,
+          "bottom": 536.5,
+          "left": 30
+        },
+        "label": {
+          "x": 42,
+          "y": 508.5,
+          "width": 92.46875,
+          "height": 20,
+          "top": 508.5,
+          "right": 134.46875,
+          "bottom": 528.5,
+          "left": 42
+        },
+        "dot": {
+          "x": 47,
+          "y": 514.5,
+          "width": 8,
+          "height": 8,
+          "top": 514.5,
+          "right": 55,
+          "bottom": 522.5,
+          "left": 47
+        }
+      }
+    },
+    {
+      "label": "status Ngừng hoạt động 414",
+      "alignment": {
+        "phone": {
+          "x": 30,
+          "y": 412.5,
+          "width": 354,
+          "height": 36,
+          "top": 412.5,
+          "right": 384,
+          "bottom": 448.5,
+          "left": 30
+        },
+        "select": {
+          "x": 30,
+          "y": 500.5,
+          "width": 354,
+          "height": 36,
+          "top": 500.5,
+          "right": 384,
+          "bottom": 536.5,
+          "left": 30
+        },
+        "label": {
+          "x": 42,
+          "y": 508.5,
+          "width": 137.40625,
+          "height": 20,
+          "top": 508.5,
+          "right": 179.40625,
+          "bottom": 528.5,
+          "left": 42
+        },
+        "dot": {
+          "x": 47,
+          "y": 514.5,
+          "width": 8,
+          "height": 8,
+          "top": 514.5,
+          "right": 55,
+          "bottom": 522.5,
+          "left": 47
+        }
+      }
+    },
+    {
+      "label": "warehouse 414",
+      "overlay": {
+        "left": 0,
+        "right": 414,
+        "width": 414,
+        "overflow": []
+      }
+    },
+    {
+      "label": "role 414",
+      "overlay": {
+        "left": 0,
+        "right": 414,
+        "width": 414,
+        "overflow": []
+      }
+    },
+    {
+      "label": "width 768",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "footerBottom": 879,
+      "columns": [
+        "STT",
+        "Tên đăng nhập",
+        "Họ và tên",
+        "Email",
+        "Số điện thoại",
+        "Trạng thái",
+        "Ngày tạo",
+        "Ngày cập nhật",
+        "Cập nhật bởi",
+        "Thao tác"
+      ],
+      "table": {
+        "x": 25,
+        "y": 424.921875,
+        "width": 718,
+        "height": 394,
+        "top": 424.921875,
+        "right": 743,
+        "bottom": 818.921875,
+        "left": 25
+      },
+      "fixed": true
+    },
+    {
+      "label": "form 768",
+      "overlay": {
+        "left": 64,
+        "right": 704,
+        "width": 768,
+        "overflow": []
+      }
+    },
+    {
+      "label": "status Hoạt động 768",
+      "alignment": {
+        "phone": {
+          "x": 90,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 376,
+          "bottom": 576,
+          "left": 90
+        },
+        "select": {
+          "x": 392,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 678,
+          "bottom": 576,
+          "left": 392
+        },
+        "label": {
+          "x": 404,
+          "y": 548,
+          "width": 92.46875,
+          "height": 20,
+          "top": 548,
+          "right": 496.46875,
+          "bottom": 568,
+          "left": 404
+        },
+        "dot": {
+          "x": 409,
+          "y": 554,
+          "width": 8,
+          "height": 8,
+          "top": 554,
+          "right": 417,
+          "bottom": 562,
+          "left": 409
+        }
+      }
+    },
+    {
+      "label": "status Ngừng hoạt động 768",
+      "alignment": {
+        "phone": {
+          "x": 90,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 376,
+          "bottom": 576,
+          "left": 90
+        },
+        "select": {
+          "x": 392,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 678,
+          "bottom": 576,
+          "left": 392
+        },
+        "label": {
+          "x": 404,
+          "y": 548,
+          "width": 137.40625,
+          "height": 20,
+          "top": 548,
+          "right": 541.40625,
+          "bottom": 568,
+          "left": 404
+        },
+        "dot": {
+          "x": 409,
+          "y": 554,
+          "width": 8,
+          "height": 8,
+          "top": 554,
+          "right": 417,
+          "bottom": 562,
+          "left": 409
+        }
+      }
+    },
+    {
+      "label": "warehouse 768",
+      "overlay": {
+        "left": 148,
+        "right": 768,
+        "width": 768,
+        "overflow": []
+      }
+    },
+    {
+      "label": "role 768",
+      "overlay": {
+        "left": 148,
+        "right": 768,
+        "width": 768,
+        "overflow": []
+      }
+    },
+    {
+      "label": "width 1024",
+      "width": 1024,
+      "height": 900,
+      "scrollWidth": 1024,
+      "footerBottom": 879,
+      "columns": [
+        "STT",
+        "Tên đăng nhập",
+        "Họ và tên",
+        "Email",
+        "Số điện thoại",
+        "Trạng thái",
+        "Ngày tạo",
+        "Ngày cập nhật",
+        "Cập nhật bởi",
+        "Thao tác"
+      ],
+      "table": {
+        "x": 281,
+        "y": 424.921875,
+        "width": 718,
+        "height": 394,
+        "top": 424.921875,
+        "right": 999,
+        "bottom": 818.921875,
+        "left": 281
+      },
+      "fixed": true
+    },
+    {
+      "label": "form 1024",
+      "overlay": {
+        "left": 192,
+        "right": 832,
+        "width": 1024,
+        "overflow": []
+      }
+    },
+    {
+      "label": "status Hoạt động 1024",
+      "alignment": {
+        "phone": {
+          "x": 218,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 504,
+          "bottom": 576,
+          "left": 218
+        },
+        "select": {
+          "x": 520,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 806,
+          "bottom": 576,
+          "left": 520
+        },
+        "label": {
+          "x": 532,
+          "y": 548,
+          "width": 92.46875,
+          "height": 20,
+          "top": 548,
+          "right": 624.46875,
+          "bottom": 568,
+          "left": 532
+        },
+        "dot": {
+          "x": 537,
+          "y": 554,
+          "width": 8,
+          "height": 8,
+          "top": 554,
+          "right": 545,
+          "bottom": 562,
+          "left": 537
+        }
+      }
+    },
+    {
+      "label": "status Ngừng hoạt động 1024",
+      "alignment": {
+        "phone": {
+          "x": 218,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 504,
+          "bottom": 576,
+          "left": 218
+        },
+        "select": {
+          "x": 520,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 806,
+          "bottom": 576,
+          "left": 520
+        },
+        "label": {
+          "x": 532,
+          "y": 548,
+          "width": 137.40625,
+          "height": 20,
+          "top": 548,
+          "right": 669.40625,
+          "bottom": 568,
+          "left": 532
+        },
+        "dot": {
+          "x": 537,
+          "y": 554,
+          "width": 8,
+          "height": 8,
+          "top": 554,
+          "right": 545,
+          "bottom": 562,
+          "left": 537
+        }
+      }
+    },
+    {
+      "label": "warehouse 1024",
+      "overlay": {
+        "left": 404,
+        "right": 1024,
+        "width": 1024,
+        "overflow": []
+      }
+    },
+    {
+      "label": "role 1024",
+      "overlay": {
+        "left": 404,
+        "right": 1024,
+        "width": 1024,
+        "overflow": []
+      }
+    },
+    {
+      "label": "width 1440",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "footerBottom": 879,
+      "columns": [
+        "STT",
+        "Tên đăng nhập",
+        "Họ và tên",
+        "Email",
+        "Số điện thoại",
+        "Trạng thái",
+        "Ngày tạo",
+        "Ngày cập nhật",
+        "Cập nhật bởi",
+        "Thao tác"
+      ],
+      "table": {
+        "x": 281,
+        "y": 374.921875,
+        "width": 1134,
+        "height": 444,
+        "top": 374.921875,
+        "right": 1415,
+        "bottom": 818.921875,
+        "left": 281
+      },
+      "fixed": true
+    },
+    {
+      "label": "form 1440",
+      "overlay": {
+        "left": 400,
+        "right": 1040,
+        "width": 1440,
+        "overflow": []
+      }
+    },
+    {
+      "label": "status Hoạt động 1440",
+      "alignment": {
+        "phone": {
+          "x": 426,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 712,
+          "bottom": 576,
+          "left": 426
+        },
+        "select": {
+          "x": 728,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 1014,
+          "bottom": 576,
+          "left": 728
+        },
+        "label": {
+          "x": 740,
+          "y": 548,
+          "width": 92.46875,
+          "height": 20,
+          "top": 548,
+          "right": 832.46875,
+          "bottom": 568,
+          "left": 740
+        },
+        "dot": {
+          "x": 745,
+          "y": 554,
+          "width": 8,
+          "height": 8,
+          "top": 554,
+          "right": 753,
+          "bottom": 562,
+          "left": 745
+        }
+      }
+    },
+    {
+      "label": "status Ngừng hoạt động 1440",
+      "alignment": {
+        "phone": {
+          "x": 426,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 712,
+          "bottom": 576,
+          "left": 426
+        },
+        "select": {
+          "x": 728,
+          "y": 540,
+          "width": 286,
+          "height": 36,
+          "top": 540,
+          "right": 1014,
+          "bottom": 576,
+          "left": 728
+        },
+        "label": {
+          "x": 740,
+          "y": 548,
+          "width": 137.40625,
+          "height": 20,
+          "top": 548,
+          "right": 877.40625,
+          "bottom": 568,
+          "left": 740
+        },
+        "dot": {
+          "x": 745,
+          "y": 554,
+          "width": 8,
+          "height": 8,
+          "top": 554,
+          "right": 753,
+          "bottom": 562,
+          "left": 745
+        }
+      }
+    },
+    {
+      "label": "warehouse 1440",
+      "overlay": {
+        "left": 820,
+        "right": 1440,
+        "width": 1440,
+        "overflow": []
+      }
+    },
+    {
+      "label": "role 1440",
+      "overlay": {
+        "left": 820,
+        "right": 1440,
+        "width": 1440,
+        "overflow": []
+      }
+    },
+    {
+      "label": "short mobile form",
+      "overlay": {
+        "left": 12,
+        "right": 378,
+        "width": 390,
+        "overflow": []
+      }
+    },
+    {
+      "label": "collapsed sidebar 1440",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "footerBottom": 879,
+      "columns": [
+        "STT",
+        "Tên đăng nhập",
+        "Họ và tên",
+        "Email",
+        "Số điện thoại",
+        "Trạng thái",
+        "Ngày tạo",
+        "Ngày cập nhật",
+        "Cập nhật bởi",
+        "Thao tác"
+      ],
+      "table": {
+        "x": 105,
+        "y": 374.921875,
+        "width": 1310,
+        "height": 444,
+        "top": 374.921875,
+        "right": 1415,
+        "bottom": 818.921875,
+        "left": 105
+      },
+      "fixed": true
+    }
+  ],
+  "errors": [],
+  "calls": [
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "draft"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "20"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "50"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "POST",
+      "params": {},
+      "body": {
+        "username": "new_user",
+        "fullName": "Người dùng mới",
+        "email": "new@example.com",
+        "status": 1
+      }
+    },
+    {
+      "path": "/users",
+      "method": "POST",
+      "params": {},
+      "body": {
+        "username": "new_user",
+        "fullName": "Người dùng mới",
+        "email": "new@example.com",
+        "status": 1
+      }
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "2",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles/00000000-0000-4000-8000-000000000002",
+      "method": "DELETE",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "roleIds": [
+          "00000000-0000-4000-8000-000000000001",
+          "00000000-0000-4000-8000-000000000003",
+          "00000000-0000-4000-8000-000000000005"
+        ]
+      }
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses/warehouse-2",
+      "method": "PUT",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses/warehouse-0",
+      "method": "DELETE",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses/warehouse-0",
+      "method": "PUT",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-1/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-1/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/roles",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "100"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/user-0/roles",
+      "method": "PUT",
+      "params": {},
+      "body": {
+        "roleIds": [
+          "00000000-0000-4000-8000-000000000001",
+          "00000000-0000-4000-8000-000000000005",
+          "00000000-0000-4000-8000-000000000003",
+          "00000000-0000-4000-8000-000000000002"
+        ]
+      }
+    },
+    {
+      "path": "/users/user-0/roles/00000000-0000-4000-8000-000000000005",
+      "method": "DELETE",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "unapplied",
+        "status": "0"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "empty",
+        "status": "0"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10",
+        "keyword": "mobile"
+      },
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/operator/roles",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users",
+      "method": "GET",
+      "params": {
+        "page": "1",
+        "pageSize": "10"
+      },
+      "body": null
+    },
+    {
+      "path": "/users/user-0/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    },
+    {
+      "path": "/users/me/warehouses",
+      "method": "GET",
+      "params": {},
+      "body": null
+    }
+  ]
+}
