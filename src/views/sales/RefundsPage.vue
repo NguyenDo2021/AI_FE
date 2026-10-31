@@ -182,6 +182,24 @@ const showRefund = (value: OrderSettlementSummary): void => {
   order.value = value
   refundOpen.value = true
 }
+// Read the displayed page again, using REFUND_VIEW only. Never fall back to
+// a previously cached order or interpret absence from /refundables as zero.
+const loadSettlement = async (
+  selected: OrderSettlementSummary,
+  signal: AbortSignal,
+): Promise<OrderSettlementSummary | undefined> => {
+  const result = await getRefundables(
+    {
+      warehouseId: filters.warehouseId || undefined,
+      page: filters.page,
+      pageSize: filters.pageSize,
+    },
+    signal,
+  )
+  return result.items.find(
+    (row) => row.salesOrderId === selected.salesOrderId && row.warehouseId === selected.warehouseId,
+  )
+}
 const showDetail = (id: string): void => {
   detailId.value = id
   detailOpen.value = true
@@ -468,6 +486,7 @@ const warehouseName = (id: string): string =>
         v-if="order"
         v-model:open="refundOpen"
         :order="order"
+        :load-settlement="loadSettlement"
         @updated="order = $event"
         @refresh-requested="load"
       />

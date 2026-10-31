@@ -62,12 +62,15 @@ export const getRefunds = (params: RefundParams): Promise<ExactPage<Refund>> =>
   request.get('/refunds', { ...salesReadConfig, params })
 export const getRefund = (id: string): Promise<Refund> =>
   request.get('/refunds/' + path(id), salesReadConfig)
-export const getRefundables = (params: {
-  warehouseId?: string
-  page: number
-  pageSize: number
-}): Promise<ExactPage<OrderSettlementSummary>> =>
-  request.get('/refundables', { ...salesReadConfig, params })
+export const getRefundables = (
+  params: {
+    warehouseId?: string
+    page: number
+    pageSize: number
+  },
+  signal?: AbortSignal,
+): Promise<ExactPage<OrderSettlementSummary>> =>
+  request.get('/refundables', { ...salesReadConfig, params, signal })
 export const createRefund = (
   id: string,
   input: RefundInput,

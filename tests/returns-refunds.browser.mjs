@@ -919,6 +919,28 @@ try {
   await modal().getByLabel('Lý do', { exact: true }).fill('Hoàn tiền hàng trả')
   await modal().getByRole('checkbox').check()
   await page.screenshot({ path: join(artifacts, 'refund-form.png') })
+  for (const width of [320, 375, 390, 414, 1366]) {
+    await page.setViewportSize({ width, height: 844 })
+    await page.waitForTimeout(100)
+    const bounds = await modal().evaluate((element) => {
+      const body = element.querySelector('.ant-modal-body')
+      const footer = element.querySelector('.ant-modal-footer')
+      return {
+        page: document.documentElement.scrollWidth,
+        width: innerWidth,
+        scroll: body.scrollWidth,
+        client: body.clientWidth,
+        footer: footer.getBoundingClientRect().bottom,
+      }
+    })
+    check(
+      'refund modal fits ' + width,
+      bounds.page <= width + 1 && bounds.scroll <= bounds.client + 1,
+    )
+    check('refund footer visible ' + width, bounds.footer <= 844)
+    await modal().getByLabel('Lý do', { exact: true }).scrollIntoViewIfNeeded()
+    await modal().getByRole('button', { name: 'Điền khoản cần hoàn' }).scrollIntoViewIfNeeded()
+  }
   await page.setViewportSize({ width: 390, height: 600 })
   const submitBounds = await modal()
     .getByRole('button', { name: 'Ghi nhận khoản đã chi' })

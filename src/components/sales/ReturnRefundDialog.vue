@@ -95,6 +95,11 @@ const emit = defineEmits<{ 'update:open': [value: boolean] }>()
   gap: 14px;
   min-width: 0;
 }
+.rr-dialog-body :deep(.ant-alert-message),
+.rr-dialog-body :deep(.ant-alert-description),
+.rr-dialog-body :deep(.rr-field-error) {
+  overflow-wrap: anywhere;
+}
 .rr-dialog-body :deep(.rr-form) {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

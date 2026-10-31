@@ -34,8 +34,8 @@ export const updateCustomer = (id: string, input: CustomerInput): Promise<Custom
   request.put('/customers/' + path(id), input, writeConfig)
 export const getSalesOrders = (params: SalesParams): Promise<PageData<SalesOrder>> =>
   request.get('/sales-orders', { ...salesReadConfig, params })
-export const getSalesOrder = (id: string): Promise<SalesOrder> =>
-  request.get('/sales-orders/' + path(id), salesReadConfig)
+export const getSalesOrder = (id: string, signal?: AbortSignal): Promise<SalesOrder> =>
+  request.get('/sales-orders/' + path(id), { ...salesReadConfig, signal })
 export const createSalesOrder = (
   input: SalesInput & { warehouseId: string },
 ): Promise<SalesOrder> =>

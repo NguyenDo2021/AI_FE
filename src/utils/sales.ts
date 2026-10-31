@@ -88,6 +88,8 @@ export const salesCustomerName = (order: SalesOrder, customers: Customer[]): str
 export const salesError = (cause: unknown): string => {
   const error = cause as NormalizedApiError
   const message = cause instanceof Error ? cause.message : 'Không thể thực hiện thao tác.'
+  if (error?.code === 'INSUFFICIENT_STOCK')
+    return 'Không đủ tồn kho để xử lý đơn. Vui lòng tải lại tồn và kiểm tra số lượng.'
   if (error?.code === 'SALES_ORDER_HAS_RETURNS')
     return 'Không thể hủy đơn có phiếu trả đã xác nhận, kể cả giá trị trả bằng 0.'
   if (error?.code === 'SALES_ORDER_HAS_PAYMENTS')

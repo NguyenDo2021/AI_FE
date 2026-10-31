@@ -223,11 +223,11 @@ const ReturnDialog = await component(
 )
 const RefundDialog = await component(
   'src/components/sales/RefundDialog.vue',
-  'form,confirmed,submit,attempt,error,current,fields',
+  'form,confirmed,submit,attempt,error,current,fields,loading,settlementError,reloadSettlement,fillAmount',
 )
 const RefundsPage = await component(
   'src/views/sales/RefundsPage.vue',
-  'rows,filters,load,total,error,changePage,showOrder,orderOpen,showDetail,detailOpen,search,resetFilters',
+  'rows,filters,load,total,error,changePage,showOrder,orderOpen,showDetail,detailOpen,search,resetFilters,showRefund,order,refundOpen,loadSettlement',
 )
 const ReturnsPage = await component(
   'src/views/sales/ReturnsPage.vue',
@@ -367,6 +367,361 @@ function reset(permissions = all) {
 const writes = () => context.calls.filter((call) => call.method !== 'GET')
 const failure = (code, status = 409, details) =>
   Object.assign(new Error(code), { code, status, details })
+
+test('first refund after reading order then confirming return uses fresh backend settlement, never cached pre-return totals', async () => {
+  const store = reset()
+  const sales = await import(await loadUrl('src/api/sales/sales.api.ts'))
+  const before = summary({
+    totalAmount: 1500000,
+    paidAmount: 1500000,
+    returnedAmount: 0,
+    adjustedTotalAmount: 1500000,
+    netPaidAmount: 1500000,
+    refundableAmount: 0,
+  })
+  context.handler = () => ({ ...before, id: 's1' })
+  const readOrder = await sales.getSalesOrder('s1')
+  context.payments.summaries.s1 = readOrder
+  store.summaries.s1 = before
+  context.handler = () => draft()
+  const returns = mount(ReturnDialog, { open: true, id: 'r1' })
+  await flush()
+  returns.vm.received = true
+  context.handler = () => draft({ status: 'CONFIRMED', totalAmount: 300000 })
+  await returns.vm.act('confirm')
+  assert.equal(context.payments.summaries.s1, undefined)
+  assert.equal(store.summaries.s1, undefined)
+  assert.equal(store.revision, 1)
+  returns.unmount()
+
+  const after = {
+    ...before,
+    returnedAmount: 300000,
+    adjustedTotalAmount: 1200000,
+    refundableAmount: 300000,
+  }
+  context.handler = () => ({ items: [after], total: 1, page: 1, pageSize: 10 })
+  const page = mount(RefundsPage, { refundable: true })
+  await flush()
+  page.vm.showRefund(page.vm.rows[0])
+  // Even a late unrelated writer to the shared store cannot replace the modal's read.
+  context.payments.summaries.s1 = before
+  const dialog = mount(RefundDialog, {
+    open: true,
+    order: page.vm.order,
+    loadSettlement: page.vm.loadSettlement,
+  })
+  assert.equal(dialog.vm.current, undefined)
+  assert.equal(dialog.vm.loading, true)
+  await dialog.vm.submit()
+  assert.equal(writes().length, 1) // only the return confirmation
+  await flush()
+  assert.equal(dialog.vm.current.returnedAmount, 300000)
+  assert.equal(dialog.vm.current.adjustedTotalAmount, 1200000)
+  dialog.vm.fillAmount()
+  assert.equal(dialog.vm.form.amount, '300000')
+  context.payments.summaries.s1 = before
+  dialog.vm.form.reason = 'Hoàn hàng trả'
+  dialog.vm.confirmed = true
+  context.handler = () =>
+    mutation({
+      order: { ...after, refundedAmount: 300000, netPaidAmount: 1200000, refundableAmount: 0 },
+    })
+  await dialog.vm.submit()
+  assert.equal(writes().at(-1).data.amount, 300000n)
+  assert.equal(dialog.vm.current.refundableAmount, 0)
+  assert.equal(store.revision, 2)
+  assert.equal(context.stock.revision, 1) // refund does not change stock
+  dialog.unmount()
+  page.unmount()
+})
+
+test('refund missing fields, read failures and missing row never become zero; retry can load a genuine zero', async () => {
+  reset()
+  let result = summary({ returnedAmount: undefined })
+  const dialog = mount(RefundDialog, {
+    open: true,
+    order: summary(),
+    loadSettlement: async () => result,
+  })
+  dialog.vm.fillAmount()
+  assert.equal(dialog.vm.form.amount, '')
+  await flush()
+  assert.equal(dialog.vm.current, undefined)
+  assert.match(dialog.vm.settlementError, /quyết toán đầy đủ/)
+  dialog.vm.form = form()
+  dialog.vm.confirmed = true
+  await dialog.vm.submit()
+  assert.equal(writes().length, 0)
+  dialog.state.loadSettlement = async () => {
+    throw new Error('Không tải được quyết toán')
+  }
+  await nextTick()
+  await dialog.vm.reloadSettlement()
+  assert.equal(dialog.vm.current, undefined)
+  assert.match(dialog.vm.settlementError, /Không tải được/)
+  dialog.state.loadSettlement = async () => undefined
+  await nextTick()
+  await dialog.vm.reloadSettlement()
+  assert.equal(dialog.vm.current, undefined)
+  assert.match(dialog.vm.settlementError, /quyết toán đầy đủ/)
+  result = summary({ refundableAmount: 0 })
+  dialog.state.loadSettlement = async () => result
+  await nextTick()
+  await dialog.vm.reloadSettlement()
+  assert.equal(dialog.vm.current.refundableAmount, 0)
+  await dialog.vm.submit()
+  assert.match(dialog.vm.error, /không còn khoản cần hoàn/)
+  assert.equal(writes().length, 0)
+  dialog.unmount()
+})
+
+test('switch A to B and close/reopen discard drafts, errors and late settlement responses', async () => {
+  reset()
+  let finishA
+  let finishB
+  const dialog = mount(RefundDialog, {
+    open: true,
+    order: summary(),
+    loadSettlement: (order) =>
+      new Promise((resolve) => {
+        if (order.salesOrderId === 's1') finishA = resolve
+        else finishB = resolve
+      }),
+  })
+  dialog.vm.form = form()
+  dialog.vm.confirmed = true
+  dialog.vm.error = 'Lỗi của A'
+  dialog.state.order = summary({ salesOrderId: 's2', code: 'BH-B' })
+  await nextTick()
+  assert.equal(dialog.vm.form.amount, '')
+  assert.equal(dialog.vm.form.reason, '')
+  assert.equal(dialog.vm.confirmed, false)
+  assert.equal(dialog.vm.error, '')
+  finishB(summary({ salesOrderId: 's2', code: 'BH-B', refundableAmount: 150000 }))
+  await flush()
+  finishA(summary())
+  await flush()
+  assert.equal(dialog.vm.current.salesOrderId, 's2')
+  assert.equal(dialog.vm.current.refundableAmount, 150000)
+  assert.equal(context.payments.summaries.s1, undefined)
+  dialog.vm.fillAmount()
+  dialog.vm.form.reason = 'B'
+  dialog.state.open = false
+  await nextTick()
+  assert.equal(dialog.vm.current, undefined)
+  assert.equal(dialog.vm.form.amount, '')
+  dialog.state.open = true
+  await nextTick()
+  finishB(summary({ salesOrderId: 's2', refundableAmount: 100000 }))
+  await flush()
+  assert.equal(dialog.vm.form.reason, '')
+  assert.equal(dialog.vm.current.refundableAmount, 100000)
+  dialog.unmount()
+})
+
+test('business limit rejection reloads settlement without changing entered amount or automatically retrying POST', async () => {
+  reset()
+  let latest = summary()
+  const dialog = mount(RefundDialog, {
+    open: true,
+    order: summary(),
+    loadSettlement: async () => latest,
+  })
+  await flush()
+  dialog.vm.form = form()
+  dialog.vm.confirmed = true
+  latest = summary({ refundableAmount: 100000, refundedAmount: 200000 })
+  context.handler = () => {
+    throw failure('REFUND_EXCEEDS_REFUNDABLE')
+  }
+  await dialog.vm.submit()
+  assert.equal(writes().length, 1)
+  assert.equal(dialog.vm.current.refundableAmount, 100000)
+  assert.equal(dialog.vm.form.amount, '300000')
+  assert.match(dialog.vm.error, /vượt khoản cần hoàn/)
+  assert.equal(dialog.vm.attempt, undefined)
+  await dialog.vm.submit()
+  assert.equal(writes().length, 1) // validation uses the newly loaded limit
+  dialog.unmount()
+})
+
+test('uncertain modal retry keeps original payload/key even when settlement read fails and modal reopens', async () => {
+  const store = reset()
+  context.handler = () => {
+    throw new Error('Timeout')
+  }
+  const dialog = mount(RefundDialog, {
+    open: true,
+    order: summary(),
+    loadSettlement: async () => summary(),
+  })
+  await flush()
+  dialog.vm.form = form()
+  dialog.vm.confirmed = true
+  await dialog.vm.submit()
+  const first = writes()[0]
+  assert.ok(store.attempts.s1)
+  dialog.state.open = false
+  await nextTick()
+  dialog.state.loadSettlement = async () => {
+    throw new Error('Read failed')
+  }
+  dialog.state.open = true
+  await flush()
+  assert.equal(dialog.vm.current, undefined)
+  assert.equal(dialog.vm.form.amount, '300000')
+  context.handler = () => mutation()
+  await dialog.vm.submit()
+  assert.equal(writes().length, 2)
+  assert.equal(writes()[1].raw, first.raw)
+  assert.equal(
+    writes()[1].config.headers['Idempotency-Key'],
+    first.config.headers['Idempotency-Key'],
+  )
+  assert.equal(store.attempts.s1, undefined)
+  dialog.unmount()
+})
+
+test('settlement rejects unsafe numbers and missing metrics, but accepts exact int64 and zero', () => {
+  assert.equal(domain.isSettlementSummary(summary()), true)
+  assert.equal(domain.isSettlementSummary(summary({ refundableAmount: 0 })), true)
+  assert.equal(
+    domain.isSettlementSummary(summary({ refundableAmount: 9223372036854775807n })),
+    true,
+  )
+  for (const value of [
+    undefined,
+    null,
+    '0',
+    1.5,
+    Number.MAX_SAFE_INTEGER + 1,
+    -1,
+    9223372036854775808n,
+  ])
+    assert.equal(domain.isSettlementSummary(summary({ refundableAmount: value })), false)
+})
+
+test('partial refund reloads the remaining backend amount on reopening', async () => {
+  reset()
+  let latest = summary()
+  const dialog = mount(RefundDialog, {
+    open: true,
+    order: summary(),
+    loadSettlement: async () => latest,
+  })
+  await flush()
+  dialog.vm.form = form({ amount: '100000' })
+  dialog.vm.confirmed = true
+  latest = summary({ refundedAmount: 100000, netPaidAmount: 500000, refundableAmount: 200000 })
+  context.handler = () => mutation({ order: latest, refund: refund({ amount: 100000 }) })
+  await dialog.vm.submit()
+  dialog.state.open = false
+  await nextTick()
+  dialog.state.open = true
+  await flush()
+  dialog.vm.fillAmount()
+  assert.equal(dialog.vm.current.refundableAmount, 200000)
+  assert.equal(dialog.vm.form.amount, '200000')
+  assert.equal(dialog.vm.form.reason, '')
+  dialog.unmount()
+})
+
+test('wrong identity and revoked access cannot publish a settlement response or discard pending requests', async () => {
+  for (const extra of [{ salesOrderId: 'different' }, { warehouseId: 'other' }]) {
+    reset()
+    const dialog = mount(RefundDialog, {
+      open: true,
+      order: summary(),
+      loadSettlement: async () => summary(extra),
+    })
+    await flush()
+    assert.equal(dialog.vm.current, undefined)
+    assert.match(dialog.vm.settlementError, /quyết toán đầy đủ/)
+    dialog.unmount()
+  }
+  const store = reset()
+  store.attempts.s1 = attempt()
+  let finish
+  const dialog = mount(RefundDialog, {
+    open: true,
+    order: summary(),
+    loadSettlement: () =>
+      new Promise((resolve) => {
+        finish = resolve
+      }),
+  })
+  context.warehouses.warehouses = []
+  finish(summary())
+  await flush()
+  assert.equal(dialog.vm.current, undefined)
+  assert.equal(dialog.vm.form.amount, '')
+  assert.ok(store.attempts.s1)
+  assert.deepEqual(context.payments.summaries, {})
+  dialog.unmount()
+})
+
+test('return validation identifies products without UUID and preserves the limit and backend detail mapping', async () => {
+  reset()
+  const limits = [
+    line({
+      productId: 'uuid-product',
+      productCode: 'TEST-PHAO',
+      productName: 'Phào',
+      returnableQuantity: 20,
+    }),
+  ]
+  const input = {
+    returnDate: '2026-11-01',
+    reason: 'Trả',
+    note: '',
+    lines: [{ productId: 'uuid-product', quantity: '21' }],
+  }
+  const fields = domain.validateReturn(input, limits)
+  assert.match(fields['uuid-product'], /20 cây/)
+  const message = domain.returnFieldMessage('uuid-product', fields['uuid-product'], limits, input)
+  assert.match(message, /TEST-PHAO — Phào/)
+  assert.ok(!message.includes('uuid-product'))
+  assert.match(
+    domain.returnFieldMessage('lines[0].quantity', 'Sai lượng', limits, input),
+    /TEST-PHAO/,
+  )
+  assert.equal(
+    domain.returnFieldMessage('unknown-uuid', 'technical detail', limits, input),
+    'Kiểm tra thông tin sản phẩm trả.',
+  )
+  assert.equal(domain.returnStatusLabel('CONFIRMED'), 'Đã xác nhận')
+  assert.equal(domain.returnStatusLabel('DRAFT'), 'Nháp')
+  assert.equal(domain.returnStatusLabel('CANCELLED'), 'Đã hủy')
+})
+
+test('return form blocks 21 of 20 and maps backend product details to the same inline row without mutating the error', async () => {
+  reset()
+  const limit = line({ returnableQuantity: 20, soldQuantity: 20 })
+  context.handler = () => [limit]
+  const dialog = mount(ReturnDialog, { open: true, salesOrderId: 's1', warehouseId: 'w1' })
+  await flush()
+  dialog.vm.form.reason = 'Trả hàng'
+  dialog.vm.form.lines = [{ productId: 'p1', quantity: '21' }]
+  await dialog.vm.save()
+  assert.equal(writes().length, 0)
+  assert.match(dialog.vm.fields.p1, /20 cây/)
+  const rejection = failure('RETURN_EXCEEDS_QUANTITY', 409, {
+    productId: 'p1',
+    returnableQuantity: 19,
+  })
+  context.handler = ({ method }) => {
+    if (method !== 'GET') throw rejection
+    return [line({ returnableQuantity: 19 })]
+  }
+  dialog.vm.form.lines[0].quantity = '20'
+  await dialog.vm.save()
+  assert.match(dialog.vm.fields.p1, /vượt lượng/)
+  assert.equal(dialog.vm.form.lines[0].quantity, '20')
+  assert.equal(rejection.code, 'RETURN_EXCEEDS_QUANTITY')
+  assert.deepEqual(rejection.details, { productId: 'p1', returnableQuantity: 19 })
+  dialog.unmount()
+})
 
 test('return valuation preserves 0,1,1 installments and large exact products', () => {
   assert.deepEqual(
@@ -568,7 +923,12 @@ test('refundables are usable with REFUND_VIEW alone and send no date filter or o
 test('refund confirmation and backend summary preserve the original order version and stock', async () => {
   reset()
   context.handler = () => mutation()
-  const subject = mount(RefundDialog, { open: true, order: summary() })
+  const subject = mount(RefundDialog, {
+    open: true,
+    order: summary(),
+    loadSettlement: async () => summary(),
+  })
+  await flush()
   subject.vm.form = form()
   await subject.vm.submit()
   assert.equal(writes().length, 0)
@@ -1026,7 +1386,7 @@ test('existing drafts keep a fixed source ID and never search for an exhausted s
   const subject = mount(ReturnDialog, { open: true, id: 'r1' })
   await flush()
   assert.equal(subject.vm.sourceId, 's1')
-  assert.equal(subject.vm.sourceLabel, 's1')
+  assert.equal(subject.vm.sourceLabel, '—')
   subject.vm.selectSource(secondOrder())
   assert.equal(subject.vm.sourceId, 's1')
   await subject.vm.startEdit()

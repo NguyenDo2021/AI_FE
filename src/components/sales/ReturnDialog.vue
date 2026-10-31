@@ -8,6 +8,7 @@ import ReturnableOrderSelect from './ReturnableOrderSelect.vue'
 import { usePaymentScope } from '@/composables/usePaymentScope'
 import { useStockStore } from '@/stores/stock'
 import { usePaymentsStore } from '@/stores/payments'
+import { useRefundsStore } from '@/stores/refunds'
 import {
   getReturn,
   getReturnableLines,
@@ -24,6 +25,8 @@ import {
   isReturnQuoteChanged,
   validReason,
   estimateReturn,
+  returnStatusLabel,
+  returnFieldMessage,
 } from '@/utils/returns'
 import { formatStockInteger as fmt, validStockInteger, stockFieldErrors } from '@/utils/stock'
 import { formatDate, formatDateTime } from '@/utils/date'
@@ -46,6 +49,7 @@ const emit = defineEmits<{ 'update:open': [value: boolean]; saved: [value: Sales
 const { can, contextKey, inScope, refreshAccess, warehouses } = usePaymentScope()
 const stock = useStockStore(),
   payments = usePaymentsStore()
+const refunds = useRefundsStore()
 const detail = ref<SalesReturn>(),
   limits = ref<ReturnableLine[]>([])
 const quote = ref<ReturnQuoteChanged>()
@@ -69,8 +73,8 @@ const sourceLabel = computed(() =>
   sourceOrder.value?.id === sourceId.value
     ? sourceOrder.value.code
     : props.salesOrderId === sourceId.value
-      ? (props.salesOrderCode ?? sourceId.value)
-      : sourceId.value,
+      ? (props.salesOrderCode ?? '—')
+      : '—',
 )
 const cancelSourceRequests = (): void => {
   ++limitsSequence
@@ -358,7 +362,10 @@ const notify = (result: SalesReturn): void => {
   emit('saved', result)
   if (result.status === 'CONFIRMED') {
     stock.invalidate()
+    delete payments.summaries[result.salesOrderId]
+    delete refunds.summaries[result.salesOrderId]
     ++payments.revision
+    ++refunds.revision
   }
 }
 const save = async (): Promise<void> => {
@@ -585,14 +592,14 @@ onBeforeUnmount(() => {
                       ? 'green'
                       : 'red'
                 "
-                >{{ $t('sales.' + detail.status) }}</a-tag
+                >{{ returnStatusLabel(detail.status) }}</a-tag
               ></template
             >
           </SettlementAmountSummary>
           <dl v-if="!editing" class="rr-info">
             <div>
               <dt>Đơn bán hàng</dt>
-              <dd>{{ sourceLabel || detail.salesOrderId }}</dd>
+              <dd :title="'ID đơn: ' + detail.salesOrderId">{{ sourceLabel }}</dd>
             </div>
             <div>
               <dt>Ngày trả</dt>
@@ -600,7 +607,9 @@ onBeforeUnmount(() => {
             </div>
             <div>
               <dt>Khách hàng</dt>
-              <dd>{{ detail.customerId ?? 'Khách lẻ' }}</dd>
+              <dd :title="detail.customerId ? 'ID khách: ' + detail.customerId : undefined">
+                {{ detail.customerId ? '—' : 'Khách lẻ' }}
+              </dd>
             </div>
             <div>
               <dt>Kho</dt>
@@ -754,7 +763,8 @@ onBeforeUnmount(() => {
             <a-form-item label="Khách hàng"
               ><a-input
                 :value="
-                  sourceOrder?.customerName ?? (detail ? (detail.customerId ?? 'Khách lẻ') : '—')
+                  sourceOrder?.customerName ??
+                  (detail ? (detail.customerId ? '—' : 'Khách lẻ') : '—')
                 "
                 readonly
             /></a-form-item>
@@ -811,7 +821,7 @@ onBeforeUnmount(() => {
                 v-for="(text, key) in fields"
                 :key="key"
                 type="error"
-                :message="String(key) + ': ' + text"
+                :message="returnFieldMessage(String(key), text, limits, form)"
                 show-icon
               />
               <h3 class="rr-section-title">Danh sách sản phẩm trả</h3>
