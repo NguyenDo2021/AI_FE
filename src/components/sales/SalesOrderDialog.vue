@@ -357,7 +357,15 @@ const submit = async (): Promise<void> => {
     if (current !== sequence) return
     detail.value = result
     message.success(
-      'Đã lưu ' + result.code + '. Tổng tiền: ' + formatStockInteger(result.totalAmount) + ' VND.',
+      props.mode === 'cancel'
+        ? 'Đã hủy đơn bán hàng ' + result.code
+        : props.mode === 'confirm'
+          ? 'Đã xác nhận đơn bán hàng ' + result.code
+          : 'Đã lưu ' +
+            result.code +
+            '. Tổng tiền: ' +
+            formatStockInteger(result.totalAmount) +
+            ' VND.',
     )
     emit('saved', result)
     emit('update:open', false)

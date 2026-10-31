@@ -16,6 +16,9 @@ import CollectPaymentDialog from './CollectPaymentDialog.vue'
 import PaymentHistory from './PaymentHistory.vue'
 import { usePaymentsStore } from '@/stores/payments'
 import { usePaymentScope } from '@/composables/usePaymentScope'
+import { getSalesOrder } from '@/api/sales/sales.api'
+import { getRefundables } from '@/api/sales/returns.api'
+import { hasNextPage } from '@/utils/returns'
 import { applyPaymentSummary, canCollect, paymentLabel } from '@/utils/payments'
 import type { SalesOrder } from '@/types/sales'
 const props = defineProps<{ order: SalesOrder; presentation?: 'receivable' }>()
@@ -50,8 +53,7 @@ const refundOrder = computed<OrderSettlementSummary>(() => ({
   refundableAmount: current.value.refundableAmount,
   paymentStatus: current.value.paymentStatus,
 }))
-// Child dialogs already watch authoritative summaries. Keep their order prop
-// stable during a mutation so a summary refresh does not restart their form.
+// Keep the selected order stable while a child dialog loads or submits.
 const showCollection = (): void => {
   collectionSelection.value = current.value
   open.value = true
@@ -59,6 +61,30 @@ const showCollection = (): void => {
 const showRefund = (): void => {
   refundSelection.value = refundOrder.value
   refundOpen.value = true
+}
+const loadSettlement = async (
+  selected: OrderSettlementSummary,
+  signal: AbortSignal,
+): Promise<OrderSettlementSummary | undefined> => {
+  if (can('SALES_ORDER_VIEW')) {
+    const order = await getSalesOrder(selected.salesOrderId, signal)
+    return { ...order, salesOrderId: order.id }
+  }
+  if (!can('REFUND_VIEW'))
+    throw new Error(
+      'Chưa có quyền đọc quyết toán hiện tại. Cần quyền xem đơn hoặc xem hoàn tiền để kiểm tra số liệu trước khi ghi nhận lần chi mới.',
+    )
+  // A receivable can be viewed without SALES_ORDER_VIEW. Use only the existing
+  // refund permission in that case; this lookup runs for the selected order.
+  for (let page = 1; !signal.aborted; ++page) {
+    const result = await getRefundables(
+      { warehouseId: selected.warehouseId, page, pageSize: 100 },
+      signal,
+    )
+    const order = result.items.find((row) => row.salesOrderId === selected.salesOrderId)
+    if (order) return order
+    if (!result.items.length || !hasNextPage(result.total, page, 100)) return
+  }
 }
 </script>
 <template>
@@ -135,6 +161,7 @@ const showRefund = (): void => {
     <RefundDialog
       v-model:open="refundOpen"
       :order="presentation === 'receivable' ? (refundSelection ?? refundOrder) : refundOrder"
+      :load-settlement="loadSettlement"
       @updated="emit('refreshRequested')"
       @refresh-requested="emit('refreshRequested')"
     />

@@ -2,7 +2,7 @@
 import type { OrderPaymentSummary } from '@/types/payments'
 import { reportValue } from '@/utils/reports'
 defineProps<{
-  settlement: Omit<OrderPaymentSummary, 'salesOrderId'>
+  settlement: Partial<Omit<OrderPaymentSummary, 'salesOrderId'>>
   compact?: boolean
   presentation?: 'receivable'
 }>()

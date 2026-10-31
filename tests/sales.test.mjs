@@ -20,6 +20,7 @@ const domainUrl = moduleUrl(transpile(await read('src/utils/stock.ts')))
 const domain = await import(domainUrl)
 const context = {
   refreshes: 0,
+  notices: [],
   confirmation: undefined,
   calls: [],
   response: undefined,
@@ -75,7 +76,7 @@ const mockUrl = moduleUrl(`
  export const useCatalogPermission = () => ({ can: (permission) => context.auth.isCatalogAdmin || context.auth.user.permissions.includes(permission) })
  export const useI18n = () => ({ t: key => key, te: key => !key.endsWith('FUTURE_TYPE') })
  export const theme = { useToken: () => ({ token: { value: {} } }) }
- export const message = { success() {}, info() {} }
+ export const message = { success:text=>context.notices.push(text), info() {} }
  export const Modal = { confirm: options => { context.confirmation = options } }
  export const formatDate = value => value
  export const formatDateTime = value => value
@@ -166,7 +167,7 @@ async function component(path, expose) {
 }
 const SalesOrderDialog = await component(
   'src/components/sales/SalesOrderDialog.vue',
-  'submit, load, reload, form, detail, fields, blocked, reason, goodsReturned, loading, customer',
+  'submit, load, reload, form, detail, fields, blocked, reason, goodsReturned, loading, customer, error',
 )
 const CustomerDialog = await component(
   'src/components/sales/CustomerDialog.vue',
@@ -273,6 +274,7 @@ const allPermissions = [
   'PRODUCT_VIEW',
 ]
 function reset() {
+  context.notices = []
   context.calls = []
   context.handler = undefined
   context.response = undefined
@@ -599,12 +601,13 @@ test('409 preserves unsaved draft and prevents retry; reload requires explicit a
   assert.equal(context.calls.filter((call) => call.method === 'GET').length, 1)
   subject.unmount()
 })
-test('backend stock error leaves status/stock unchanged and displays backend message', async () => {
+test('backend stock code is translated, retaining product details and unchanged status/stock', async () => {
   reset()
   context.handler = ({ method }) => {
     if (method === 'GET') return order()
     throw Object.assign(new Error('Not enough goods'), {
       status: 409,
+      code: 'INSUFFICIENT_STOCK',
       details: { productId: 'p1' },
     })
   }
@@ -614,7 +617,55 @@ test('backend stock error leaves status/stock unchanged and displays backend mes
   assert.equal(subject.vm.detail.status, 'DRAFT')
   assert.equal(context.stock.revision, 0)
   assert.equal(subject.vm.fields.productId, 'p1')
+  assert.match(subject.vm.error, /Không đủ tồn kho/)
+  assert.ok(!subject.vm.error.includes('Not enough goods'))
   subject.unmount()
+})
+
+test('sales success toast follows the action and is never emitted on API rejection', async () => {
+  for (const mode of ['cancel', 'confirm', 'edit', 'create']) {
+    reset()
+    context.handler = () => order()
+    const subject = mount(SalesOrderDialog, {
+      open: true,
+      mode,
+      id: mode === 'create' ? undefined : 's1',
+    })
+    await flush()
+    subject.vm.reason = 'Lập sai'
+    if (mode === 'create' || mode === 'edit') subject.vm.form = form()
+    context.handler = () => {
+      throw Object.assign(new Error('Failed'), { status: 400 })
+    }
+    await subject.vm.submit()
+    assert.equal(context.notices.length, 0)
+    context.handler = () =>
+      order({
+        status: mode === 'cancel' ? 'CANCELLED' : mode === 'confirm' ? 'CONFIRMED' : 'DRAFT',
+      })
+    await subject.vm.submit()
+    assert.equal(context.notices.length, 1)
+    assert.match(
+      context.notices[0],
+      mode === 'cancel'
+        ? /Đã hủy đơn bán hàng DH1/
+        : mode === 'confirm'
+          ? /Đã xác nhận đơn bán hàng DH1/
+          : /Đã lưu DH1/,
+    )
+    subject.unmount()
+  }
+  assert.match(
+    salesDomain.salesError(
+      Object.assign(new Error('Version changed'), { status: 409, code: 'VERSION_CONFLICT' }),
+    ),
+    /Version changed/,
+  )
+  assert.ok(
+    !salesDomain
+      .salesError({ status: 409, code: 'WAREHOUSE_ACCESS_DENIED' })
+      .includes('Không đủ tồn kho'),
+  )
 })
 test('ambiguous confirm/cancel failure reconciles via GET before any retry', async () => {
   for (const mode of ['confirm', 'cancel']) {

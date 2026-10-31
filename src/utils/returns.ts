@@ -10,6 +10,50 @@ import type {
   OrderSettlementSummary,
 } from '@/types/returns'
 import type { NormalizedApiError } from '@/utils/request'
+export const returnStatusLabel = (status: string): string =>
+  ({ DRAFT: 'Nháp', CONFIRMED: 'Đã xác nhận', CANCELLED: 'Đã hủy' })[status] ?? status
+
+// Do not accept missing metrics as zero, or coerce unsafe JSON numbers.
+export const isSettlementSummary = (value: unknown): value is OrderSettlementSummary => {
+  if (!value || typeof value !== 'object') return false
+  const row = value as Record<string, unknown>
+  return (
+    ['salesOrderId', 'warehouseId', 'code', 'saleDate'].every(
+      (key) => typeof row[key] === 'string' && row[key] !== '',
+    ) &&
+    ['DRAFT', 'CONFIRMED', 'CANCELLED'].includes(String(row.status)) &&
+    [
+      'totalAmount',
+      'returnedAmount',
+      'adjustedTotalAmount',
+      'paidAmount',
+      'refundedAmount',
+      'netPaidAmount',
+      'remainingAmount',
+      'refundableAmount',
+    ].every((key) => isInteger(row[key]) && validStockInteger(String(row[key])))
+  )
+}
+
+export const returnFieldMessage = (
+  key: string,
+  text: string,
+  lines: Pick<ReturnableLine, 'productId' | 'productCode' | 'productName'>[],
+  form: ReturnForm,
+): string => {
+  const index = /^lines(?:\[(\d+)\]|\.(\d+))\./.exec(key)
+  const id = index ? form.lines[Number(index[1] ?? index[2])]?.productId : key
+  const line = lines.find((item) => item.productId === id)
+  if (line) return [line.productCode, line.productName].filter(Boolean).join(' — ') + ': ' + text
+  const labels: Record<string, string> = {
+    returnDate: 'Ngày trả',
+    reason: 'Lý do',
+    note: 'Ghi chú',
+    salesOrderId: 'Đơn bán hàng',
+    lines: 'Sản phẩm trả',
+  }
+  return labels[key] ? labels[key] + ': ' + text : 'Kiểm tra thông tin sản phẩm trả.'
+}
 export const todayLocal = (): string =>
   new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Bangkok' }).format(new Date())
 export const validReturnDate = (value: string): boolean => {
@@ -51,7 +95,12 @@ export const validateReturn = (
       !validStockInteger(line.quantity, true) ||
       BigInt(line.quantity) > BigInt(limit.returnableQuantity)
     )
-      errors[line.productId] = 'Nhập số nguyên dương không vượt lượng còn được trả.'
+      errors[line.productId] =
+        'Nhập số nguyên dương; số lượng trả không được vượt ' +
+        String(limit.returnableQuantity) +
+        ' ' +
+        limit.unit +
+        '.'
     ids.add(line.productId)
   }
   return errors

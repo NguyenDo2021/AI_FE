@@ -7,7 +7,7 @@ import type { TableColumnsType } from 'ant-design-vue'
 import ReturnDialog from '@/components/sales/ReturnDialog.vue'
 import { usePaymentScope } from '@/composables/usePaymentScope'
 import { getReturns } from '@/api/sales/returns.api'
-import { returnError } from '@/utils/returns'
+import { returnError, returnStatusLabel } from '@/utils/returns'
 import { formatStockInteger as fmt } from '@/utils/stock'
 import { formatDate, formatDateTime } from '@/utils/date'
 import type { SalesReturn } from '@/types/returns'
@@ -275,7 +275,7 @@ const resetFilters = (): void => {
             :color="
               record.status === 'DRAFT' ? 'orange' : record.status === 'CONFIRMED' ? 'green' : 'red'
             "
-            >{{ $t('sales.' + record.status) }}</a-tag
+            >{{ returnStatusLabel(record.status) }}</a-tag
           >
           <div v-else-if="column.key === 'actions'" class="rr-actions">
             <a-tooltip title="Chi tiết / xử lý" :trigger="['hover', 'focus']">
@@ -284,6 +284,13 @@ const resetFilters = (): void => {
               </a-button>
             </a-tooltip>
           </div>
+          <a-tooltip
+            v-else-if="['salesOrderId', 'customerId', 'createdBy'].includes(String(column.key))"
+            :title="record[column.key] ? 'ID: ' + record[column.key] : undefined"
+            ><span class="rr-text">{{
+              column.key === 'customerId' && !record.customerId ? 'Khách lẻ' : '—'
+            }}</span></a-tooltip
+          >
           <a-tooltip
             v-else
             :title="record[column.dataIndex] ?? (column.key === 'customerId' ? 'Khách lẻ' : '—')"
