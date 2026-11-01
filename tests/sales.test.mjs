@@ -84,7 +84,7 @@ const mockUrl = moduleUrl(`
  export const BasicDrawer = defineComponent({ setup(_, { slots, emit }) { return () => h('drawer', [slots.default?.(), slots.footer?.({ close: () => emit('update:open', false) })]) } })
  export const MoreOutlined = defineComponent({ setup() { return () => null } })
  export const ShopOutlined = MoreOutlined, PlusOutlined = MoreOutlined, ReloadOutlined = MoreOutlined, EyeOutlined = MoreOutlined, EditOutlined = MoreOutlined
- export const FittedListTable = defineComponent({ props: ['columns','rows'], setup(props, { slots }) { return () => h('table', (props.rows ?? []).flatMap(record => props.columns.map(column => h('cell', { column: column.key }, slots.bodyCell?.({ column, record, compact: false }))))) } })
+ export const FittedListTable = defineComponent({ props: ['columns','rows'], setup(props, { slots }) { return () => h('table', (props.rows ?? []).flatMap(record => props.columns.map(column => h('cell', { column: column.key }, slots.bodyCell?.({ column, record, compact: !!context.compact }))))) } })
  export const BasicTable = defineComponent({ props: ['columns','dataSource'], setup(props, { slots }) { return () => h('table', (props.dataSource ?? []).flatMap(record => props.columns.map(column => h('cell', { column: column.key }, slots.bodyCell?.({ column, record }))))) } })
  export default defineComponent({ setup() { return () => null } })
 `)
@@ -179,7 +179,7 @@ const CustomersPage = await component(
 )
 const SalesOrdersPage = await component(
   'src/views/sales/SalesOrdersPage.vue',
-  'load, rows, filters, customers, page, pageSize, changePage, total, columns, scrollRevision',
+  'load, rows, filters, customers, page, pageSize, changePage, total, columns, scrollRevision, orderActions, runAction',
 )
 const CustomerSelect = await component(
   'src/components/sales/CustomerSelect.vue',
@@ -247,6 +247,8 @@ function mount(Component, props) {
     'a-date-picker',
     'a-textarea',
     'a-button',
+    'a-menu',
+    'a-menu-item',
   ])
     app.component(
       name,
@@ -257,6 +259,14 @@ function mount(Component, props) {
         },
       }),
     )
+  app.component(
+    'ADropdown',
+    defineComponent({
+      setup(_, { slots }) {
+        return () => h('dropdown', [slots.default?.(), slots.overlay?.()])
+      },
+    }),
+  )
   const tree = { children: [] }
   const root = app.mount(tree)
   return { vm: root.$refs.subject, state, tree, unmount: () => app.unmount() }
@@ -274,6 +284,8 @@ const allPermissions = [
   'PRODUCT_VIEW',
 ]
 function reset() {
+  context.compact = false
+  context.payments.attempts = {}
   context.notices = []
   context.calls = []
   context.handler = undefined
@@ -824,10 +836,10 @@ test('revoked warehouse/permission discards pending detail and disables mutation
     subject.unmount()
   }
 })
-test('403 clears visible results and reloads assigned warehouse scope', async () => {
+test('WAREHOUSE_ACCESS_DENIED clears visible results and reloads assigned warehouse scope', async () => {
   reset()
   context.handler = () => {
-    throw Object.assign(new Error('Denied'), { status: 403 })
+    throw Object.assign(new Error('Denied'), { status: 403, code: 'WAREHOUSE_ACCESS_DENIED' })
   }
   const subject = mount(CustomersPage, {})
   await flush()
@@ -1131,5 +1143,110 @@ test('quantity, price and note edits do not refetch advisory inventory', async (
   subject.vm.form.note = 'Keep entered values'
   await flush()
   assert.equal(context.calls.length, before)
+  subject.unmount()
+})
+const nodes = (root, predicate) => [
+  ...(predicate(root) ? [root] : []),
+  ...(root.children ?? []).flatMap((child) => nodes(child, predicate)),
+]
+
+test('view-only orders show details without an empty action trigger on desktop and mobile', async () => {
+  for (const compact of [false, true]) {
+    for (const status of ['DRAFT', 'CONFIRMED', 'CANCELLED']) {
+      reset()
+      context.compact = compact
+      context.auth.user.permissions = ['SALES_ORDER_VIEW']
+      context.response = pageData([order({ status })])
+      const subject = mount(SalesOrdersPage, {})
+      await flush()
+      assert.equal(
+        nodes(subject.tree, (node) => node.props?.['aria-label'] === 'Chi tiết').length,
+        1,
+      )
+      assert.equal(
+        nodes(subject.tree, (node) => node.props?.['aria-label'] === 'Thao tác').length,
+        0,
+      )
+      assert.equal(nodes(subject.tree, (node) => node.type === 'dropdown').length, 0)
+      assert.equal(writes().length, 0)
+      subject.unmount()
+    }
+  }
+})
+
+test('action items use the same permission and business rules on desktop and mobile, including Admin', async () => {
+  const cases = [
+    { permissions: ['SALES_ORDER_UPDATE'], status: 'DRAFT', keys: ['edit'] },
+    { permissions: ['SALES_ORDER_CONFIRM'], status: 'DRAFT', keys: ['confirm'] },
+    { permissions: ['SALES_ORDER_CANCEL'], status: 'CONFIRMED', paidAmount: 0, keys: ['cancel'] },
+    { permissions: ['SALES_ORDER_CANCEL'], status: 'CONFIRMED', paidAmount: 1, keys: [] },
+    { permissions: ['SALES_ORDER_UPDATE', 'SALES_ORDER_CONFIRM'], status: 'CONFIRMED', keys: [] },
+    {
+      permissions: ['PAYMENT_CREATE'],
+      status: 'CONFIRMED',
+      remainingAmount: 100,
+      keys: ['collect'],
+    },
+    { permissions: ['PAYMENT_CREATE'], status: 'CONFIRMED', remainingAmount: 0, keys: [] },
+    {
+      permissions: ['PAYMENT_CREATE'],
+      status: 'CONFIRMED',
+      remainingAmount: 0,
+      retry: true,
+      keys: ['collect'],
+    },
+    { permissions: [], admin: true, status: 'DRAFT', keys: ['edit', 'confirm', 'cancel'] },
+    {
+      permissions: [],
+      admin: true,
+      status: 'CONFIRMED',
+      paidAmount: 0,
+      remainingAmount: 100,
+      keys: ['collect', 'cancel'],
+    },
+    { permissions: [], admin: true, status: 'CANCELLED', keys: [] },
+  ]
+  for (const compact of [false, true])
+    for (const item of cases) {
+      reset()
+      context.compact = compact
+      context.auth.user.permissions = ['SALES_ORDER_VIEW', ...item.permissions]
+      context.auth.isCatalogAdmin = !!item.admin
+      const record = order({
+        status: item.status,
+        paidAmount: item.paidAmount ?? 0,
+        remainingAmount: item.remainingAmount ?? 0,
+      })
+      if (item.retry) context.payments.attempts[record.id] = { state: 'pending' }
+      context.response = pageData([record])
+      const subject = mount(SalesOrdersPage, {})
+      await flush()
+      assert.deepEqual(
+        subject.vm.orderActions(record).map((action) => action.key),
+        item.keys,
+      )
+      assert.equal(
+        nodes(subject.tree, (node) => node.type === 'dropdown').length,
+        item.keys.length ? 1 : 0,
+      )
+      assert.equal(
+        nodes(subject.tree, (node) => node.props?.['aria-label'] === 'Chi tiết').length,
+        1,
+      )
+      assert.equal(writes().length, 0)
+      subject.unmount()
+    }
+})
+
+test('FORBIDDEN does not refresh warehouse assignments or remove valid warehouse choices', async () => {
+  reset()
+  context.handler = () => {
+    throw Object.assign(new Error('No permission'), { status: 403, code: 'FORBIDDEN' })
+  }
+  const subject = mount(SalesOrdersPage, {})
+  await flush()
+  assert.equal(context.refreshes, 0)
+  assert.equal(context.warehouses.selectedId, 'w1')
+  assert.equal(context.warehouses.warehouses.length, 2)
   subject.unmount()
 })

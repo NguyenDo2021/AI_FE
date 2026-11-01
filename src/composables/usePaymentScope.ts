@@ -5,9 +5,14 @@ export const usePaymentScope = () => {
   const contextKey = computed(
     () => scope.scopeKey.value + ':' + (scope.warehouses.selectedId ?? ''),
   )
-  const refreshAccess = async (): Promise<void> => {
+  const refreshAccess = async (cause?: unknown): Promise<void> => {
+    if ((cause as { warehouseScopeHandled?: boolean } | undefined)?.warehouseScopeHandled) return
+    if ((cause as { code?: string } | undefined)?.code === 'WAREHOUSE_ACCESS_DENIED') {
+      await scope.refreshScope(cause)
+      return
+    }
     await scope.auth.getUserInfo().catch(() => undefined)
-    await scope.refreshScope()
+    await scope.refreshScope(cause)
   }
   return { ...scope, contextKey, refreshAccess }
 }

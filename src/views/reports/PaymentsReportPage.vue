@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, useId, watch } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
@@ -202,7 +202,7 @@ const load = async (): Promise<void> => {
       filters.warehouseId = undefined
       appliedFilters.value = { ...appliedFilters.value, warehouseId: undefined, page: 1 }
       try {
-        await refreshScope()
+        await refreshScope(cause)
       } finally {
         scopeRefreshing = false
       }

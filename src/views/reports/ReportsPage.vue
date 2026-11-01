@@ -159,7 +159,7 @@ const load = async (): Promise<void> => {
       loading.value = false
       filters.warehouseId = undefined
       try {
-        await refreshScope()
+        await refreshScope(cause)
       } finally {
         scopeRefreshing = false
       }

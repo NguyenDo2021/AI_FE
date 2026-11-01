@@ -93,7 +93,7 @@ const load = async (): Promise<void> => {
     if ((cause as { status?: number }).status === 403) {
       rows.value = []
       open.value = false
-      await refreshAccess()
+      await refreshAccess(cause)
     }
   } finally {
     if (current === sequence) loading.value = false

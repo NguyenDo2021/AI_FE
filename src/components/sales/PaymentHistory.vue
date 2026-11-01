@@ -106,7 +106,7 @@ const load = async (): Promise<void> => {
     total.value = result.total
   } catch (cause) {
     if (current === sequence) error.value = paymentError(cause)
-    if ((cause as NormalizedApiError).status === 403) await refreshAccess()
+    if ((cause as NormalizedApiError).status === 403) await refreshAccess(cause)
   } finally {
     if (current === sequence) loading.value = false
   }

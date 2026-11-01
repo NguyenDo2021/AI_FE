@@ -58,7 +58,7 @@ const retry = async (attempt: PaymentAttempt): Promise<void> => {
   } catch (cause) {
     if (auth.user?.id !== user || current !== sequence) return
     error.value = paymentError(cause)
-    if ((cause as NormalizedApiError).status === 403) await refreshAccess()
+    if ((cause as NormalizedApiError).status === 403) await refreshAccess(cause)
   }
 }
 </script>

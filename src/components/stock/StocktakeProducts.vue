@@ -59,7 +59,7 @@ const load = async (): Promise<void> => {
   } catch (cause) {
     if (current !== sequence) return
     error.value = stockError(cause, t)
-    if ((cause as { code?: string }).code === 'WAREHOUSE_ACCESS_DENIED') await refreshScope()
+    if ((cause as { code?: string }).code === 'WAREHOUSE_ACCESS_DENIED') await refreshScope(cause)
   } finally {
     if (current === sequence) loading.value = false
   }

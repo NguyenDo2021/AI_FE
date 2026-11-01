@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import FittedListTable from '@/components/catalog/FittedListTable.vue'
 import type { TableColumnsType } from 'ant-design-vue'
@@ -83,7 +83,7 @@ const load = async (): Promise<void> => {
     total.value = result.total
   } catch (cause) {
     if (current === sequence) error.value = salesError(cause)
-    if ((cause as { status?: number }).status === 403) await refreshScope()
+    if ((cause as { status?: number }).status === 403) await refreshScope(cause)
   } finally {
     if (current === sequence) loading.value = false
   }

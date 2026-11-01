@@ -103,7 +103,7 @@ export const usePaymentReceipt = () => {
       if (error.status === 403 || error.status === 401) {
         close()
         message.error(receiptError(cause))
-        if (error.status === 403) await refreshAccess()
+        if (error.status === 403) await refreshAccess(cause)
       } else {
         state.error = receiptError(cause)
       }

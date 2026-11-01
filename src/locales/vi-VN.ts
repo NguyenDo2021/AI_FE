@@ -60,6 +60,10 @@ export default {
     waitBeforeExport: 'Hãy tìm kiếm và chờ bảng tải xong trước khi xuất Excel.',
   },
   header: {
+    warehouseAccessRevoked:
+      'Kho đang chọn đã được thu hồi quyền truy cập. Danh sách kho đã được cập nhật.',
+    warehouseScopeUnverified: 'Quyền truy cập kho đã thay đổi. Chưa xác minh được phạm vi kho mới.',
+    warehouseScopeRetry: 'Dữ liệu kho đã được ẩn. Hãy tải lại phạm vi kho để tiếp tục.',
     home: 'Trang chủ',
     breadcrumb: 'Đường dẫn trang',
     expandSidebar: 'Mở rộng thanh bên',
@@ -425,7 +429,8 @@ export default {
     'product-groups': 'Nhóm sản phẩm',
     products: 'Sản phẩm',
     workingWarehouse: 'Kho đang làm việc',
-    noWarehouses: 'Bạn chưa có kho nào trong phạm vi được giao.',
+    noWarehouses:
+      'Bạn chưa có kho nào trong phạm vi được giao. Vui lòng liên hệ quản trị viên để được gán kho.',
     adminUnverified: 'Chưa xác nhận được trạng thái Admin. Giao diện đang sử dụng quyền hiện có.',
     keyword: 'Tìm theo mã hoặc tên',
     allStatuses: 'Tất cả trạng thái',

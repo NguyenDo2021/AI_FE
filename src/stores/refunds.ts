@@ -17,6 +17,7 @@ export const useRefundsStore = defineStore('refunds', () => {
       auth.user?.permissions,
       auth.isCatalogAdmin,
       warehouses.selectedId,
+      warehouses.scopeRevision,
       warehouses.warehouses.map((item) => [item.id, item.status]),
     ])
   const attempts = ref<Record<string, RefundAttempt>>({})

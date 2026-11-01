@@ -201,7 +201,7 @@ const loadLimits = async (): Promise<void> => {
     if (currentLimits === limitsSequence) limitsController = undefined
   }
 }
-const deny = async (): Promise<void> => {
+const deny = async (cause?: unknown): Promise<void> => {
   ++sequence
   cancelSourceRequests()
   sourceOrder.value = undefined
@@ -212,7 +212,7 @@ const deny = async (): Promise<void> => {
   form.value = empty()
   quote.value = undefined
   emit('update:open', false)
-  await refreshAccess()
+  await refreshAccess(cause)
 }
 const load = async (): Promise<void> => {
   const current = ++sequence
@@ -254,7 +254,7 @@ const load = async (): Promise<void> => {
   } catch (cause) {
     if (current !== sequence) return
     error.value = returnError(cause)
-    if ((cause as NormalizedApiError).status === 403) await deny()
+    if ((cause as NormalizedApiError).status === 403) await deny(cause)
   } finally {
     if (current === sequence) loading.value = false
   }
@@ -303,7 +303,7 @@ const selectSource = (order: ReturnableOrder): void => {
     } catch (cause) {
       if (selectedSequence !== sequence) return
       error.value = returnError(cause)
-      if ((cause as NormalizedApiError).status === 403) await deny()
+      if ((cause as NormalizedApiError).status === 403) await deny(cause)
     } finally {
       if (selectedSequence === sequence) loading.value = false
     }
@@ -337,7 +337,7 @@ const startEdit = async (): Promise<void> => {
   } catch (cause) {
     if (current !== sequence) return
     error.value = returnError(cause)
-    if ((cause as NormalizedApiError).status === 403) await deny()
+    if ((cause as NormalizedApiError).status === 403) await deny(cause)
   } finally {
     if (current === sequence) loading.value = false
   }
@@ -350,7 +350,7 @@ const refreshLimits = async (): Promise<void> => {
   } catch (cause) {
     if (current !== sequence) return
     error.value = returnError(cause)
-    if ((cause as NormalizedApiError).status === 403) await deny()
+    if ((cause as NormalizedApiError).status === 403) await deny(cause)
   } finally {
     if (current === sequence) loading.value = false
   }
@@ -438,7 +438,7 @@ const handleError = async (cause: unknown): Promise<void> => {
         fields.value[data.productId] = 'Dòng này vượt lượng còn được trả.'
     }
   }
-  if (apiError.status === 403) await deny()
+  if (apiError.status === 403) await deny(cause)
 }
 const act = async (kind: 'confirm' | 'cancel'): Promise<void> => {
   const original = detail.value

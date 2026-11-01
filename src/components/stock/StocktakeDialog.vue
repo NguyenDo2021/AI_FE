@@ -168,7 +168,7 @@ const handleError = async (cause: unknown): Promise<void> => {
   if (failure.code === 'VERSION_CONFLICT') blocked.value = true
   if (failure.code === 'WAREHOUSE_ACCESS_DENIED') {
     clear()
-    await refreshScope()
+    await refreshScope(cause)
   } else if (failure.status === 403 || failure.status === 404) clear()
 }
 const load = async (ask = true): Promise<void> => {

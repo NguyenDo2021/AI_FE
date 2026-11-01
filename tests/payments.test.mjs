@@ -867,7 +867,7 @@ test('scope/user change discards late payment list responses', async () => {
   assert.deepEqual(subject.vm.rows, [])
   subject.unmount()
 })
-test('403 refreshes current permissions and assigned warehouses', async () => {
+test('FORBIDDEN refreshes permissions without refreshing warehouse assignments', async () => {
   reset(['PAYMENT_VIEW'])
   context.handler = () => {
     throw Object.assign(new Error('Denied'), { status: 403, code: 'FORBIDDEN' })
@@ -875,7 +875,7 @@ test('403 refreshes current permissions and assigned warehouses', async () => {
   const subject = mount(History, {})
   await flush()
   assert.deepEqual(subject.vm.rows, [])
-  assert.equal(context.refreshes, 2)
+  assert.equal(context.refreshes, 1)
   subject.unmount()
 })
 test('cancel requires reason, updates authoritative summary and never changes stock', async () => {
@@ -1206,7 +1206,7 @@ test('receipt denial closes preview and refreshes access; invalid success and ne
   }
   await subject.vm.show(receipt())
   assert.equal(subject.vm.state.open, false)
-  assert.equal(context.refreshes, 2)
+  assert.equal(context.refreshes, 1)
   context.handler = undefined
   context.response = {
     data: new Blob(['{}'], { type: 'application/json' }),

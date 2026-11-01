@@ -59,7 +59,7 @@ export const useBusinessDashboard = () => {
     try {
       if (error.code === 'WAREHOUSE_ACCESS_DENIED' || error.code === 'WAREHOUSE_NOT_FOUND') {
         filters.warehouseId = undefined
-        await refreshScope()
+        await refreshScope(cause)
       } else {
         await auth.getUserInfo().catch(() => undefined)
       }

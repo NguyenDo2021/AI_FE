@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { computed, reactive, ref, watch, onBeforeUnmount } from 'vue'
 import {
   EyeOutlined,
@@ -137,7 +137,7 @@ const load = async (): Promise<void> => {
     if (current !== sequence) return
     error.value = paymentError(cause)
     mobileFiltersOpen.value = true
-    if ((cause as NormalizedApiError).status === 403) await refreshAccess()
+    if ((cause as NormalizedApiError).status === 403) await refreshAccess(cause)
   } finally {
     if (current === sequence) loading.value = false
   }

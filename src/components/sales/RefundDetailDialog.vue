@@ -46,7 +46,7 @@ const load = async (): Promise<void> => {
       if ((cause as NormalizedApiError).status === 403) {
         clear()
         emit('update:open', false)
-        await refreshAccess()
+        await refreshAccess(cause)
       }
     }
   } finally {
@@ -98,7 +98,7 @@ const cancel = async (): Promise<void> => {
     if (apiError.status === 403) {
       clear()
       emit('update:open', false)
-      await refreshAccess()
+      await refreshAccess(cause)
     } else if (!apiError.status || apiError.status === 408 || apiError.status >= 500) {
       try {
         const latest = await getRefund(original.id)

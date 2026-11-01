@@ -300,19 +300,22 @@ test('logout clears scope and prevents a pending response from restoring it', as
   assert.deepEqual(store.warehouses, [])
   assert.equal(store.loading, false)
 })
-test('only latest scope request can commit its response', async () => {
+test('concurrent scope loads share one request; a new user supersedes the old response', async () => {
   const completions = []
   globalThis.__getMyWarehouses = () => new Promise((resolve) => completions.push(resolve))
   const store = warehouseModule.useWarehouseStore()
   const older = store.load('a')
-  const newer = store.load('a')
+  const shared = store.load('a')
+  assert.equal(completions.length, 1)
+  const newer = store.load('b')
   completions[1]([warehouse('new')])
   await newer
   completions[0]([warehouse('old')])
   await older
+  await shared
   assert.equal(store.warehouses[0].id, 'new')
 })
-test('scope fetch failure clears stale selected warehouse', async () => {
+test('failed recovery retains last known scope without claiming an empty assignment', async () => {
   response = [warehouse('w1')]
   const store = warehouseModule.useWarehouseStore()
   await store.load('a')
@@ -320,9 +323,12 @@ test('scope fetch failure clears stale selected warehouse', async () => {
   globalThis.__getMyWarehouses = async () => {
     throw new Error('Denied')
   }
-  await assert.rejects(store.load('a'), /Denied/)
-  assert.equal(store.selectedId, undefined)
-  assert.deepEqual(store.warehouses, [])
+  await assert.rejects(store.revokeAccess('a'), /Denied/)
+  assert.equal(store.selected, undefined)
+  assert.equal(store.accessBlocked, true)
+  assert.equal(store.loaded, true)
+  assert.equal(store.warehouses[0].id, 'w1')
+  assert.equal(store.error, 'Denied')
 })
 
 let account = { status: 1 }

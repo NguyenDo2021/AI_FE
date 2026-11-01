@@ -56,7 +56,7 @@ const load = async (): Promise<void> => {
     }
   } catch (cause) {
     if (current === sequence) error.value = paymentError(cause)
-    if ((cause as NormalizedApiError).status === 403) await refreshAccess()
+    if ((cause as NormalizedApiError).status === 403) await refreshAccess(cause)
   } finally {
     if (current === sequence) loading.value = false
   }
@@ -135,7 +135,7 @@ const submit = async (): Promise<void> => {
     if (!status || status >= 500 || status === 408)
       error.value +=
         ' Chưa xác định kết quả. Có thể thử lại hủy với cùng lý do; backend không đảo tiền thêm.'
-    if (status === 403) await refreshAccess()
+    if (status === 403) await refreshAccess(cause)
   } finally {
     saving.value = false
   }

@@ -83,7 +83,7 @@ const reloadSettlement = async (): Promise<void> => {
     settlementError.value = returnError(cause)
     if ((cause as NormalizedApiError).status === 403) {
       emit('update:open', false)
-      await refreshAccess()
+      await refreshAccess(cause)
     }
   } finally {
     if (version === sequence) loading.value = false
@@ -178,7 +178,7 @@ const submit = async (): Promise<void> => {
     if (apiError.status === 403) {
       form.value = empty()
       emit('update:open', false)
-      await refreshAccess()
+      await refreshAccess(cause)
     } else if (
       apiError.code === 'REFUND_EXCEEDS_REFUNDABLE' ||
       apiError.code === 'INVALID_SALES_ORDER_STATUS'

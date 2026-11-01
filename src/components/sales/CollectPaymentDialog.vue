@@ -123,7 +123,7 @@ const submit = async (): Promise<void> => {
     if (attempt.value?.state === 'uncertain')
       error.value += ' Kết quả chưa xác định. Chỉ thử lại đúng request đã lưu.'
     if (apiError.status === 403) {
-      await refreshAccess()
+      await refreshAccess(cause)
       return
     }
     if (
@@ -145,7 +145,7 @@ const submit = async (): Promise<void> => {
       } catch (reloadCause) {
         if (current === sequence)
           error.value += ' Không tải được số liệu mới: ' + paymentError(reloadCause)
-        if ((reloadCause as NormalizedApiError).status === 403) await refreshAccess()
+        if ((reloadCause as NormalizedApiError).status === 403) await refreshAccess(reloadCause)
       }
     }
   }

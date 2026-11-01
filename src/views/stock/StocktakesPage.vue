@@ -133,7 +133,7 @@ const load = async (): Promise<void> => {
         rows.value = []
         total.value = 0
         open.value = false
-        await refreshScope()
+        await refreshScope(cause)
       }
     }
   } finally {
