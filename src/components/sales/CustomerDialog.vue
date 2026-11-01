@@ -85,7 +85,7 @@ const load = async (): Promise<void> => {
     blocked.value = false
   } catch (cause) {
     if (current === sequence) error.value = salesError(cause)
-    if ((cause as { status?: number }).status === 403) await refreshScope()
+    if ((cause as { status?: number }).status === 403) await refreshScope(cause)
   } finally {
     if (current === sequence) loading.value = false
   }
@@ -149,7 +149,7 @@ const submit = async (): Promise<void> => {
     fields.value = salesFieldErrors(cause)
     if ((cause as { status?: number }).status === 403) {
       blocked.value = true
-      await refreshScope()
+      await refreshScope(cause)
     }
   } finally {
     saving.value = false

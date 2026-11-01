@@ -61,6 +61,11 @@ export default {
     waitBeforeExport: 'Search and wait for the table to finish loading before exporting Excel.',
   },
   header: {
+    warehouseAccessRevoked:
+      'Access to the selected warehouse has been revoked. The warehouse list has been updated.',
+    warehouseScopeUnverified:
+      'Warehouse access has changed. The new warehouse scope has not been verified.',
+    warehouseScopeRetry: 'Warehouse data is hidden. Reload the warehouse scope to continue.',
     home: 'Home',
     breadcrumb: 'Breadcrumb',
     expandSidebar: 'Expand sidebar',
@@ -426,7 +431,8 @@ export default {
     'product-groups': 'Product groups',
     products: 'Products',
     workingWarehouse: 'Working warehouse',
-    noWarehouses: 'No warehouses are available in your assigned scope.',
+    noWarehouses:
+      'No warehouses are available in your assigned scope. Contact an administrator to assign a warehouse.',
     adminUnverified: 'Admin status could not be verified. Existing permissions are being used.',
     keyword: 'Search code or name',
     allStatuses: 'All statuses',

@@ -7,6 +7,8 @@ import { i18n } from '@/locales'
 import { useAuthStore } from '@/stores/auth'
 import { installPermissionDirective } from '@/directives/permission'
 import { configureRequestAuth } from '@/utils/request'
+import { installWarehouseAccess } from '@/utils/warehouseAccess'
+import { useWarehouseStore } from '@/stores/warehouse'
 import '@/styles/index.css'
 
 const app = createApp(App)
@@ -14,6 +16,8 @@ const pinia = createPinia()
 app.use(pinia)
 
 const auth = useAuthStore(pinia)
+const warehouses = useWarehouseStore(pinia)
+installWarehouseAccess(warehouses, () => auth.user?.id)
 configureRequestAuth({
   refresh: auth.refreshToken,
   onAccessDenied: () => {

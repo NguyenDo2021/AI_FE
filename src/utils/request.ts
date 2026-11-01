@@ -16,6 +16,7 @@ declare module 'axios' {
     quietErrors?: boolean
     preventAutomaticRetry?: boolean
     skipAccessRefresh?: boolean
+    _warehouseRevision?: number
   }
 }
 interface RetryConfig extends InternalAxiosRequestConfig {
@@ -39,6 +40,28 @@ let refreshSession: (() => Promise<string>) | null = null
 let onSessionExpired: (() => void) | null = null
 let onAccessDenied: (() => void) | null = null
 
+// Keep warehouse recovery independent of authentication and functional permissions.
+let warehouseAccess: {
+  revision: () => number
+  allows: (config: AxiosRequestConfig) => boolean
+  onDenied: () => void
+} | null = null
+export const configureRequestWarehouse = (handlers: NonNullable<typeof warehouseAccess>): void => {
+  warehouseAccess = handlers
+}
+export const isWarehouseRequest = (url = ''): boolean =>
+  /^\/(?:stock-receipts|stocktakes|sales-orders|customers|payments|receivables|sales-returns|refunds|refundables|reports)(?:\/|$)/.test(
+    url,
+  ) || /^\/warehouses\/[^/]+\/(?:inventory|inventory-movements)(?:\/|$)/.test(url)
+const scopeChanged = (): NormalizedApiError =>
+  Object.assign(new Error('Phạm vi kho đã thay đổi. Vui lòng tải lại phạm vi kho.'), {
+    code: 'WAREHOUSE_SCOPE_CHANGED',
+  })
+const isStaleWarehouseRequest = (config?: AxiosRequestConfig): boolean =>
+  !!warehouseAccess &&
+  config?._warehouseRevision !== undefined &&
+  config._warehouseRevision !== warehouseAccess.revision()
+
 export const configureRequestAuth = (handlers: {
   refresh: () => Promise<string>
   onSessionExpired: () => void
@@ -50,6 +73,10 @@ export const configureRequestAuth = (handlers: {
 }
 
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  if (warehouseAccess && isWarehouseRequest(config.url)) {
+    if (isStaleWarehouseRequest(config) || !warehouseAccess.allows(config)) throw scopeChanged()
+    config._warehouseRevision = warehouseAccess.revision()
+  }
   const token = getAccessToken()
   if (token) config.headers.set('Authorization', `Bearer ${token}`)
   return config
@@ -70,9 +97,14 @@ const normalizeError = (error: AxiosError<ApiErrorPayload>): NormalizedApiError 
 }
 
 http.interceptors.response.use(
-  (response) => (response.config.preserveResponse ? response : response.data),
+  (response) => {
+    if (isStaleWarehouseRequest(response.config)) throw scopeChanged()
+    return response.config.preserveResponse ? response : response.data
+  },
   async (error: AxiosError<ApiErrorPayload>) => {
+    if (error.code === 'WAREHOUSE_SCOPE_CHANGED') return Promise.reject(error)
     const config = error.config as RetryConfig | undefined
+    if (isStaleWarehouseRequest(config)) return Promise.reject(scopeChanged())
     if (config?.preserveResponse && error.response) {
       const payload = await readBlobError(
         error.response.data,
@@ -80,7 +112,18 @@ http.interceptors.response.use(
       )
       if (payload) error.response.data = payload
     }
+    if (isStaleWarehouseRequest(config)) return Promise.reject(scopeChanged())
     const status = error.response?.status
+    if (
+      error.response?.data?.code === 'WAREHOUSE_ACCESS_DENIED' &&
+      isWarehouseRequest(config?.url)
+    ) {
+      warehouseAccess?.onDenied()
+      // Never replay a denied operation, including writes, against another warehouse.
+      return Promise.reject(
+        Object.assign(normalizeError(error), { warehouseScopeHandled: !!warehouseAccess }),
+      )
+    }
     const isAuthEndpoint =
       config?.url?.includes('/auth/login') || config?.url?.includes('/auth/refresh')
 
@@ -103,7 +146,13 @@ http.interceptors.response.use(
         // Keep PDF retry failures outside this catch; JSON calls retain their existing behavior.
         if (config.preserveResponse) return http.request(config)
         return await http.request(config)
-      } catch {
+      } catch (cause) {
+        if (
+          ['WAREHOUSE_SCOPE_CHANGED', 'WAREHOUSE_ACCESS_DENIED'].includes(
+            (cause as NormalizedApiError | undefined)?.code ?? '',
+          )
+        )
+          return Promise.reject(cause)
         clearTokens()
         onSessionExpired?.()
         message.error(i18n.global.t('errors.401'))

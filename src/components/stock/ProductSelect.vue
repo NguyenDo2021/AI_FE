@@ -78,7 +78,7 @@ const load = async (append = false): Promise<void> => {
     total.value = result.total
   } catch (cause) {
     if (current === sequence) error.value = stockError(cause, t)
-    if (props.salePricing && (cause as { status?: number }).status === 403) await refreshScope()
+    if (props.salePricing && (cause as { status?: number }).status === 403) await refreshScope(cause)
   } finally {
     if (current === sequence) loading.value = false
   }

@@ -4,10 +4,21 @@ import AppSidebar from '@/components/layout/AppSidebar.vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { usePermission } from '@/composables/usePermission'
+import { computed } from 'vue'
+import { useWarehouseStore } from '@/stores/warehouse'
 
 const route = useRoute()
 const authStore = useAuthStore()
 const { can } = usePermission()
+const warehouses = useWarehouseStore()
+const warehousePage = computed(
+  () => /^\/(stock|sales|reports)(\/|$)/.test(route.path) || route.name === 'dashboard',
+)
+const scopeUnavailable = computed(
+  () =>
+    warehousePage.value &&
+    (warehouses.accessBlocked || (warehouses.loaded && !warehouses.warehouses.length)),
+)
 </script>
 
 <template>
@@ -53,7 +64,37 @@ const { can } = usePermission()
             (authStore.isCatalogAdmin || can('REPORT_DASHBOARD_VIEW')),
         }"
       >
-        <RouterView />
+        <a-alert
+          v-if="warehousePage && warehouses.recoveryNotice && !warehouses.accessBlocked"
+          type="warning"
+          show-icon
+          :message="$t('header.warehouseAccessRevoked')"
+        />
+        <a-alert
+          v-if="scopeUnavailable"
+          :type="warehouses.accessBlocked ? 'warning' : 'info'"
+          show-icon
+          :message="
+            $t(
+              warehouses.accessBlocked
+                ? 'header.warehouseScopeUnverified'
+                : 'header.noAssignedWarehouses',
+            )
+          "
+          :description="
+            $t(warehouses.accessBlocked ? 'header.warehouseScopeRetry' : 'catalog.noWarehouses')
+          "
+        >
+          <template #action>
+            <a-button
+              :loading="warehouses.loading"
+              :disabled="warehouses.loading || !authStore.user"
+              @click="authStore.user && warehouses.load(authStore.user.id).catch(() => undefined)"
+              >{{ $t('header.reloadData') }}</a-button
+            >
+          </template>
+        </a-alert>
+        <RouterView v-else :key="warehousePage ? warehouses.scopeRevision : undefined" />
       </a-layout-content>
     </a-layout>
   </a-layout>

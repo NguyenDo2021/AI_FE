@@ -147,11 +147,11 @@ const load = async (): Promise<void> => {
             result.status === 'rejected' && (result.reason as { status?: number }).status === 403,
         )
       )
-        await refreshScope()
+        await refreshScope(results.find((result) => result.status === 'rejected')?.reason)
     }
   } catch (cause) {
     if (current === sequence) error.value = salesError(cause)
-    if ((cause as { status?: number }).status === 403) await refreshScope()
+    if ((cause as { status?: number }).status === 403) await refreshScope(cause)
   } finally {
     if (current === sequence) loading.value = false
   }
@@ -222,6 +222,34 @@ const show = (value: typeof mode.value, order?: SalesOrder): void => {
 const showCollect = (order: SalesOrder): void => {
   collectOrder.value = order
   collectOpen.value = true
+}
+const orderActions = (order: SalesOrder) => {
+  const actions: {
+    key: 'collect' | 'edit' | 'confirm' | 'cancel'
+    label: string
+    danger?: boolean
+  }[] = []
+  if (can('PAYMENT_CREATE') && (canCollect(order) || payments.attempts[order.id]))
+    actions.push({
+      key: 'collect',
+      label: payments.attempts[order.id] ? 'Thử lại lần thu' : 'Thu tiền',
+    })
+  if (order.status === 'DRAFT' && can('SALES_ORDER_UPDATE'))
+    actions.push({ key: 'edit', label: 'Sửa' })
+  if (order.status === 'DRAFT' && can('SALES_ORDER_CONFIRM'))
+    actions.push({ key: 'confirm', label: 'Xác nhận xuất' })
+  if (
+    order.status !== 'CANCELLED' &&
+    BigInt(order.paidAmount ?? 0) === 0n &&
+    can('SALES_ORDER_CANCEL')
+  )
+    actions.push({ key: 'cancel', label: 'Hủy', danger: true })
+  return actions
+}
+const runAction = (key: 'collect' | 'edit' | 'confirm' | 'cancel', order: SalesOrder): void => {
+  if (!orderActions(order).some((action) => action.key === key)) return
+  if (key === 'collect') showCollect(order)
+  else show(key, order)
 }
 const changePage = (next: number, size: number): void => {
   if (![10, 20, 50, 100].includes(size)) return
@@ -341,7 +369,7 @@ const changePage = (next: number, size: number): void => {
           @reload="load"
           @page-change="changePage"
         >
-          <template #bodyCell="{ column, record, compact }">
+          <template #bodyCell="{ column, record }">
             <a-tooltip v-if="column.key === 'code'" :title="record.code">
               <span class="order-text order-code">{{ record.code }}</span>
             </a-tooltip>
@@ -396,52 +424,23 @@ const changePage = (next: number, size: number): void => {
               {{ $t('sales.' + record.status) }}
             </a-tag>
             <div v-else-if="column.key === 'actions'" class="order-actions">
-              <a-tooltip v-if="!compact" title="Chi tiết">
+              <a-tooltip title="Chi tiết">
                 <a-button type="text" aria-label="Chi tiết" @click="show('view', record)">
                   <template #icon><EyeOutlined aria-hidden="true" /></template>
                 </a-button>
               </a-tooltip>
-              <a-dropdown :trigger="['click']">
+              <a-dropdown v-if="orderActions(record).length" :trigger="['click']">
                 <a-button type="text" aria-label="Thao tác">
                   <template #icon><MoreOutlined aria-hidden="true" /></template>
                 </a-button>
                 <template #overlay>
                   <a-menu>
-                    <a-menu-item v-if="compact" key="view" @click="show('view', record)"
-                      >Chi tiết</a-menu-item
-                    >
                     <a-menu-item
-                      v-if="
-                        can('PAYMENT_CREATE') &&
-                        (canCollect(record) || payments.attempts[record.id])
-                      "
-                      key="collect"
-                      @click="showCollect(record)"
-                    >
-                      {{ payments.attempts[record.id] ? 'Thử lại lần thu' : 'Thu tiền' }}
-                    </a-menu-item>
-                    <a-menu-item
-                      v-if="record.status === 'DRAFT' && can('SALES_ORDER_UPDATE')"
-                      key="edit"
-                      @click="show('edit', record)"
-                      >Sửa</a-menu-item
-                    >
-                    <a-menu-item
-                      v-if="record.status === 'DRAFT' && can('SALES_ORDER_CONFIRM')"
-                      key="confirm"
-                      @click="show('confirm', record)"
-                      >Xác nhận xuất</a-menu-item
-                    >
-                    <a-menu-item
-                      v-if="
-                        record.status !== 'CANCELLED' &&
-                        BigInt(record.paidAmount ?? 0) === 0n &&
-                        can('SALES_ORDER_CANCEL')
-                      "
-                      key="cancel"
-                      danger
-                      @click="show('cancel', record)"
-                      >Hủy</a-menu-item
+                      v-for="action in orderActions(record)"
+                      :key="action.key"
+                      :danger="action.danger"
+                      @click="runAction(action.key, record)"
+                      >{{ action.label }}</a-menu-item
                     >
                   </a-menu>
                 </template>

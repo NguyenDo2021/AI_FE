@@ -11,7 +11,7 @@ const store = useWarehouseStore()
 const { t } = useI18n()
 const { token } = theme.useToken()
 const options = computed(() =>
-  store.warehouses.map((item) => ({
+  (store.accessBlocked ? [] : store.warehouses).map((item) => ({
     value: item.id,
     label: `${item.code} — ${item.name}${item.status === 0 ? ` (${t('common.inactive')})` : ''}`,
     name: item.name,
@@ -66,7 +66,12 @@ watch(
           class="warehouse-selector__select"
           :value="store.selected ? store.selectedId : undefined"
           :loading="store.loading"
-          :disabled="store.loading || (!!store.loaded && !store.warehouses.length) || !!store.error"
+          :disabled="
+            store.loading ||
+            store.accessBlocked ||
+            (!!store.loaded && !store.warehouses.length) ||
+            !!store.error
+          "
           :status="store.error ? 'error' : undefined"
           :options="options"
           :placeholder="placeholder"

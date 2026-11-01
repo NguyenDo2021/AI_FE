@@ -16,6 +16,7 @@ export const usePaymentsStore = defineStore('payments', () => {
       auth.user?.permissions,
       auth.isCatalogAdmin,
       warehouses.selectedId,
+      warehouses.scopeRevision,
       warehouses.warehouses.map((item) => [item.id, item.status]),
     ])
   const attempts = ref<Record<string, PaymentAttempt>>({})

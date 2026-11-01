@@ -138,7 +138,7 @@ const loadCustomer = async (id: string, current: number): Promise<void> => {
     customer.value = result
   } catch (cause) {
     if (current === sequence) customerLookupFailed.value = true
-    if ((cause as NormalizedApiError).status === 403) await refreshScope()
+    if ((cause as NormalizedApiError).status === 403) await refreshScope(cause)
   }
 }
 const load = async (): Promise<void> => {
@@ -178,7 +178,7 @@ const load = async (): Promise<void> => {
       await loadCustomer(result.customerId, current)
   } catch (cause) {
     if (current === sequence) error.value = salesError(cause)
-    if ((cause as NormalizedApiError).status === 403) await refreshScope()
+    if ((cause as NormalizedApiError).status === 403) await refreshScope(cause)
   } finally {
     if (current === sequence) loading.value = false
   }
@@ -257,7 +257,7 @@ watch(
           if (item) inventory.value[item.productId] = item.quantity
         } else {
           inventoryError.value = salesError(result.reason)
-          if ((result.reason as NormalizedApiError).status === 403) void refreshScope()
+          if ((result.reason as NormalizedApiError).status === 403) void refreshScope(result.reason)
         }
       })
     }
@@ -375,7 +375,7 @@ const submit = async (): Promise<void> => {
     error.value = salesError(cause)
     fields.value = salesFieldErrors(cause)
     if ([409, 403, 404].includes(apiError.status ?? 0)) blocked.value = true
-    if (apiError.status === 403) await refreshScope()
+    if (apiError.status === 403) await refreshScope(cause)
     if (
       (!apiError.status || apiError.status === 408 || apiError.status >= 500) &&
       ['confirm', 'cancel'].includes(props.mode) &&
@@ -386,7 +386,7 @@ const submit = async (): Promise<void> => {
         const latest = await getSalesOrder(detail.value.id)
         if (current !== sequence) return
         if (!inScope(latest.warehouseId)) {
-          await refreshScope()
+          await refreshScope(cause)
           return
         }
         detail.value = latest

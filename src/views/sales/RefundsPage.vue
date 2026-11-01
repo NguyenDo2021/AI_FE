@@ -172,7 +172,7 @@ const load = async (): Promise<void> => {
       order.value = undefined
       refundOpen.value = false
       detailOpen.value = false
-      await refreshAccess()
+      await refreshAccess(cause)
     }
   } finally {
     if (current === sequence) loading.value = false
