@@ -331,65 +331,133 @@ test('failed recovery retains last known scope without claiming an empty assignm
   assert.equal(store.error, 'Denied')
 })
 
-let account = { status: 1 }
-let roles = [{ code: 'ADMIN', status: 1 }]
-let rejectAdmin = false
-let tokenResponse = async () => ({ accessToken: 'new-token', refreshToken: 'refresh' })
-let identity = async () => ({ id: 'a', username: 'a', fullName: 'A', email: '', permissions: [] })
+const authUtils = await loadSource('src/utils/auth.ts')
+const jwt = (permissions = [], extra = {}) =>
+  'header.' +
+  Buffer.from(JSON.stringify({ permissions, ...extra })).toString('base64url') +
+  '.signature'
+const profile = (overrides = {}) => ({
+  id: 'a',
+  username: 'a',
+  fullName: 'A',
+  email: '',
+  permissions: [],
+  isAdmin: false,
+  ...overrides,
+})
+let tokenResponse
+let identity
+let loginResponse
+let savedToken
+let identityCalls
+let timers
+globalThis.window = { setTimeout: (callback) => timers.push(callback) }
 globalThis.__authMocks = {
-  getUser: async () => {
-    if (rejectAdmin) throw new Error('Denied')
-    return account
+  getUserInfoApi: async () => {
+    identityCalls++
+    return authUtils.validateCurrentUser(await identity())
   },
-  getUserRoles: async () => roles,
-  getUserInfoApi: () => identity(),
-  loginApi: async () => ({ accessToken: 'token', refreshToken: 'refresh' }),
+  loginApi: () => loginResponse(),
   refreshTokenApi: () => tokenResponse(),
+  getTokenPermissions: authUtils.getTokenPermissions,
   useWarehouseStore: () => warehouseModule.useWarehouseStore(),
   clearPaymentRetries: () => {},
-  clearTokens: () => {},
-  getAccessToken: () => 'token',
+  clearTokens: () => {
+    savedToken = null
+  },
+  getAccessToken: () => savedToken,
   getRefreshToken: () => 'refresh',
-  saveTokens: () => {},
+  saveTokens: (tokens) => {
+    savedToken = tokens.accessToken
+  },
 }
+beforeEach(() => {
+  savedToken = jwt(['PRODUCT_VIEW'])
+  identity = async () => profile()
+  loginResponse = async () => ({ accessToken: savedToken, refreshToken: 'refresh' })
+  tokenResponse = async () => ({ accessToken: jwt(['PRODUCT_CREATE']), refreshToken: 'refresh' })
+  identityCalls = 0
+  timers = []
+})
 const authModule = await loadSource('src/stores/auth.ts', (source) => {
   source = source.replace(/import \{[^}]+\} from '@\/(?:api|stores|utils)\/[^']+'\r?\n/g, '')
   return moduleImports(source).replace(
     'export const useAuthStore',
-    'const { getUser, getUserRoles, getUserInfoApi, loginApi, refreshTokenApi, useWarehouseStore, clearPaymentRetries, clearTokens, getAccessToken, getRefreshToken, saveTokens } = globalThis.__authMocks\nexport const useAuthStore',
+    'const { getUserInfoApi, loginApi, refreshTokenApi, getTokenPermissions, useWarehouseStore, clearPaymentRetries, clearTokens, getAccessToken, getRefreshToken, saveTokens } = globalThis.__authMocks\nexport const useAuthStore',
   )
 })
-test('Admin requires active account and active database ADMIN role, independent of permissions', async () => {
-  rejectAdmin = false
+
+test('Admin comes only from the boolean /auth/me field, independent of username, roles and permissions', async () => {
   const auth = authModule.useAuthStore()
-  for (const [status, roleStatus, expected] of [
-    [1, 1, true],
-    [0, 1, false],
-    [1, 0, false],
-  ]) {
-    account = { status }
-    roles = [{ code: 'ADMIN', status: roleStatus }]
+  assert.equal(auth.adminVerificationStatus, 'idle')
+  for (const isAdmin of [true, false]) {
+    identity = async () =>
+      profile({ isAdmin, username: 'ADMIN', permissions: ['USER_VIEW', 'PRODUCT_CREATE'] })
     await auth.getUserInfo()
-    assert.equal(auth.isCatalogAdmin, expected)
+    assert.equal(auth.isCatalogAdmin, isAdmin)
     assert.equal(auth.adminVerified, true)
+    assert.equal(auth.adminVerificationStatus, 'verified')
+    assert.deepEqual(auth.user.permissions, ['PRODUCT_VIEW'])
+    assert.deepEqual(auth.currentUser.permissions, ['USER_VIEW', 'PRODUCT_CREATE'])
   }
-  roles = [{ code: 'USER', status: 1 }]
-  await auth.refreshAdmin()
-  assert.equal(auth.isCatalogAdmin, false)
 })
-test('failed database verification falls back to permissions without claiming Admin', async () => {
-  account = { status: 1 }
-  roles = [{ code: 'ADMIN', status: 1 }]
-  rejectAdmin = false
+
+test('failed verification removes prior Admin immediately, retains token permissions and permits retry', async () => {
+  identity = async () => profile({ isAdmin: true })
   const auth = authModule.useAuthStore()
   await auth.getUserInfo()
   assert.equal(auth.isCatalogAdmin, true)
-  rejectAdmin = true
-  await auth.refreshAdmin()
+  let fail
+  identity = () =>
+    new Promise((_, reject) => {
+      fail = reject
+    })
+  const pending = auth.refreshAdmin()
   assert.equal(auth.isCatalogAdmin, false)
-  assert.equal(auth.adminVerified, false)
-  rejectAdmin = false
+  assert.equal(auth.adminVerificationStatus, 'loading')
+  fail(new Error('Network unavailable'))
+  await pending
+  assert.equal(auth.currentUser, null)
+  assert.equal(auth.isCatalogAdmin, false)
+  assert.equal(auth.adminVerificationStatus, 'failed')
+  assert.deepEqual(auth.user.permissions, ['PRODUCT_VIEW'])
+  identity = async () => profile()
+  await auth.refreshAdmin()
+  assert.equal(auth.adminVerificationStatus, 'verified')
+  assert.equal(auth.isCatalogAdmin, false)
 })
+
+test('missing, null, string and numeric isAdmin reject the contract rather than verifying false', async () => {
+  const auth = authModule.useAuthStore()
+  for (const isAdmin of [undefined, null, 'false', 'true', 0, 1]) {
+    identity = async () => profile({ isAdmin })
+    await assert.rejects(auth.getUserInfo(), /Invalid \/auth\/me response/)
+    assert.equal(auth.adminVerificationStatus, 'failed')
+    assert.equal(auth.isCatalogAdmin, false)
+  }
+  for (const value of [{ data: profile() }, null, { ...profile(), permissions: ['VIEW', 1] }]) {
+    assert.throws(() => authUtils.validateCurrentUser(value), /Invalid \/auth\/me response/)
+  }
+})
+
+test('concurrent identity, manual verification and denial recovery share one /me request', async () => {
+  let finish
+  identity = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const auth = authModule.useAuthStore()
+  const pending = auth.getUserInfo()
+  const shared = auth.getUserInfo()
+  const retry = auth.refreshAdmin()
+  const denial = auth.refreshAdminAfterDenial()
+  assert.equal(identityCalls, 1)
+  finish(profile())
+  await Promise.all([pending, shared, retry, denial])
+  await auth.refreshAdminAfterDenial()
+  assert.equal(identityCalls, 1)
+})
+
 test('late identity response after logout cannot restore logged-out state', async () => {
   let finish
   identity = () =>
@@ -399,11 +467,111 @@ test('late identity response after logout cannot restore logged-out state', asyn
   const auth = authModule.useAuthStore()
   const pending = auth.getUserInfo()
   auth.logout()
-  finish({ id: 'a', permissions: [] })
+  finish(profile({ isAdmin: true }))
   await assert.rejects(pending, /Session changed/)
   assert.equal(auth.user, null)
+  assert.equal(auth.currentUser, null)
   assert.equal(auth.isCatalogAdmin, false)
-  identity = async () => ({ id: 'a', permissions: [] })
+  assert.equal(auth.adminVerificationStatus, 'idle')
+})
+
+test('account switch clears Admin, warehouse selection and persistence and rejects late old identity', async () => {
+  const auth = authModule.useAuthStore()
+  identity = async () => profile({ isAdmin: true })
+  await auth.getUserInfo()
+  response = [warehouse('w1')]
+  const scope = warehouseModule.useWarehouseStore()
+  await scope.load('a')
+  scope.select('w1')
+  let finish
+  identity = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const old = auth.getUserInfo()
+  const employeeToken = jwt(['PRODUCT_VIEW'])
+  loginResponse = async () => ({ accessToken: employeeToken, refreshToken: 'employee-refresh' })
+  identity = async () => profile({ id: 'b', username: 'employee', isAdmin: false })
+  await auth.login({ username: 'employee', password: 'password' })
+  finish(profile({ isAdmin: true }))
+  await assert.rejects(old, /Session changed/)
+  assert.equal(auth.user.id, 'b')
+  assert.equal(auth.isCatalogAdmin, false)
+  assert.equal(auth.adminVerified, true)
+  assert.deepEqual(scope.warehouses, [])
+  assert.equal(scope.selectedId, undefined)
+  assert.equal(storage.has('working-warehouse:a'), false)
+})
+
+test('DB permission changes do not affect can() until the access token rotates', async () => {
+  const auth = authModule.useAuthStore()
+  identity = async () => profile({ permissions: ['PRODUCT_CREATE'] })
+  await auth.getUserInfo()
+  assert.deepEqual(auth.user.permissions, ['PRODUCT_VIEW'])
+  await auth.refreshToken()
+  assert.deepEqual(auth.user.permissions, ['PRODUCT_CREATE'])
+  assert.equal(auth.isCatalogAdmin, false)
+  assert.equal(auth.adminVerificationStatus, 'idle')
+  await auth.getUserInfo()
+  for (const callback of timers) callback()
+  assert.equal(identityCalls, 2)
+  assert.deepEqual(auth.user.permissions, ['PRODUCT_CREATE'])
+  assert.equal(auth.adminVerified, true)
+})
+
+test('refresh response after logout cannot restore tokens', async () => {
+  let finish
+  tokenResponse = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const auth = authModule.useAuthStore()
+  const pending = auth.refreshToken()
+  auth.logout()
+  finish({ accessToken: jwt([]), refreshToken: 'refresh' })
+  await assert.rejects(pending, /Session changed/)
+  assert.equal(auth.accessToken, null)
+  assert.equal(auth.user, null)
+})
+
+test('token rotation during identity fetch uses new token permissions without duplicate verification', async () => {
+  const auth = authModule.useAuthStore()
+  identity = async () => {
+    await auth.refreshToken()
+    return profile()
+  }
+  await auth.getUserInfo()
+  assert.equal(identityCalls, 1)
+  assert.equal(timers.length, 0)
+  assert.deepEqual(auth.user.permissions, ['PRODUCT_CREATE'])
+  assert.equal(auth.adminVerified, true)
+})
+
+test('concurrent refreshes share tokens and schedule one verification', async () => {
+  let finish
+  tokenResponse = () =>
+    new Promise((resolve) => {
+      finish = resolve
+    })
+  const auth = authModule.useAuthStore()
+  const pending = auth.refreshToken()
+  const shared = auth.refreshToken()
+  finish({ accessToken: jwt([]), refreshToken: 'refresh' })
+  await Promise.all([pending, shared])
+  assert.equal(timers.length, 1)
+  timers[0]()
+  await auth.getUserInfo()
+  assert.equal(identityCalls, 1)
+})
+
+test('malformed JWT permission claims fail closed without using roles or DB fallback', () => {
+  for (const token of ['bad', jwt(null), jwt('PRODUCT_VIEW'), 'header.bad.signature']) {
+    assert.deepEqual(authUtils.getTokenPermissions(token), [])
+  }
+  assert.deepEqual(
+    authUtils.getTokenPermissions(jwt(['PRODUCT_VIEW', 1], { roles: ['ADMIN'], isAdmin: true })),
+    ['PRODUCT_VIEW'],
+  )
 })
 
 const permissionsModule = await loadSource('src/constants/permissions.ts')
@@ -423,33 +591,4 @@ test('login landing prioritizes business dashboard for verified Admin and preser
   assert.equal(landing.getLandingPath(['DASHBOARD_VIEW'], false), '/dashboard')
   assert.equal(landing.getLandingPath(['USER_VIEW'], false), '/system/user')
   assert.equal(landing.getLandingPath([], false), '/403')
-})
-test('refresh response after logout cannot restore tokens', async () => {
-  let finish
-  tokenResponse = () =>
-    new Promise((resolve) => {
-      finish = resolve
-    })
-  const auth = authModule.useAuthStore()
-  const pending = auth.refreshToken()
-  auth.logout()
-  finish({ accessToken: 'late-token', refreshToken: 'refresh' })
-  await assert.rejects(pending, /Session changed/)
-  assert.equal(auth.accessToken, null)
-  assert.equal(auth.user, null)
-  tokenResponse = async () => ({ accessToken: 'new-token', refreshToken: 'refresh' })
-})
-test('token rotation during identity fetch does not incorrectly invalidate the session', async () => {
-  const auth = authModule.useAuthStore()
-  identity = async () => {
-    auth.accessToken = 'rotated-token'
-    return { id: 'a', permissions: [] }
-  }
-  rejectAdmin = false
-  account = { status: 1 }
-  roles = []
-  await auth.getUserInfo()
-  assert.equal(auth.user.id, 'a')
-  assert.equal(auth.accessToken, 'rotated-token')
-  identity = async () => ({ id: 'a', permissions: [] })
 })

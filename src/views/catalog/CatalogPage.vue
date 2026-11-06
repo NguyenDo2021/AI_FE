@@ -572,12 +572,6 @@ onBeforeUnmount(() => {
         'warehouses-page': isWarehouse,
       }"
     >
-      <a-alert
-        v-if="!auth.adminVerified"
-        type="warning"
-        show-icon
-        :message="$t('catalog.adminUnverified')"
-      />
       <a-alert v-if="error && !isFittedCatalog" type="error" show-icon :message="error"
         ><template #action
           ><a-button size="small" @click="loadList">{{ $t('common.reload') }}</a-button></template

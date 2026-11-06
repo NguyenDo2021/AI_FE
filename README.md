@@ -58,7 +58,7 @@ src/
 - Access/refresh token hiện được lưu trong `localStorage` thông qua `utils/storage.ts`. Với triển khai production nhạy cảm, ưu tiên refresh token trong cookie `HttpOnly; Secure; SameSite` do backend quản lý.
 - Các request domain dùng Axios instance ở `utils/request.ts`; token tự đính kèm vào `Authorization`.
 - Khi nhiều request cùng nhận 401, interceptor chia sẻ một promise refresh; refresh lỗi sẽ xóa session và chuyển về `/login`.
-- Hợp đồng backend mặc định: `POST /auth/login` và `POST /auth/refresh` trả `{ accessToken, refreshToken }`; `GET /auth/me` trả `AuthUser`.
+- Hợp đồng backend: `POST /auth/login` và `POST /auth/refresh` trả `{ accessToken, refreshToken }`; `GET /auth/me` trả object `CurrentUser` trực tiếp, gồm boolean `isAdmin`. Hồ sơ DB nằm ở `auth.currentUser`; `auth.user.permissions` lấy từ claim `permissions` trong access JWT để đồng bộ quyền hiệu lực với backend. Xem [chi tiết tích hợp](docs/auth-me-integration.md).
 
 ## API
 

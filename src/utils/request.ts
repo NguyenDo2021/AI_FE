@@ -17,6 +17,7 @@ declare module 'axios' {
     preventAutomaticRetry?: boolean
     skipAccessRefresh?: boolean
     _warehouseRevision?: number
+    _authSessionRevision?: number
   }
 }
 interface RetryConfig extends InternalAxiosRequestConfig {
@@ -36,9 +37,22 @@ const http = axios.create({
 })
 
 let refreshPromise: Promise<string> | null = null
+let refreshPromiseRevision: number | undefined
 let refreshSession: (() => Promise<string>) | null = null
 let onSessionExpired: (() => void) | null = null
 let onAccessDenied: (() => void) | null = null
+let authSessionRevision: (() => number) | null = null
+const isStaleSessionRequest = (config?: AxiosRequestConfig): boolean =>
+  !!authSessionRevision &&
+  config?._authSessionRevision !== undefined &&
+  config._authSessionRevision !== authSessionRevision()
+const sessionChanged = (): NormalizedApiError =>
+  Object.assign(new Error('Session changed'), { code: 'AUTH_SESSION_CHANGED' })
+// Capture at call time, before Axios schedules its asynchronous request interceptor.
+const withAuthSession = (config?: AxiosRequestConfig): AxiosRequestConfig => ({
+  ...config,
+  _authSessionRevision: config?._authSessionRevision ?? authSessionRevision?.(),
+})
 
 // Keep warehouse recovery independent of authentication and functional permissions.
 let warehouseAccess: {
@@ -66,13 +80,17 @@ export const configureRequestAuth = (handlers: {
   refresh: () => Promise<string>
   onSessionExpired: () => void
   onAccessDenied?: () => void
+  sessionRevision?: () => number
 }): void => {
   refreshSession = handlers.refresh
   onSessionExpired = handlers.onSessionExpired
   onAccessDenied = handlers.onAccessDenied ?? null
+  authSessionRevision = handlers.sessionRevision ?? null
 }
 
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  if (isStaleSessionRequest(config)) throw sessionChanged()
+  if (authSessionRevision) config._authSessionRevision = authSessionRevision()
   if (warehouseAccess && isWarehouseRequest(config.url)) {
     if (isStaleWarehouseRequest(config) || !warehouseAccess.allows(config)) throw scopeChanged()
     config._warehouseRevision = warehouseAccess.revision()
@@ -98,12 +116,15 @@ const normalizeError = (error: AxiosError<ApiErrorPayload>): NormalizedApiError 
 
 http.interceptors.response.use(
   (response) => {
+    if (isStaleSessionRequest(response.config)) throw sessionChanged()
     if (isStaleWarehouseRequest(response.config)) throw scopeChanged()
     return response.config.preserveResponse ? response : response.data
   },
   async (error: AxiosError<ApiErrorPayload>) => {
-    if (error.code === 'WAREHOUSE_SCOPE_CHANGED') return Promise.reject(error)
+    if (['WAREHOUSE_SCOPE_CHANGED', 'AUTH_SESSION_CHANGED'].includes(error.code ?? ''))
+      return Promise.reject(error)
     const config = error.config as RetryConfig | undefined
+    if (isStaleSessionRequest(config)) return Promise.reject(sessionChanged())
     if (isStaleWarehouseRequest(config)) return Promise.reject(scopeChanged())
     if (config?.preserveResponse && error.response) {
       const payload = await readBlobError(
@@ -114,6 +135,7 @@ http.interceptors.response.use(
     }
     if (isStaleWarehouseRequest(config)) return Promise.reject(scopeChanged())
     const status = error.response?.status
+    if (isStaleSessionRequest(config)) return Promise.reject(sessionChanged())
     if (
       error.response?.data?.code === 'WAREHOUSE_ACCESS_DENIED' &&
       isWarehouseRequest(config?.url)
@@ -138,15 +160,22 @@ http.interceptors.response.use(
     ) {
       config._retry = true
       try {
-        if (!refreshPromise)
-          refreshPromise = refreshSession().finally(() => (refreshPromise = null))
+        if (!refreshPromise || refreshPromiseRevision !== config._authSessionRevision) {
+          const task = refreshSession().finally(() => {
+            if (refreshPromise === task) refreshPromise = null
+          })
+          refreshPromise = task
+          refreshPromiseRevision = config._authSessionRevision
+        }
         const token = await refreshPromise
+        if (isStaleSessionRequest(config)) return Promise.reject(sessionChanged())
         config.headers.set('Authorization', `Bearer ${token}`)
         if (config.preventAutomaticRetry) return Promise.reject(normalizeError(error))
         // Keep PDF retry failures outside this catch; JSON calls retain their existing behavior.
         if (config.preserveResponse) return http.request(config)
         return await http.request(config)
       } catch (cause) {
+        if (isStaleSessionRequest(config)) return Promise.reject(sessionChanged())
         if (
           ['WAREHOUSE_SCOPE_CHANGED', 'WAREHOUSE_ACCESS_DENIED'].includes(
             (cause as NormalizedApiError | undefined)?.code ?? '',
@@ -178,21 +207,21 @@ http.interceptors.response.use(
 export const request = {
   getBlob(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
     return http.get<Blob, AxiosResponse<Blob>>(url, {
-      ...config,
+      ...withAuthSession(config),
       responseType: 'blob',
       preserveResponse: true,
     })
   },
   get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    return http.get<T, T>(url, config)
+    return http.get<T, T>(url, withAuthSession(config))
   },
   post<T, D = unknown>(url: string, data?: D, config?: AxiosRequestConfig): Promise<T> {
-    return http.post<T, T, D>(url, data, config)
+    return http.post<T, T, D>(url, data, withAuthSession(config))
   },
   put<T, D = unknown>(url: string, data?: D, config?: AxiosRequestConfig): Promise<T> {
-    return http.put<T, T, D>(url, data, config)
+    return http.put<T, T, D>(url, data, withAuthSession(config))
   },
   delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    return http.delete<T, T>(url, config)
+    return http.delete<T, T>(url, withAuthSession(config))
   },
 }

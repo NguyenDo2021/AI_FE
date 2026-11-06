@@ -6,7 +6,7 @@
 - `src/types/catalog.ts`, `src/api/catalog/catalog.api.ts`, `src/utils/catalog.ts`: hợp đồng API, payload đầy đủ, validation và lỗi theo trường. Đường dẫn tương đối với baseURL đã có `/api`.
 - `src/components/catalog/UserWarehousesDrawer.vue`, `src/views/system/user/index.vue`: xem/gán/gỡ từng kho. Không thay toàn bộ danh sách, PUT không có body, DELETE 204 không parse JSON.
 - `src/stores/warehouse.ts`, `src/components/catalog/WarehouseSelector.vue`, `src/layouts/BasicLayout.vue`: phạm vi kho và kho đang làm việc, lưu sessionStorage theo user, kiểm tra lựa chọn sau mỗi tải lại và xóa khi logout.
-- `src/stores/auth.ts`, `src/composables/useCatalogPermission.ts`, router/menu/constants: Admin từ user đang hoạt động và role ADMIN đang hoạt động trong database. Chỉ bỏ qua permission cho chức năng mới; quyền màn hình hệ thống cũ vẫn giữ nguyên.
+- `src/stores/auth.ts`, `src/composables/useCatalogPermission.ts`, router/menu/constants: Admin lấy từ boolean `isAdmin` của `/auth/me`; quyền hiệu lực lấy từ claim `permissions` trong access JWT. Chỉ bỏ qua permission cho chức năng mới; quyền màn hình hệ thống cũ vẫn giữ nguyên.
 - `src/utils/request.ts`, `src/main.ts`: cơ chế lỗi do màn hình mới xử lý và làm mới xác nhận Admin khi gặp 403. Giữ refresh/đăng xuất hiện tại.
 - BasicTable hỗ trợ scroll; BasicModal/BasicDrawer ngăn đóng khi mutation đang chạy. Locale Việt/Anh được bổ sung, không thêm dependency.
 - `tests/catalog.test.mjs`: kiểm thử validation, payload, API client, Admin, phạm vi kho và response đến muộn.
@@ -35,7 +35,7 @@ Các test dùng mock API và state thực của Pinia; không phải kiểm th�
 
 ## Giới hạn và hợp đồng backend
 
-- Theo xác nhận của người dùng: GET `/users/{id}` và `/users/{id}/roles` cho phép đọc chính mình không cần USER_VIEW, trả trạng thái hiện tại. Nếu xác nhận thất bại, FE dùng permissions và cảnh báo, không suy ra Admin từ JWT.
+- Contract `/auth/me` mới thay thế cách đọc bản thân qua GET `/users/{id}` và `/users/{id}/roles`. Hai API quản trị vẫn giữ cho màn hình có quyền tương ứng. `isAdmin=false` là xác minh thành công; lỗi xác minh gỡ ngoại lệ Admin, giữ quyền JWT và cho phép thử lại. Chi tiết: [Tích hợp phiên Admin](auth-me-integration.md).
 - Axios dùng JSON number thông thường. FE chặn giá vượt Number.MAX_SAFE_INTEGER, dù backend hỗ trợ 19 chữ số. Giá ngoài phạm vi an toàn nhận từ backend được cảnh báo và chặn PUT; không gửi chuỗi số hoặc âm thầm lưu giá đã làm tròn.
 - Khi không có PRODUCT_GROUP_VIEW, nhóm hiện tại hiển thị bằng ID và không mất groupId; không chọn nhóm mới. Backend giữ quyết định quyền/phạm vi cuối cùng.
 - Không có dữ liệu tồn kho trong module này. Không triển khai nhập xuất, bán hàng, công nợ, hóa đơn; hiện chưa có dữ liệu phụ thuộc kho cần tải lại khi đổi lựa chọn. Module tương lai cần theo dõi selectedId trong warehouse store.

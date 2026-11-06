@@ -20,8 +20,9 @@ const warehouses = useWarehouseStore(pinia)
 installWarehouseAccess(warehouses, () => auth.user?.id)
 configureRequestAuth({
   refresh: auth.refreshToken,
+  sessionRevision: () => auth.sessionRevision,
   onAccessDenied: () => {
-    void auth.refreshAdmin()
+    void auth.refreshAdminAfterDenial()
   },
   onSessionExpired: () => {
     auth.logout()

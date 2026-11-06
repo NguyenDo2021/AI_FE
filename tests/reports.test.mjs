@@ -1881,6 +1881,8 @@ test('sales screen commits period, summary and rows together, discards stale res
   await flush()
   const pending = []
   context.handler = () => new Promise((resolve) => pending.push(resolve))
+  // Supply the whole fixture range; the current default month changes over time.
+  vm.filters.from = '2026-10-01'
   vm.filters.to = '2026-10-20'
   vm.submit()
   assert.equal(vm.sales, undefined)

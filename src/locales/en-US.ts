@@ -434,6 +434,7 @@ export default {
     noWarehouses:
       'No warehouses are available in your assigned scope. Contact an administrator to assign a warehouse.',
     adminUnverified: 'Admin status could not be verified. Existing permissions are being used.',
+    adminVerifying: 'Verifying session information.',
     keyword: 'Search code or name',
     allStatuses: 'All statuses',
     allGroups: 'All groups',

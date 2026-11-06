@@ -432,6 +432,7 @@ export default {
     noWarehouses:
       'Bạn chưa có kho nào trong phạm vi được giao. Vui lòng liên hệ quản trị viên để được gán kho.',
     adminUnverified: 'Chưa xác nhận được trạng thái Admin. Giao diện đang sử dụng quyền hiện có.',
+    adminVerifying: 'Đang xác minh thông tin phiên.',
     keyword: 'Tìm theo mã hoặc tên',
     allStatuses: 'Tất cả trạng thái',
     allGroups: 'Tất cả nhóm',

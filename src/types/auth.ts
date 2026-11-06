@@ -15,3 +15,10 @@ export interface AuthUser {
   email: string
   permissions: string[]
 }
+
+// Database profile; permissions here may differ from the active access token.
+export interface CurrentUser extends AuthUser {
+  isAdmin: boolean
+}
+
+export type AdminVerificationStatus = 'idle' | 'loading' | 'verified' | 'failed'

@@ -65,6 +65,24 @@ const scopeUnavailable = computed(
         }"
       >
         <a-alert
+          v-if="authStore.adminVerificationStatus === 'loading'"
+          type="info"
+          show-icon
+          :message="$t('catalog.adminVerifying')"
+        />
+        <a-alert
+          v-if="authStore.adminVerificationStatus === 'failed'"
+          type="warning"
+          show-icon
+          :message="$t('catalog.adminUnverified')"
+        >
+          <template #action>
+            <a-button size="small" @click="authStore.refreshAdmin()">
+              {{ $t('common.reload') }}
+            </a-button>
+          </template>
+        </a-alert>
+        <a-alert
           v-if="warehousePage && warehouses.recoveryNotice && !warehouses.accessBlocked"
           type="warning"
           show-icon
